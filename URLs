@@ -1,8 +1,30 @@
+docs:
+
+- https://docs.unity3d.com/6000.1/Documentation/Manual/UnityManual.html
+
+instal·lar unity hub:
+
+- instal·lar "unity editor (6.1)"
+
+instal·lar "probuilder" desde "unity editor":
+
+- window > package manager > unity registry > probuilder
+- obrir-lo des de 'tools'
+
 gestió de paquets:
 
 - https://assetstore.unity.com
 - (UNL) Ulimate nautre lite
 - AQUAS
+
+bàsics:
+
+- game object
+- components (sprite renderer, rigidbody, collider, script, ...)
+- un game object afecta un altre
+- un game object xoca amb un altre
+- un game object executa un trigger/script
+- com es fa un script amb estat global del joc i game over
 
 terrain:
 
@@ -11,3 +33,17 @@ terrain:
 - posar gespa i arbres
 
 aigua https://www.youtube.com/watch?v=pOo48Vdtwwk&t=172s
+
+flappy bird: https://www.youtube.com/watch?v=XtQMytORBmM
+
+- Dibuixar assets (ocell i pipes)
+- gravetat a l'ocell
+- apretar tecla 'espai' per saltar
+- dissenyar tuberies (colisions i trigger central) = prefab
+- generador de tuberies
+- canvas i UI
+- restart del joc amb botó
+- puntuació i game over
+
+canvas i ui: https://www.youtube.com/watch?v=IuuKUaZQiSU
+
