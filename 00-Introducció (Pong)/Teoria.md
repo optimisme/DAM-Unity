@@ -2,7 +2,7 @@
 
 Unity és un **motor de videojocs** que permet fer jocs per diferents plataformes. (Windows, Linux, Android, iOS, ...)
 
-El software de unity està compost per múltiples aplicacions.
+El software de unity està compost per múltiples aplicacions. 
 
 ## Unity HUB
 
