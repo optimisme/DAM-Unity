@@ -635,3 +635,49 @@ public class GameManager : MonoBehaviour
 ```
 
 Aquest codi controla el "Game Over" i reinici del joc.
+
+## Introducció a la API de Unity
+
+Sense entrar amb detalls del codi, cal saber que aquestes funcions són *"heredades"* de **"MonoBehaviour"**:
+
+**Awake()**
+
+- Es crida una sola vegada quan el GameObject s’instancia o la escena es carrega.
+Serveix per inicialitzar variables i referències.
+- Es crida abans que Start().
+
+**OnEnable()**
+
+- Es crida cada cop que el GameObject o component s’activa (.enabled = true).
+- Útil per subscriure’s a events o reiniciar estats.
+
+**Start()**
+
+- Es crida la primera vegada que el component està actiu, després de Awake().
+- Bona per inicialitzacions que depenen d’altres objectes ja carregats.
+
+**Update()**
+
+- Es crida cada frame.
+- S’utilitza per lògica dependent del temps (input, moviments, animacions).
+
+**FixedUpdate()**
+
+- Es crida a intervals fixes (no depèn dels FPS).
+- Ideal per física i forces (Rigidbody).
+
+**LateUpdate()**
+
+- Es crida després de tots els Update().
+- Útil per càmeres o accions que han d’esperar que la resta d’objectes s’hagin mogut.
+
+**OnDisable()**
+
+- Es crida quan el component o GameObject es desactiva (.enabled = false).
+- Serveix per des-subcriure’s a events o alliberar recursos temporals.
+
+**OnDestroy()**
+
+- Es crida quan el GameObject es destrueix.
+- Bona per netejar recursos, tancar connexions o alliberar memòria.
+
