@@ -228,38 +228,76 @@ using UnityEngine.InputSystem;
 
 public class MovimentJugador : MonoBehaviour
 {
-    public float velocitatBase = 5f;
-    public Transform murEsquerra, murDreta;
+    [SerializeField] private float baseSpeed = 5f;
+    [SerializeField] private Transform leftWall;
+    [SerializeField] private Transform rightWall;
 
     private Rigidbody2D rb;
-    private Collider2D colPala, colMurEsq, colMurDre;
+    private Collider2D playerCollider;
+    private float leftBound, rightBound;
 
-    void Start()
+    private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        colPala = GetComponent<Collider2D>();
-        if (!murEsquerra) { var go = GameObject.Find("Mur esquerra"); if (go) murEsquerra = go.transform; }
-        if (!murDreta)    { var go = GameObject.Find("Mur dreta");    if (go) murDreta    = go.transform; }
-        if (murEsquerra) colMurEsq = murEsquerra.GetComponent<Collider2D>();
-        if (murDreta)    colMurDre = murDreta.GetComponent<Collider2D>();
+        playerCollider = GetComponent<Collider2D>();
+        
+        // Find walls if not assigned - keeping original names
+        if (!leftWall) leftWall = GameObject.Find("Mur esquerra")?.transform;
+        if (!rightWall) rightWall = GameObject.Find("Mur dreta")?.transform;
+        
+        CalculateBounds();
+        SetupRigidbody();
+    }
+
+    private void SetupRigidbody()
+    {
+        rb.gravityScale = 0f;
         rb.constraints = RigidbodyConstraints2D.FreezeRotation | RigidbodyConstraints2D.FreezePositionY;
     }
 
-    void FixedUpdate()
+    private void CalculateBounds()
     {
-        float x = 0f;
-        if (Keyboard.current?.leftArrowKey.isPressed == true || Keyboard.current?.aKey.isPressed == true) x -= 1f;
-        if (Keyboard.current?.rightArrowKey.isPressed == true || Keyboard.current?.dKey.isPressed == true) x += 1f;
-
-        float v = velocitatBase * GameState.speedFactor;
-        rb.linearVelocity = new Vector2(x * v, 0f);
-
-        if (colPala && colMurEsq && colMurDre)
+        if (leftWall && rightWall && playerCollider)
         {
-            float halfP = colPala.bounds.extents.x;
-            float minX = colMurEsq.bounds.max.x + halfP;
-            float maxX = colMurDre.bounds.min.x - halfP;
-            rb.position = new Vector2(Mathf.Clamp(rb.position.x, minX, maxX), rb.position.y);
+            float halfWidth = playerCollider.bounds.extents.x;
+            leftBound = leftWall.GetComponent<Collider2D>().bounds.max.x + halfWidth;
+            rightBound = rightWall.GetComponent<Collider2D>().bounds.min.x - halfWidth;
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        if (GameState.gameOver) return;
+
+        float input = GetMovementInput();
+        float velocity = baseSpeed * GameState.speedFactor * input;
+        
+        rb.linearVelocity = new Vector2(velocity, 0f);
+        ClampPosition();
+    }
+
+    private float GetMovementInput()
+    {
+        float input = 0f;
+        
+        if (Keyboard.current?.leftArrowKey.isPressed == true || 
+            Keyboard.current?.aKey.isPressed == true)
+            input -= 1f;
+            
+        if (Keyboard.current?.rightArrowKey.isPressed == true || 
+            Keyboard.current?.dKey.isPressed == true)
+            input += 1f;
+            
+        return input;
+    }
+
+    private void ClampPosition()
+    {
+        if (leftWall && rightWall)
+        {
+            var pos = rb.position;
+            pos.x = Mathf.Clamp(pos.x, leftBound, rightBound);
+            rb.position = pos;
         }
     }
 }
@@ -274,49 +312,87 @@ using UnityEngine;
 
 public class MovimentPilota : MonoBehaviour
 {
-    public float velocitat = 5f;
-    public float incrementVelocitat = 0.5f;
+    [SerializeField] private float initialSpeed = 5f;
+    [SerializeField] private float speedIncrement = 0.5f;
 
     private Rigidbody2D rb;
-    private static readonly Vector2 AMUNT_ESQ = new Vector2(-1, 1).normalized;
-    private static readonly Vector2 AMUNT_DRE = new Vector2( 1, 1).normalized;
-    private Vector2 dir;
-    private float velocitatInicial;
+    private float currentSpeed;
+    private Vector2 direction;
 
-    void Start()
+    // Diagonal directions (45 degrees)
+    private static readonly Vector2 UP_LEFT = new Vector2(-1, 1).normalized;
+    private static readonly Vector2 UP_RIGHT = new Vector2(1, 1).normalized;
+
+    private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        velocitatInicial = velocitat;
-        GameState.ResetSpeed();
-        dir = Random.value < 0.5f ? AMUNT_ESQ : AMUNT_DRE;
+        currentSpeed = initialSpeed;
     }
 
-    void FixedUpdate()
+    private void Start()
     {
-        rb.linearVelocity = dir * velocitat;
+        SetupRigidbody();
+        ResetBall();
     }
 
-    void OnCollisionEnter2D(Collision2D c)
+    private void SetupRigidbody()
     {
-        var n = c.contacts[0].normal;
-        dir = (Mathf.Abs(n.x) > Mathf.Abs(n.y))
-            ? new Vector2(-dir.x, dir.y).normalized
-            : new Vector2(dir.x, -dir.y).normalized;
+        rb.gravityScale = 0f;
+        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+        rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+    }
 
-        if (c.gameObject.name == "Jugador")
+    private void FixedUpdate()
+    {
+        if (!GameState.gameOver)
         {
-            velocitat += incrementVelocitat;
-            GameState.speedFactor = Mathf.Max(1f, velocitat / velocitatInicial);
-            GameState.punts = GameState.punts + 1;
+            // Maintain constant speed
+            rb.linearVelocity = direction * currentSpeed;
         }
     }
 
-    public void ResetBall(Vector2 startDirUp)
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        Vector2 normal = collision.contacts[0].normal;
+        
+        // Reflect direction based on collision normal
+        if (Mathf.Abs(normal.x) > Mathf.Abs(normal.y))
+            direction = new Vector2(-direction.x, direction.y); // Horizontal bounce
+        else
+            direction = new Vector2(direction.x, -direction.y); // Vertical bounce
+            
+        direction = direction.normalized;
+
+        // Check if hit player - keeping original name check
+        if (collision.gameObject.name == "Jugador" || collision.collider.transform.root.name == "Jugador")
+        {
+            OnPlayerHit();
+        }
+    }
+
+    private void OnPlayerHit()
+    {
+        currentSpeed += speedIncrement;
+        GameState.points++;
+        GameState.speedFactor = Mathf.Max(1f, currentSpeed / initialSpeed);
+    }
+
+    private void OnBecameInvisible()
+    {
+        // Ball left screen - game over
+        GameState.gameOver = true;
+        rb.linearVelocity = Vector2.zero;
+    }
+
+    public void ResetBall()
     {
         transform.position = Vector3.zero;
-        velocitat = velocitatInicial;
-        GameState.ResetSpeed();
-        dir = startDirUp.normalized; // e.g. AMUNT_ESQ o AMUNT_DRE
+        currentSpeed = initialSpeed;
+        
+        // Random initial direction (up-left or up-right)
+        direction = Random.value < 0.5f ? UP_LEFT : UP_RIGHT;
+        
+        if (rb) rb.linearVelocity = direction * currentSpeed;
     }
 }
 ```
@@ -332,13 +408,28 @@ Fes un nou script amb les variables compartides entre els objectes del joc.
 Crea un script "GameState.cs":
 
 ```csharp
+using UnityEngine;
+
 public static class GameState
 {
-    // "static" accessibles des dels altres objectes
-    public static float speedFactor = 1f; // shared speed scale
-    public static int punts = 0;
+    public static float speedFactor = 1f;
+    public static int points = 0;
+    public static bool gameOver = false;
 
-    public static void ResetSpeed() { speedFactor = 1f; }
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ResetOnLoad()
+    {
+        speedFactor = 1f;
+        points = 0;
+        gameOver = false;
+    }
+
+    public static void Reset()
+    {
+        speedFactor = 1f;
+        points = 0;
+        gameOver = false;
+    }
 }
 ```
 
@@ -355,9 +446,9 @@ Les variables dels *scripts* marcades com a "public" permeten decidir el valor d
 **Prova**: Fes públiques les variables *murEsquerra* i *murDret* per assignar-les des de l'Inspector enlloc de fer-ho al mètode *Start()*
 
 
-## HUD mostrar informació
+## UIHUD mostrar informació
 
-**HUD (heads-up display)** és el mètode pel que es mostra informació visual al jugador.
+**UIHUD (user interface heads-up display)** és el mètode pel que es mostra informació visual al jugador.
 
 A 'Hierarchy' afegeix un 'Text (TMP)', segurament et demanarà que importis el paquet *TMP Essentials*
 
@@ -388,7 +479,9 @@ I arrossega la **"Main Camera"** des de *Hierarchy* fins a la opció **"Render C
 <video src="./assets/unity-editor-hud-camera.mov" width="400" controls></video>
 </center>
 
-A l'inspector del *Text (TMP)* posa "..." com a valor per defecte del text.
+Canvia el nom de l'objecte *"Text (TMP)"* per *Punts* 
+
+A l'inspector de l'objecte *"Punts"* posa "..." com a valor per defecte del text.
 
 I ajusta si ho veus conveninet *"Pos X" i "Pos Y"
 
@@ -410,24 +503,135 @@ using TMPro;
 
 public class UIHUD : MonoBehaviour
 {
-    TextMeshProUGUI label;
+    [SerializeField] private TextMeshProUGUI scoreText;
+    [SerializeField] private TextMeshProUGUI gameOverText;
+    
+    private int lastPoints = -1;
+    private float lastSpeedFactor = -1f;
+    private bool lastGameOverState = false;
 
-    void Awake()
+    private void Awake()
     {
-        // Grab the TMP on this object
-        label = GetComponent<TextMeshProUGUI>();
-        if (!label) label = GetComponentInChildren<TextMeshProUGUI>();
+        // Auto-find UI elements by name like original code
+        if (!scoreText) scoreText = GameObject.Find("Punts")?.GetComponent<TextMeshProUGUI>();
+        if (!gameOverText) gameOverText = GameObject.Find("GameOver")?.GetComponent<TextMeshProUGUI>();
+        
+        if (gameOverText) gameOverText.gameObject.SetActive(false);
     }
 
-    void Update()
+    private void Update()
     {
-        label.text = $"Factor: x{GameState.speedFactor:0.00} - Punts: {GameState.punts}";
+        UpdateScoreDisplay();
+        UpdateGameOverDisplay();
+    }
+
+    private void UpdateScoreDisplay()
+    {
+        if (scoreText && (GameState.points != lastPoints || GameState.speedFactor != lastSpeedFactor))
+        {
+            scoreText.text = $"Factor: x{GameState.speedFactor:F2} - Punts: {GameState.points}";
+            lastPoints = GameState.points;
+            lastSpeedFactor = GameState.speedFactor;
+        }
+    }
+
+    private void UpdateGameOverDisplay()
+    {
+        if (gameOverText && GameState.gameOver != lastGameOverState)
+        {
+            gameOverText.gameObject.SetActive(GameState.gameOver);
+            lastGameOverState = GameState.gameOver;
+        }
     }
 }
 ```
 
-Arrossega l'script **"UIHUD"** com a un nou component a l'inspector de **"Text (TMP)"**
+Arrossega l'script **"UIHUD"** com a un nou component a l'inspector de **"Punts"**
 
 <center>
 <video src="./assets/unity-editor-hud-textscript.mov" width="400" controls></video>
 </center>
+
+## Game Over i gestor del joc
+
+Afegeix un nout ext dins del *Canvas* anomenat **GameOver**
+
+<center>
+<img src="./assets/unity-editor-hud-gameover-hierarchy.png" style="width: 90%; max-width: 400px">
+</center>
+
+Centra el text i fes-lo gran:
+
+<center>
+<img src="./assets/unity-editor-hud-gameover-properties.png" style="width: 90%; max-width: 400px">
+</center>
+
+Crea un nou objecte **"Empty"**, això ens servirà per posar-hi un *Component* d'script i res més.
+
+<center>
+<img src="./assets/unity-editor-obj-manager.png" style="width: 90%; max-width: 400px">
+</center>
+
+Anomena l'objecte anterior com a **"GameManager"
+
+Crea un nou script **"GameManager"** amb aquest codi i arrossega'l a l'inspector de l'objecte "GameManaer" com un nou *Component*
+
+```csharp
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+public class GameManager : MonoBehaviour
+{
+    [SerializeField] private MovimentPilota ball;
+    [SerializeField] private Transform player;
+
+    private void Awake()
+    {
+        // Find by GameObject name like original code
+        if (!ball)
+        {
+            var go = GameObject.Find("Pilota");
+            if (go) ball = go.GetComponent<MovimentPilota>();
+            else Debug.LogWarning("[GameManager] No GameObject named 'Pilota' found");
+        }
+        if (!player)
+        {
+            var go = GameObject.Find("Jugador");
+            if (go) player = go.transform;
+            else Debug.LogWarning("[GameManager] No GameObject named 'Jugador' found");
+        }
+    }
+
+    private void Start()
+    {
+        RestartGame();
+    }
+
+    private void Update()
+    {
+        if (GameState.gameOver && Keyboard.current?.spaceKey.wasPressedThisFrame == true)
+        {
+            RestartGame();
+        }
+    }
+
+    public void RestartGame()
+    {
+        GameState.Reset();
+        CenterPlayer();
+        if (ball) ball.ResetBall();
+    }
+
+    private void CenterPlayer()
+    {
+        if (player)
+        {
+            var pos = player.position;
+            pos.x = 0f;
+            player.position = pos;
+        }
+    }
+}
+```
+
+Aquest codi controla el "Game Over" i reinici del joc.
