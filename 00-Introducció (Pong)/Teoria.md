@@ -228,55 +228,38 @@ using UnityEngine.InputSystem;
 
 public class MovimentJugador : MonoBehaviour
 {
-    public float velocitat = 8f;
-
-    public Transform murEsquerra;  // Assign in Inspector or found by name
-    public Transform murDreta;
+    public float velocitatBase = 5f;
+    public Transform murEsquerra, murDreta;
 
     private Rigidbody2D rb;
-    private Collider2D colPala;
-    private Collider2D colMurEsq;
-    private Collider2D colMurDre;
+    private Collider2D colPala, colMurEsq, colMurDre;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        colPala = GetComponent<Collider2D>(); // paddle collider (for half width)
-
-        // Auto-find by name if not set in Inspector
-        if (murEsquerra == null) { var go = GameObject.Find("Mur esquerra"); if (go) murEsquerra = go.transform; }
-        if (murDreta   == null) { var go = GameObject.Find("Mur dreta");   if (go) murDreta   = go.transform; }
-
-        // Get wall colliders
+        colPala = GetComponent<Collider2D>();
+        if (!murEsquerra) { var go = GameObject.Find("Mur esquerra"); if (go) murEsquerra = go.transform; }
+        if (!murDreta)    { var go = GameObject.Find("Mur dreta");    if (go) murDreta    = go.transform; }
         if (murEsquerra) colMurEsq = murEsquerra.GetComponent<Collider2D>();
         if (murDreta)    colMurDre = murDreta.GetComponent<Collider2D>();
-
-        // Safety constraints (avoid rotation / vertical move)
         rb.constraints = RigidbodyConstraints2D.FreezeRotation | RigidbodyConstraints2D.FreezePositionY;
     }
 
     void FixedUpdate()
     {
-        // Read keyboard directly (A/D or Left/Right)
         float x = 0f;
         if (Keyboard.current?.leftArrowKey.isPressed == true || Keyboard.current?.aKey.isPressed == true) x -= 1f;
         if (Keyboard.current?.rightArrowKey.isPressed == true || Keyboard.current?.dKey.isPressed == true) x += 1f;
 
-        rb.velocity = new Vector2(x * velocitat, 0f);
+        float v = velocitatBase * GameState.speedFactor;
+        rb.linearVelocity = new Vector2(x * v, 0f);
 
-        // If colliders exist, clamp using real bounds (includes scale)
         if (colPala && colMurEsq && colMurDre)
         {
-            // Bounds are world-space AABBs
-            float halfPala = colPala.bounds.extents.x;     // half width of paddle
-            float rightOfLeftWall = colMurEsq.bounds.max.x; // right edge of left wall
-            float leftOfRightWall = colMurDre.bounds.min.x; // left edge of right wall
-
-            float minX = rightOfLeftWall + halfPala;
-            float maxX = leftOfRightWall - halfPala;
-
-            float clampedX = Mathf.Clamp(rb.position.x, minX, maxX);
-            rb.position = new Vector2(clampedX, rb.position.y);
+            float halfP = colPala.bounds.extents.x;
+            float minX = colMurEsq.bounds.max.x + halfP;
+            float maxX = colMurDre.bounds.min.x - halfP;
+            rb.position = new Vector2(Mathf.Clamp(rb.position.x, minX, maxX), rb.position.y);
         }
     }
 }
@@ -291,50 +274,49 @@ using UnityEngine;
 
 public class MovimentPilota : MonoBehaviour
 {
-    public float velocitat = 6f;            // Velocitat inicial
-    public float incrementVelocitat = 0.25f;
+    public float velocitat = 5f;
+    public float incrementVelocitat = 0.5f;
 
     private Rigidbody2D rb;
-
-    // Constants de direcció
-    private static readonly Vector2 AMUNT_ESQUERRA = new Vector2(-1, 1).normalized;
-    private static readonly Vector2 AMUNT_DRETA   = new Vector2( 1, 1).normalized;
-    private static readonly Vector2 AVALL_ESQUERRA= new Vector2(-1,-1).normalized;
-    private static readonly Vector2 AVALL_DRETA   = new Vector2( 1,-1).normalized;
-
-    private Vector2 direccioActual;
+    private static readonly Vector2 AMUNT_ESQ = new Vector2(-1, 1).normalized;
+    private static readonly Vector2 AMUNT_DRE = new Vector2( 1, 1).normalized;
+    private Vector2 dir;
+    private float velocitatInicial;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        // Sortida inicial: sempre amunt (esquerra o dreta aleatori)
-        direccioActual = Random.value < 0.5f ? AMUNT_ESQUERRA : AMUNT_DRETA;
-        rb.linearVelocity = direccioActual * velocitat;
+        velocitatInicial = velocitat;
+        GameState.ResetSpeed();
+        dir = Random.value < 0.5f ? AMUNT_ESQ : AMUNT_DRE;
     }
 
-    void OnCollisionEnter2D(Collision2D col)
+    void FixedUpdate()
     {
-        Vector2 normal = col.contacts[0].normal;
+        rb.linearVelocity = dir * velocitat;
+    }
 
-        // Decideix si és rebot vertical o horitzontal
-        if (Mathf.Abs(normal.x) > Mathf.Abs(normal.y))
-        {
-            // Rebot vertical → invertir X
-            direccioActual = new Vector2(-direccioActual.x, direccioActual.y).normalized;
-        }
-        else
-        {
-            // Rebot horitzontal → invertir Y
-            direccioActual = new Vector2(direccioActual.x, -direccioActual.y).normalized;
-        }
+    void OnCollisionEnter2D(Collision2D c)
+    {
+        var n = c.contacts[0].normal;
+        dir = (Mathf.Abs(n.x) > Mathf.Abs(n.y))
+            ? new Vector2(-dir.x, dir.y).normalized
+            : new Vector2(dir.x, -dir.y).normalized;
 
-        // ✅ Ús correcte: sense ()
-        if (col.gameObject.name == "Pala")
+        if (c.gameObject.name == "Jugador")
         {
             velocitat += incrementVelocitat;
+            GameState.speedFactor = Mathf.Max(1f, velocitat / velocitatInicial);
+            GameState.punts = GameState.punts + 1;
         }
+    }
 
-        rb.linearVelocity = direccioActual * velocitat;
+    public void ResetBall(Vector2 startDirUp)
+    {
+        transform.position = Vector3.zero;
+        velocitat = velocitatInicial;
+        GameState.ResetSpeed();
+        dir = startDirUp.normalized; // e.g. AMUNT_ESQ o AMUNT_DRE
     }
 }
 ```
@@ -345,7 +327,107 @@ Vincula cada un dels cripts, amb el seu inspector, arrossegant l'script des dels
 <video src="./assets/unity-editor-linkscript.mov" width="300" controls></video>
 </center>
 
-- Script **MovimentJugador** amb l'inspector del **Jugador**
+Fes un nou script amb les variables compartides entre els objectes del joc. 
 
-- Script **MovimentPilota** amb l'inspector de la **Pilota**
+Crea un script "GameState.cs":
 
+```csharp
+public static class GameState
+{
+    // "static" accessibles des dels altres objectes
+    public static float speedFactor = 1f; // shared speed scale
+    public static int punts = 0;
+
+    public static void ResetSpeed() { speedFactor = 1f; }
+}
+```
+
+### Valors inicials de les variables de l'Script
+
+Les variables dels *scripts* marcades com a "public" permeten decidir el valor des de *l'inspector*, tot i tenir definit un altre valor inicial.
+
+<center>
+<img src="./assets/unity-editor-obj-jugadorvelocitat.png" style="width: 90%; max-width: 400px">
+</center>
+
+**Important!** El valor definit gràficament a Inspector té preferència al definit pel codi
+
+**Prova**: Fes públiques les variables *murEsquerra* i *murDret* per assignar-les des de l'Inspector enlloc de fer-ho al mètode *Start()*
+
+
+## HUD mostrar informació
+
+**HUD (heads-up display)** és el mètode pel que es mostra informació visual al jugador.
+
+A 'Hierarchy' afegeix un 'Text (TMP)', segurament et demanarà que importis el paquet *TMP Essentials*
+
+<center>
+<img src="./assets/unity-editor-obj-hud.png" style="width: 90%; max-width: 400px">
+</center>
+
+Importar 'TMP Essentials' si ho demana.
+
+<center>
+<img src="./assets/unity-editor-tmpimporter.png" style="width: 90%; max-width: 400px">
+</center>
+
+A la jerarquia creará dos objectes:
+
+- Canvas per dibuixar-hi informació
+- Text (amb la informació)
+
+<center>
+<img src="./assets/unity-editor-hud-hierarchy.png" style="width: 90%; max-width: 400px">
+</center>
+
+A l'inspector del *Canvas* assigna **"Render Mode"** com a **"Screen Space - Camera"**
+
+I arrossega la **"Main Camera"** des de *Hierarchy* fins a la opció **"Render Camera"**
+
+<center>
+<video src="./assets/unity-editor-hud-camera.mov" width="400" controls></video>
+</center>
+
+A l'inspector del *Text (TMP)* posa "..." com a valor per defecte del text.
+
+I ajusta si ho veus conveninet *"Pos X" i "Pos Y"
+
+<center>
+<img src="./assets/unity-editor-hud-text.png" style="width: 90%; max-width: 400px">
+</center>
+
+Augmenta la mida d'escriptura del text, amb la "Move Tool":
+
+<center>
+<video src="./assets/unity-editor-hud-textresize.mov" width="400" controls></video>
+</center>
+
+Afegeix l'script "UIHUD" següent:
+
+```csharp
+using UnityEngine;
+using TMPro;
+
+public class UIHUD : MonoBehaviour
+{
+    TextMeshProUGUI label;
+
+    void Awake()
+    {
+        // Grab the TMP on this object
+        label = GetComponent<TextMeshProUGUI>();
+        if (!label) label = GetComponentInChildren<TextMeshProUGUI>();
+    }
+
+    void Update()
+    {
+        label.text = $"Factor: x{GameState.speedFactor:0.00} - Punts: {GameState.punts}";
+    }
+}
+```
+
+Arrossega l'script **"UIHUD"** com a un nou component a l'inspector de **"Text (TMP)"**
+
+<center>
+<video src="./assets/unity-editor-hud-textscript.mov" width="400" controls></video>
+</center>
