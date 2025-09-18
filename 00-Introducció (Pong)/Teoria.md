@@ -289,6 +289,7 @@ public class MovimentJugador : MonoBehaviour
         }
     }
 
+    // Es crida per actualitzar independentment dels FPS (ideal per moviments)
     private void FixedUpdate()
     {
         // Si el joc s’ha acabat, no hi ha moviment.
@@ -392,6 +393,7 @@ public class MovimentPilota : MonoBehaviour
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;
     }
 
+    // Es crida per actualitzar independentment dels FPS (ideal per moviments)
     private void FixedUpdate()
     {
         // Només es mou si el joc no ha acabat.

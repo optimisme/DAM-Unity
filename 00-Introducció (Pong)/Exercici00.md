@@ -19,6 +19,8 @@ rb.constraints = RigidbodyConstraints2D.FreezeRotation | RigidbodyConstraints2D.
 
 Tingues en compte que caldrà actualitzar la posició del jugador verticalment modificant la velocitat
 ```csharp
+// Objecte 'MovimentJugador'
+// FixedUpdate
 // Apliquem la velocitat al Rigidbody2D en l’eix X.
 rb.linearVelocity = new Vector2(velocity, 0f);
 
