@@ -205,8 +205,8 @@ A més, cal:
 
 **Important**: sobre *Collision detection*:
 
-    * *Discrete*, mira només si a la posició actual l'objecte *"xoca"*
-    * *Contiuous*, mira durant tot el recorrecut del moviment si *"xoca"*, cal posar-la per objectes que poden moure's molt ràpid, sinó podríen atrevesar murs o parets.
+* **Discrete**, mira només si a la posició actual l'objecte *"xoca"*
+* **Contiuous**, mira durant tot el recorrecut del moviment si *"xoca"*, cal posar-la per objectes que poden moure's molt ràpid, sinó podríen atrevesar murs o parets.
 
 <center>
 <img src="./assets/unity-editor-obj-pilotagravity.png" style="width: 90%; max-width: 300px">
