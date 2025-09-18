@@ -214,11 +214,7 @@ A més, cal:
 
 ## Scripts de moviment
 
-A la secció **"Project"** a la part inferior, afegir un **"Asset"** tipus **"Empty C# Script"** amb el menú de context del botó dret:
-
-<center>
-<img src="./assets/unity-editor-addscript.png" style="width: 90%; max-width: 600px">
-</center>
+A la secció **"Project"** a la part inferior, afegir un **"Asset"** (tipus Mono Behaviour) amb el menú de context del botó dret:
 
 Anomena l'script com "MovimentJugador"
 
@@ -311,7 +307,7 @@ public class MovimentJugador : MonoBehaviour
 }
 ```
 
-Fes el mateix per afegir un script "MovimentPilota.cs"
+Fes el mateix per afegir un script "MovimentPilota.cs" (tipus MonoBehaviour)
 
 Posa-hi aquest codi:
 
@@ -413,7 +409,7 @@ Vincula cada un dels cripts, amb el seu inspector, arrossegant l'script des dels
 
 Fes un nou script amb les variables compartides entre els objectes del joc. 
 
-Crea un script "GameState.cs":
+Crea un script "GameState.cs" (Empty C# Script):
 
 ```csharp
 using UnityEngine;
@@ -554,7 +550,7 @@ public class UIHUD : MonoBehaviour
 }
 ```
 
-Arrossega l'script **"UIHUD"** com a un nou component a l'inspector de **"Punts"**
+Arrossega l'script **"UIHUD"** (tipus MonoBehaviour) com a un nou component a l'inspector de **"Punts"**
 
 <center>
 <video src="./assets/unity-editor-hud-textscript.mov" width="400" controls></video>
