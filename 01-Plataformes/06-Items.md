@@ -79,7 +79,9 @@ public class Coin : MonoBehaviour
 }
 ```
 
-Fes un nou objecte buit anomenat **"Coins"**, mou l'objecte **"Coin"** dins del nou objecte i copia'l tants cops com vulguis.
+Fes un nou objecte buit amb **"Create Empty"** a la jerarquia d'objectes, anomenat **"Coins"**. 
+
+Mou l'objecte **"Coin"** dins del nou objecte i copia'l tants cops com vulguis.
 
 <center>
 <img src="./assets/items-list.png" style="width: 90%; max-width: 500px">
