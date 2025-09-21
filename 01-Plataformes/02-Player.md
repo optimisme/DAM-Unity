@@ -154,7 +154,7 @@ public class PlayerJump : MonoBehaviour
     private Transform groundCheck;
     private LayerMask jumpableLayer;
 
-    private bool isGrounded;
+    public bool isGrounded { get; private set; }
     private float lastGroundedTime = -999f;
     private float lastJumpPressedTime = -999f;
 
