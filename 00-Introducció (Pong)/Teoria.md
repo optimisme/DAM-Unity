@@ -157,6 +157,7 @@ I s'hi s'apreta el botó de 'Play', el joc sense interactivitat:
 <center>
 <img src="./assets/unity-editor-status01.png" style="width: 90%; max-width: 300px">
 </center>
+<br/>
 
 ## Definir objectes amb col·lisió
 
@@ -171,12 +172,14 @@ Cal afegir-lo als 3 murs (no al jugador):
 <center>
 <img src="./assets/unity-editor-boxcollider2d.png" style="width: 90%; max-width: 300px">
 </center>
+<br/>
 
 Cal fixar-se que el "Box Collider 2d" es marca a l'escena amb la forma taronja que fa la col·lisió:
 
 <center>
 <img src="./assets/unity-editor-addscript.png" style="width: 90%; max-width: 600px">
 </center>
+<br/>
 
 ### Col·lisions al jugador (paleta)
 
@@ -190,6 +193,7 @@ A més, el jugador ha de desactivar les físiques amb **"Body Type"** a *Kinemat
 <center>
 <img src="./assets/unity-editor-obj-jugadorkinematic.png" style="width: 90%; max-width: 300px">
 </center>
+<br/>
 
 ### Col·lisions a la pilota
 
@@ -211,6 +215,7 @@ A més, cal:
 <center>
 <img src="./assets/unity-editor-obj-pilotagravity.png" style="width: 90%; max-width: 300px">
 </center>
+<br/>
 
 ## Scripts de moviment
 
@@ -219,12 +224,14 @@ A la secció **"Project"** a la part inferior, afegir un **"Asset"** (tipus Mono
 <center>
 <img src="./assets/unity-editor-scripts-monobehaviour.png" style="width: 90%; max-width: 400px">
 </center>
+<br/>
 
 Anomena l'script com "MovimentJugador"
 
 <center>
 <img src="./assets/unity-editor-scripts.png" style="width: 90%; max-width: 300px">
 </center>
+<br/>
 
 Obre l'script al **Visual Studio Code**, amb un doble click.
 
