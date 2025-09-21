@@ -38,12 +38,17 @@ Defineix la gravetat del player a 2, per tal que no salti massa.
 </center>
 <br/>
 
-Edita la caixa de col·lisió del personatge, amb el botó de **Edit Collider**, i canvia la mida de la caixa *verda* perquè sigui menor que el relleu del personatge.
+Edita la caixa de col·lisió del personatge, amb el botó de **Edit Collider**:
+
+- Defineix *"Edge Radius"* a 0.05
+- Canvia la mida de la caixa *verda* perquè sigui menor que el relleu del personatge.
 
 <center>
 <img src="./assets/player-editcollider.png" style="width: 90%; max-width: 400px">
 </center>
 <br/>
+
+Fixa't que apareix com arrodonida als extrems. Per tal d'evitar problemes amb els canvis de rajoles/tiles.
 
 ## Moviment dreta/esquerra
 
