@@ -109,14 +109,6 @@ Aparta la pestanya d'animacions amb els *"tabs"* de projecte i consola, o tancal
 
 ## Codi d'animacions
 
-Al script **"PlayerJump"**, afegeix aquesta funció per saber si el personatge està a terra o no:
-
-```csharp
-    public bool getIsGrounded() {
-        return isGrounded;
-    }
-```
-
 Crea un nou script tipus "MonoBehaviour" anomenat **"PlayerAnimation"**, posa-hi el següent codi i arrosega'l al personatge "Player" com un nou component:
 
 ```csharp
@@ -146,7 +138,7 @@ public class PlayerAnimation : MonoBehaviour
     {
         float vy = rb.linearVelocity.y;
 
-        if (playerJump.getIsGrounded())
+        if (playerJump.isGrounded)
         {
             if (Mathf.Approximately(rb.linearVelocity.x, 0f))
                 ChangeAnimationState("PlayerIdle");
