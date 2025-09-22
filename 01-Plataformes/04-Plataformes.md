@@ -2,7 +2,7 @@
 
 Les plataformes són objectes que s'animen entre varies posicions.
 
-Crea un objecte buit a l'escena i anomena'l **"Platform"**.
+Crea un objecte buit amb **"Create Empty"** a l'escena i anomena'l **"Platform"**.
 
 Dins de l'objecte **Platform**, crea dos objectes més:
 
@@ -13,7 +13,7 @@ Dins de l'objecte **Platform**, crea dos objectes més:
 
 Els sprites són les imatges que es veuran.
 
-Des dels assets:
+Des dels *"Assets"*:
 
 *Assets > Simple 2D Platformer BE2 > Sprites*
 
@@ -24,7 +24,7 @@ Desplega l'objecte **"Platforms"**
 </center>
 <br/>
 
-**No et confonguis amb els Tiles!**
+**Important!** No et confonguis amb els Tiles!
 
 Arrosega els sprites [Single Left, Single, Single Right] a l'escena. I mou-los dins de l'objecte **Platform > Sprites**.
 
@@ -49,23 +49,23 @@ De manera que quedin de costat.
 </center>
 <br/>
 
-Fes que l'objecte **Sprites** sigui 'Jumpable'.
+Fes que l'objecte **"Sprites"** sigui 'Jumpable'.
+
+**Important!** Et demanarà si vols fer els objectes fills també 'Jumpable'. No cal, es pot dir que **NO**.
 
 <center>
 <img src="./assets/plataformes-jumpable.png" style="width: 90%; max-width: 400px">
 </center>
 <br/>
 
-**Important!** Et demanarà si vols fer els objectes fills també 'Jumpable'. No cal, es pot dir que **NO**.
-
-Afegeix un component **BoxCollider2D** a l'objecte **Sprites**. I adapta la mida de la caixa al tamany dels sprites amb el botó **Edit Collider**.
+Afegeix un component **BoxCollider2D** a l'objecte **"Sprites"**. I adapta la mida de la caixa al tamany dels sprites amb el botó **Edit Collider**.
 
 <center>
 <img src="./assets/plataformes-editcollider.png" style="width: 90%; max-width: 400px">
 </center>
 <br/>
 
-Afegeix un component **Rigidbody2D** a l'objecte **Sprites**. I posa:
+Afegeix un component **Rigidbody2D** a l'objecte **"Sprites"**. I posa:
 
 - **Body Type**: Kinematic
 
