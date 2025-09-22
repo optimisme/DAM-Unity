@@ -271,4 +271,4 @@ Arrosega l'objecte **"CoinsNumber"** a la variable **"Coins Text"** de l'script 
 </center>
 <br/>
 
-Prova al joc, com s'actualitza el text de les monedes al agafar-les
+Prova al joc, com s'actualitza el text de les monedes al agafar-les.

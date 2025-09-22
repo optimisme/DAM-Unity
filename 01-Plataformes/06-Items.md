@@ -64,18 +64,19 @@ public class Coin : MonoBehaviour
 {
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // Mirem si el que ha col·lisionat és el Player
         Player player = other.GetComponent<Player>();
         if (player != null)
         {
-            // Suma 1 a les monedes del Player
             player.coins++;
             Debug.Log("Monedes recollides: " + player.coins);
 
-            // Destrueix la moneda recollida
+            // Actualitza el HUD
+            var hud = FindFirstObjectByType<UIHUD>();
+            if (hud != null) hud.UpdateCoins(player.coins);
+
             Destroy(gameObject);
         }
-    }
+    } 
 }
 ```
 
