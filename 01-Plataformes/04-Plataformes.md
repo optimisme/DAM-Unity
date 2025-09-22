@@ -69,11 +69,16 @@ Afegeix un component **Rigidbody2D** a l'objecte **"Sprites"**. I posa:
 
 - **Body Type**: Kinematic
 
+<center>
+<img src="./assets/plataformes-kinematic.png" style="width: 90%; max-width: 400px">
+</center>
+<br/>
+
 ## Waypoints
 
 Els waypoints són els punts per on es mourà la plataforma.
 
-Defineix tres elements buits dins de l'objecte **Waypoints**. I anomena'ls **"Point0", "Point1", "Point2"**.
+Defineix tres elements buits *(Create Empty)* dins de l'objecte **Waypoints**. I anomena'ls **"Point0", "Point1", "Point2"**.
 
 <center>
 <img src="./assets/plataformes-pointshierarchy.png" style="width: 90%; max-width: 400px">
@@ -81,6 +86,26 @@ Defineix tres elements buits dins de l'objecte **Waypoints**. I anomena'ls **"Po
 <br/>
 
 Col·loca'ls a les posicions per on vols que passi la plataforma.
+
+<center>
+<img src="./assets/plataformes-point0.png" style="width: 90%; max-width: 400px">
+</center>
+<center>
+<img src="./assets/plataformes-point1.png" style="width: 90%; max-width: 400px">
+</center>
+<center>
+<img src="./assets/plataformes-point2.png" style="width: 90%; max-width: 400px">
+</center>
+<br/>
+
+A l'exemple:
+
+- Point0 X: 3
+- Point0 Y: -2.9
+- Point1 X: 9
+- Point1 Y: -2.9
+- Point2 X: 9
+- Point2 Y: -2
 
 ## Scripts
 
@@ -90,6 +115,11 @@ Modifica l'script **"PlayerJump.cs"** per:
 
 - Afegir la variable *GroundCollider* per saber en quin terra estem.
 - Modifica la funció *UpdateGrounded* per assignar el collider.
+
+```csharp
+    // Al final de les declaracions
+    public Collider2D GroundCollider { get; private set; }
+```
 
 ```csharp
     private void UpdateGrounded()
@@ -335,5 +365,4 @@ public class Platform : MonoBehaviour
         foreach (var p in gizmoPts) Gizmos.DrawSphere(p.position, 0.05f);
     }
 }
-
 ```
