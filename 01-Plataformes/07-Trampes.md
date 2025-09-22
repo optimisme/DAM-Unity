@@ -49,96 +49,143 @@ Finalment, etiqueta l'objecte **"Spike"** amb el tag **"Damage"**
 
 Crea un nou script tipus "MonoBehaviour" anomenat **"PlayerDamage"** amb el següent codi. 
 
+Afegeix el nou script com a component de l'objecte **"Player"**.
+
 ```csharp
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(SpriteRenderer))]
 public class PlayerDamage : MonoBehaviour
 {
     [Header("Health")]
-    public int health = 100;
+    [SerializeField] private int maxHealth = 100;
     [SerializeField] private int damagePerHit = 10;
-    [SerializeField] private float damageCooldown = 0.3f; // temps mínim entre danys
+    [SerializeField] private float damageCooldown = 0.3f; // temps mínim entre tics de dany
+    [SerializeField] private string damageTag = "Damage";
 
     [Header("Damage Feedback")]
     [SerializeField] private int flashCount = 2;
     [SerializeField] private float flashDuration = 0.1f;
 
-    private float lastDamageTime = -999f; // temps de l'últim cop que vam rebre danys
-    private SpriteRenderer sr; // per fer el flash de vermell
+    private SpriteRenderer sr;
+    private Color baseColor;
 
-    private bool inTrap = false;   // estem dins una trampa?
+    private int health;
     private float nextDamageTime = 0f;
 
-    void Awake()
+    // En comptes d'un bool, comptem quantes trampes ens solapen
+    private int damageOverlapCount = 0;
+
+    // Gestionar un únic coroutine de flash
+    private Coroutine flashRoutine;
+    private bool isFlashing = false;
+
+    private void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
+        baseColor = sr.color;
+        health = Mathf.Clamp(health <= 0 ? maxHealth : health, 0, maxHealth);
+    }
+
+    private void OnEnable()
+    {
+        // per si s'havia quedat en vermell per pauses o desactivacions
+        StopFlashAndRestoreColor();
+    }
+
+    private void OnDisable()
+    {
+        StopFlashAndRestoreColor();
     }
 
     private void OnCollisionEnter2D(Collision2D col)
     {
-        Debug.Log("Collision detected with " + col.collider.name);
-        if (col.collider.CompareTag("Damage"))
-            TakeDamage(damagePerHit);
-    }
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Damage"))
-            inTrap = true;
-    }
-
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.CompareTag("Damage"))
-            inTrap = false;
-    }
-
-    private void OnCollisionEnter2D(Collision2D col)
-    {
-        if (col.collider.CompareTag("Damage"))
-            inTrap = true;
+        if (col.collider.CompareTag(damageTag))
+            damageOverlapCount++;
     }
 
     private void OnCollisionExit2D(Collision2D col)
     {
-        if (col.collider.CompareTag("Damage"))
-            inTrap = false;
+        if (col.collider.CompareTag(damageTag))
+        {
+            damageOverlapCount = Mathf.Max(0, damageOverlapCount - 1);
+            if (damageOverlapCount == 0) StopFlashAndRestoreColor();
+        }
     }
 
-    public void TakeDamage(int amount)
+    private void Update()
     {
-        health = Mathf.Max(0, health - amount);
-        Debug.Log($"Vida restant: {health}");
+        if (health <= 0) return;
 
-        UpdateHealthUI();
-        StartCoroutine(FlashRed());
+        // Estem dins d'alguna trampa?
+        bool inTrap = damageOverlapCount > 0;
+
+        if (inTrap && Time.time >= nextDamageTime)
+        {
+            ApplyDamage(damagePerHit);
+            nextDamageTime = Time.time + damageCooldown;
+        }
+
+        // Si ja no hi ha dany actiu, assegura color restaurat
+        if (!inTrap && !isFlashing && sr.color != baseColor)
+        {
+            sr.color = baseColor;
+        }
     }
 
+    private void ApplyDamage(int amount)
+    {
+        int prev = health;
+        health = Mathf.Max(0, health - amount);
+        Debug.Log($"Vida: {prev} -> {health}");
+
+        // Feedback de dany
+        StartFlash();
+
+        if (health <= 0)
+        {
+            // TODO: afegeix lògica de mort si cal (Disable controls, animació, etc.)
+            StopFlashAndRestoreColor(); // opcional: deixar color base en morir
+        }
+    }
+
+    private void StartFlash()
+    {
+        if (flashRoutine != null)
+            StopCoroutine(flashRoutine);
+        flashRoutine = StartCoroutine(FlashRed());
+    }
+
+    private void StopFlashAndRestoreColor()
+    {
+        if (flashRoutine != null)
+        {
+            StopCoroutine(flashRoutine);
+            flashRoutine = null;
+        }
+        isFlashing = false;
+        sr.color = baseColor;
+    }
 
     private IEnumerator FlashRed()
     {
-        Color original = sr.color;
+        isFlashing = true;
+
         for (int i = 0; i < flashCount; i++)
         {
             sr.color = Color.red;
-            yield return new WaitForSeconds(flashDuration);
-            sr.color = original;
-            yield return new WaitForSeconds(flashDuration);
-        }
-    }
+            // Realtime evita quedar-se “penjat” si canvies Time.timeScale
+            yield return new WaitForSecondsRealtime(flashDuration);
 
-    void Update()
-    {
-        if (inTrap && Time.time >= nextDamageTime)
-        {
-            TakeDamage(damagePerHit);
-            nextDamageTime = Time.time + damageCooldown;
+            sr.color = baseColor;
+            yield return new WaitForSecondsRealtime(flashDuration);
         }
+
+        isFlashing = false;
     }
 }
 ```
 
-Afegeix el nou script com a component del player.
 

@@ -101,9 +101,9 @@ Col·loca'ls a les posicions per on vols que passi la plataforma.
 A l'exemple:
 
 - Point0 X: 3
-- Point0 Y: -2.9
+- Point0 Y: -2.89
 - Point1 X: 9
-- Point1 Y: -2.9
+- Point1 Y: -2.89
 - Point2 X: 9
 - Point2 Y: -2
 
