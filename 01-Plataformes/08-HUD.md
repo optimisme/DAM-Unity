@@ -11,7 +11,7 @@ Afegeix un nou objecte tipus **"Canvas"**
 
 **Nota:** Fixa't que automàticament ha afegit un objecte *EventSystem*, no l'esborris!
 
-## Health bar
+## Health bar
 
 Dins del canvas afegeix un objecte buit i anomena'l "Healthbar", indicarà el nivell de vida.
 
@@ -64,13 +64,13 @@ De manera que quedi així:
 
 Per tornar a la vista de l'escena (nivell de zoom de l'escena), fes doble click a **"Main Camera"**.
 
-## Visualització
+### Visualització
 
 Durant la partida el canvas es sobreposa a la càmera.
 
 Prova, com es veu la barra de nivell mentre juges.
 
-## Script
+### Script
 
 Per tal de fer que la barra de nivell canvii, cal adaptar **"PlayerDamage.cs"**
 
@@ -190,3 +190,85 @@ Cal vincular l'objecte **"Health"** amb la nova variable **"Health fill"** de l'
 <center>
 <img src="./assets/hud-draghealth.png" style="width: 90%; max-width: 600px">
 </center>
+
+## Monedes
+
+Afegeix una nova *"UI > Image"* a l'objecte **"Canvas"** i anomena-la com a **"ImageCoin"**
+
+Aleshores, arrosega la imatge de la moneda al camp **"Source Image"** de l'objecte **"ImageCoin"**
+
+<center>
+<img src="./assets/hud-addimagecoin.png" style="width: 90%; max-width: 600px">
+</center>
+
+Mou el nou objecte **"ImageCoin"** a les posicions:
+
+- Pos X: 850
+- Pos Y: 435
+
+Afegeix un nou objecte *"UI > Text - TextMeshPro (TMP)"* a l'objecte **"Canvas"** i anomena'l "CoinsNumber". Amb les propietats:
+
+- Pos X: 690
+- Pos Y: 435
+- Text: 0
+- Font Size: 50
+- Alignment: a la dreta
+
+<center>
+<img src="./assets/hud-coinsnumber.png" style="width: 90%; max-width: 600px">
+</center>
+<br/>
+
+### Scripts
+
+Afegeix un nou script tipus "MonoBehaviour" anomenat **"UIHUD.cs"**, i posa'l com a component de l'objecte **"Canvas"**
+
+```csharp
+using UnityEngine;
+using TMPro;
+
+public class UIHUD : MonoBehaviour
+{
+    [SerializeField] private TextMeshProUGUI coinsText; // assigna-hi CoinsNumber al Canvas
+
+    public void UpdateCoins(int coins)
+    {
+        if (coinsText)
+            coinsText.text = coins.ToString();
+    }
+}
+```
+
+Canvia l'script **"Coin.cs"** per:
+
+```csharp
+using UnityEngine;
+
+public class Coin : MonoBehaviour
+{
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        Player player = other.GetComponent<Player>();
+        if (player != null)
+        {
+            player.coins++;
+            Debug.Log("Monedes recollides: " + player.coins);
+
+            // Actualitza el HUD
+            var hud = FindObjectOfType<UIHUD>();
+            if (hud != null) hud.UpdateCoins(player.coins);
+
+            Destroy(gameObject);
+        }
+    }
+}
+```
+
+Arrosega l'objecte **"CoinsNumber"** a la variable **"Coins Text"** de l'script **"UIHUD"** de l'objecte **"Canvas"**.
+
+<center>
+<img src="./assets/hud-dragcoinstext.png" style="width: 90%; max-width: 600px">
+</center>
+<br/>
+
+Prova al joc, com s'actualitza el text de les monedes al agafar-les
