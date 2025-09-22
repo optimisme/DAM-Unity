@@ -40,7 +40,7 @@ Crea una nova carpeta dins de *Assets* i posa-li de nom "Tiles".
 
 I escull aquesta carpeta com a destinació.
 
-## Tilemap
+## Tilemap
 
 Per poder definir on van les imatges de les *rajoles/tiles*, cal crear un **Tilemap** de tipus *Rectangular*.
 
