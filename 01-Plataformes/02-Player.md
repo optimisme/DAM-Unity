@@ -4,7 +4,7 @@ Afegirem un personatge animat al joc, a partir d'imatges d'sprite.
 
 ## Nou personatge
 
-Per afegir un personatge al joc, cal crar un objecte.
+Per afegir un personatge al joc, cal crear un objecte.
 
 El crearem arrossegant un **Sprite** de personatge a l'escena. Busca l'asset **"Idle 0"** dins de:
 
@@ -22,16 +22,11 @@ Afegeix-li dos components:
 - Un component de tipus **BoxCollider2D**.
 - Un component de tipus **Rigidbody2D**.
 
-Per tal d'evitar que el personatge giri amb la física, activa:
+Per tal d'evitar que el personatge giri amb la física, defineix:
 
-*Constraints > Freeze Rotation Z*
+- Gravity scale: 2, per tal que no salti massa
+- *Constraints > Freeze Rotation Z*, per tal que no roti
 
-<center>
-<img src="./assets/player-rotation.png" style="width: 90%; max-width: 400px">
-</center>
-<br/>
-
-Defineix la gravetat del player a 2, per tal que no salti massa.
 
 <center>
 <img src="./assets/player-gravity2.png" style="width: 90%; max-width: 400px">
@@ -50,7 +45,7 @@ Edita la caixa de col·lisió del personatge, amb el botó de **Edit Collider**:
 
 Fixa't que apareix com arrodonida als extrems. Per tal d'evitar problemes amb els canvis de rajoles/tiles.
 
-## Moviment dreta/esquerra
+## Moviment dreta/esquerra
 
 A la carpeta **"Assets"**, crea un spript tipus "MonoBehaviour" anomenat **Player** i arrosega'l a l'inspector de l'objecte **Player**.
 
@@ -76,6 +71,7 @@ public class Player : MonoBehaviour
 
     void FixedUpdate()
     {
+        // Moure el jugador a dreta i esquerra, preserva la gravetat
         rb.linearVelocity = new Vector2(move.x * moveSpeed, rb.linearVelocity.y);
     }
 }
@@ -88,7 +84,7 @@ De l'script anterior:
 
 Prova que el personatge cau sobre el terreny, i es mou amb les tecles de fletxa o les tecles A i D.
 
-## Saltar
+## Saltar
 
 El personatge ha de poder saltar sobre el terreny i altres plataformes.
 
@@ -115,7 +111,7 @@ Assigna el nou layer **Jumpable** a l'objecte **Ground**.
 
 Finalment, cal afegir el cercle als peus del personatge, que farà la detecció de "jumpable".
 
-Afegeix un cercle buit com a fill de l'objecte **Player**, anomena'l **"GroundCheck"**, i situa'l als peus del personatge.
+Afegeix un cercle buit com a fill de l'objecte **"Player"**, anomena'l **"GroundCheck"**, i situa'l als peus del personatge.
 
 <center>
 <img src="./assets/player-groundcheck-empty.png" style="width: 90%; max-width: 400px">
@@ -129,7 +125,7 @@ Anomena'l **"GroundCheck"** i situa'l als peus del personatge.
 </center>
 <br/>
 
-A la carpeta **"Assets"**, afegeix un nou script tipus "MonoBehaviour" anomenat **PlayerJump** amb el següent codi, i afegeix-lo a l'objecte **Player**.
+A la carpeta **"Assets"**, afegeix un nou script tipus "MonoBehaviour" anomenat **PlayerJump** amb el següent codi, i afegeix-lo a l'objecte **"Player"**.
 
 
 ```csharp
