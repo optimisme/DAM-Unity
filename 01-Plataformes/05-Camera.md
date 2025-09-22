@@ -58,4 +58,4 @@ Activa i defineix els limits pels que es pot moure la càmera:
 </center>
 <br/>
 
-Prova el joc, la càmera ha de seguir al **"Player"**
+Prova el joc, la càmera ha de seguir al **"Player"**, excepte al principi de la pantalla.
