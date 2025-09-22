@@ -68,6 +68,9 @@ public class PlayerDamage : MonoBehaviour
     private float lastDamageTime = -999f; // temps de l'últim cop que vam rebre danys
     private SpriteRenderer sr; // per fer el flash de vermell
 
+    private bool inTrap = false;   // estem dins una trampa?
+    private float nextDamageTime = 0f;
+
     void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
@@ -83,25 +86,36 @@ public class PlayerDamage : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Damage"))
-            TakeDamage(damagePerHit);
+            inTrap = true;
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Damage"))
+            inTrap = false;
+    }
+
+    private void OnCollisionEnter2D(Collision2D col)
+    {
+        if (col.collider.CompareTag("Damage"))
+            inTrap = true;
+    }
+
+    private void OnCollisionExit2D(Collision2D col)
+    {
+        if (col.collider.CompareTag("Damage"))
+            inTrap = false;
     }
 
     public void TakeDamage(int amount)
     {
-        if (Time.time - lastDamageTime < damageCooldown) return;
-        lastDamageTime = Time.time;
-
         health = Mathf.Max(0, health - amount);
         Debug.Log($"Vida restant: {health}");
 
+        UpdateHealthUI();
         StartCoroutine(FlashRed());
-
-        if (health == 0)
-        {
-            // Aquí podries afegir lògica de mort
-            Debug.Log("El jugador ha mort!");
-        }
     }
+
 
     private IEnumerator FlashRed()
     {
@@ -112,6 +126,15 @@ public class PlayerDamage : MonoBehaviour
             yield return new WaitForSeconds(flashDuration);
             sr.color = original;
             yield return new WaitForSeconds(flashDuration);
+        }
+    }
+
+    void Update()
+    {
+        if (inTrap && Time.time >= nextDamageTime)
+        {
+            TakeDamage(damagePerHit);
+            nextDamageTime = Time.time + damageCooldown;
         }
     }
 }
