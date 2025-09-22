@@ -75,98 +75,17 @@ Prova, com es veu la barra de nivell mentre juges.
 Per tal de fer que la barra de nivell canvii, cal adaptar **"PlayerDamage.cs"**
 
 ```csharp
-using UnityEngine;
-using System.Collections;
-
-[RequireComponent(typeof(SpriteRenderer))]
-public class PlayerDamage : MonoBehaviour
-{
-    [Header("Health")]
-    public int maxHealth = 100;
-    public int health = 100;
-    [SerializeField] private int damagePerHit = 10;
-    [SerializeField] private float damageCooldown = 0.3f;
-
-    [Header("HUD (Healthbar)")]
-    [Tooltip("Arrossega aquí l'objecte UI 'Healthbar/Health' (el verd)")]
-    [SerializeField] private RectTransform healthFill;
-    private Vector3 fillBaseScale = Vector3.one;
-
-    [Header("Damage Feedback")]
-    [SerializeField] private int flashCount = 2;
-    [SerializeField] private float flashDuration = 0.1f;
-
-    private SpriteRenderer sr;
-    private UIHUD hud;
-
-    // Control del dany continu
-    private bool inTrap = false;
-    private float nextDamageTime = 0f;
-
-    void Awake()
-    {
-        sr = GetComponent<SpriteRenderer>();
-        hud = FindFirstObjectByType<UIHUD>();
-
-        health = Mathf.Clamp(health, 0, maxHealth);
-        if (healthFill != null)
-        {
-            fillBaseScale = healthFill.localScale;
-            UpdateHealthUI();
-        }
-    }
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Damage"))
-            inTrap = true;
-    }
-
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.CompareTag("Damage"))
-            inTrap = false;
-    }
-
-    private void OnCollisionEnter2D(Collision2D col)
-    {
-        if (col.collider.CompareTag("Damage"))
-            inTrap = true;
-    }
-
-    private void OnCollisionExit2D(Collision2D col)
-    {
-        if (col.collider.CompareTag("Damage"))
-            inTrap = false;
-    }
-
-    void Update()
-    {
-        if (inTrap && Time.time >= nextDamageTime)
-        {
-            TakeDamage(damagePerHit);
-            nextDamageTime = Time.time + damageCooldown;
-        }
-    }
 
     public void TakeDamage(int amount)
     {
-        health = Mathf.Max(0, health - amount);
-        Debug.Log($"Vida restant: {health}");
-
+        ...
         UpdateHealthUI();
-        StartCoroutine(FlashRed());
-
-        if (health == 0 && hud)
-        {
-            hud.ShowGameOver();
-        }
+       ...
     }
 
     public void Heal(int amount)
     {
-        health = Mathf.Min(maxHealth, health + amount);
-        Debug.Log($"Vida després de curar: {health}");
+        ...
         UpdateHealthUI();
     }
 
@@ -182,18 +101,6 @@ public class PlayerDamage : MonoBehaviour
         );
     }
 
-    private IEnumerator FlashRed()
-    {
-        Color original = sr.color;
-        for (int i = 0; i < flashCount; i++)
-        {
-            sr.color = Color.red;
-            yield return new WaitForSeconds(flashDuration);
-            sr.color = original;
-            yield return new WaitForSeconds(flashDuration);
-        }
-    }
-}
 ```
 
 Cal vincular l'objecte **"Health"** amb la nova variable **"Health fill"** de l'script **"PlayerDamage.cs"**, arrosegant l'objecte a la variable.
