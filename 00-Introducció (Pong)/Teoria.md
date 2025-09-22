@@ -540,49 +540,52 @@ Les variables dels *scripts* marcades com a "public" permeten decidir el valor d
 
 **UIHUD (user interface heads-up display)** és el mètode pel que es mostra informació visual al jugador.
 
-A 'Hierarchy' afegeix un 'Text (TMP)', segurament et demanarà que importis el paquet *TMP Essentials*
+A la *Hierarchy* afegeix un nou objecte *"UI > Canvas"*, fixa't que automàticament s'afegeix un objecte *"EventSystem"*, no l'esborris.
 
-<center>
-<img src="./assets/unity-editor-obj-hud.png" style="width: 90%; max-width: 400px">
-</center>
+Dins de l'objecte canvas afegeix dos objectes tipus *"Text - TextMeshPro"* i renombra'ls a **"Punts"** i **"GameOver"**
 
-Importar 'TMP Essentials' si ho demana.
+**Nota:** Importa 'TMP Essentials' si ho demana.
 
 <center>
 <img src="./assets/unity-editor-tmpimporter.png" style="width: 90%; max-width: 400px">
 </center>
 
-A la jerarquia creará dos objectes:
-
-- Canvas per dibuixar-hi informació
-- Text (amb la informació)
+Ha de quedar així:
 
 <center>
 <img src="./assets/unity-editor-hud-hierarchy.png" style="width: 90%; max-width: 400px">
 </center>
 
-A l'inspector del *Canvas* assigna **"Render Mode"** com a **"Screen Space - Camera"**
+**Important!** El canvas es sobreposarà a la imatge final, encara que a l'editor tingui una mida diferent a l'escena.
 
-I arrossega la **"Main Camera"** des de *Hierarchy* fins a la opció **"Render Camera"**
+Per canviar de punt de vista:
 
-<center>
-<video src="./assets/unity-editor-hud-camera.mov" width="400" controls></video>
-</center>
+- Fer *"Doble click"* a l'objecte **"Canvas"** per veure l'espai del canvas
+- Fer *"Doble click"* a l'objecte **"Main Camera"** per veure l'espai de l'escena
 
-Canvia el nom de l'objecte *"Text (TMP)"* per *Punts* 
+Defineix aquestes propietats per l'objecte **"Punts"**:
 
-A l'inspector de l'objecte *"Punts"* posa "..." com a valor per defecte del text.
+- Text per defecte "..."
+- Pos X: 350
+- Pos Y: -200
+- Alignment: dreta
+- Extra Settings, Margins, Left: -200
 
-I ajusta si ho veus conveninet *"Pos X" i "Pos Y"
-
-<center>
-<img src="./assets/unity-editor-hud-text.png" style="width: 90%; max-width: 400px">
-</center>
-
-Augmenta la mida d'escriptura del text, amb la "Move Tool":
+Els margins es poden modificar canviant la mida d'escriptura del text, amb la "Move Tool":
 
 <center>
 <video src="./assets/unity-editor-hud-textresize.mov" width="400" controls></video>
+</center>
+
+Defineix aquestes propietats per l'objecte **"GameOver"**:
+
+- Centra el text
+- Defineix el text per defecte "Game Over"
+- Fes la lletra gran (mida 100)
+
+
+<center>
+<img src="./assets/unity-editor-hud-gameover.png" style="width: 90%; max-width: 400px">
 </center>
 
 Afegeix l'script "UIHUD" següent:
@@ -649,25 +652,18 @@ public class UIHUD : MonoBehaviour
 }
 ```
 
-Arrossega l'script **"UIHUD"** (tipus MonoBehaviour) com a un nou component a l'inspector de **"Punts"**
+Arrossega l'script **"UIHUD"** (tipus MonoBehaviour) com a un nou component a l'inspector de **"Canvas"**
+
+Arrossega:
+
+- L' objecte **"Punts"** a la variable **"Score Text"** de l'script del **"Canvas"**
+- L' objecte **"GameOver"** a la variable **"Game Over Text"** de l'script del **"Canvas"**
 
 <center>
-<video src="./assets/unity-editor-hud-textscript.mov" width="400" controls></video>
+<img src="./assets/unity-editor-hud-dragvars.png" style="width: 90%; max-width: 400px">
 </center>
 
-## Game Over i gestor del joc
-
-Afegeix un nout ext dins del *Canvas* anomenat **GameOver**
-
-<center>
-<img src="./assets/unity-editor-hud-gameover-hierarchy.png" style="width: 90%; max-width: 400px">
-</center>
-
-Centra el text i fes-lo gran:
-
-<center>
-<img src="./assets/unity-editor-hud-gameover-properties.png" style="width: 90%; max-width: 400px">
-</center>
+## GameManager
 
 Crea un nou objecte **"Empty"**, això ens servirà per posar-hi un *Component* d'script i res més.
 
