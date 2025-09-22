@@ -82,79 +82,87 @@ using System.Collections;
 public class PlayerDamage : MonoBehaviour
 {
     [Header("Health")]
-    public int maxHealth = 100;           // <-- afegit
+    public int maxHealth = 100;
     public int health = 100;
     [SerializeField] private int damagePerHit = 10;
     [SerializeField] private float damageCooldown = 0.3f;
 
     [Header("HUD (Healthbar)")]
     [Tooltip("Arrossega aquí l'objecte UI 'Healthbar/Health' (el verd)")]
-    [SerializeField] private RectTransform healthFill;  // <-- afegit
-    private Vector3 fillBaseScale = Vector3.one;        // <-- escala base capturada a l'inici
+    [SerializeField] private RectTransform healthFill;
+    private Vector3 fillBaseScale = Vector3.one;
 
     [Header("Damage Feedback")]
     [SerializeField] private int flashCount = 2;
     [SerializeField] private float flashDuration = 0.1f;
 
-    private float lastDamageTime = -999f;
     private SpriteRenderer sr;
+    private UIHUD hud;
+
+    // Control del dany continu
+    private bool inTrap = false;
+    private float nextDamageTime = 0f;
 
     void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
+        hud = FindFirstObjectByType<UIHUD>();
 
-        // Inicialitza salut i barra
         health = Mathf.Clamp(health, 0, maxHealth);
         if (healthFill != null)
         {
-            fillBaseScale = healthFill.localScale; // p.ex. (4.9, 0.4, 1) segons el teu setup
+            fillBaseScale = healthFill.localScale;
             UpdateHealthUI();
         }
-    }
-
-    private void OnCollisionEnter2D(Collision2D col)
-    {
-        if (col.collider.CompareTag("Damage"))
-            TakeDamage(damagePerHit);
-    }
-
-    private void OnCollisionStay2D(Collision2D col)
-    {
-        if (col.collider.CompareTag("Damage"))
-            TakeDamage(damagePerHit);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Damage"))
-            TakeDamage(damagePerHit);
+            inTrap = true;
     }
 
-    private void OnTriggerStay2D(Collider2D other)
+    private void OnTriggerExit2D(Collider2D other)
     {
         if (other.CompareTag("Damage"))
+            inTrap = false;
+    }
+
+    private void OnCollisionEnter2D(Collision2D col)
+    {
+        if (col.collider.CompareTag("Damage"))
+            inTrap = true;
+    }
+
+    private void OnCollisionExit2D(Collision2D col)
+    {
+        if (col.collider.CompareTag("Damage"))
+            inTrap = false;
+    }
+
+    void Update()
+    {
+        if (inTrap && Time.time >= nextDamageTime)
+        {
             TakeDamage(damagePerHit);
+            nextDamageTime = Time.time + damageCooldown;
+        }
     }
 
     public void TakeDamage(int amount)
     {
-        if (Time.time - lastDamageTime < damageCooldown) return;
-        lastDamageTime = Time.time;
-
         health = Mathf.Max(0, health - amount);
         Debug.Log($"Vida restant: {health}");
 
-        UpdateHealthUI();             // <-- actualitza la barra
+        UpdateHealthUI();
         StartCoroutine(FlashRed());
 
-        if (health == 0)
+        if (health == 0 && hud)
         {
-            Debug.Log("El jugador ha mort!");
-            // TODO: lògica de mort
+            hud.ShowGameOver();
         }
     }
 
-    // (Opcional) per curar
     public void Heal(int amount)
     {
         health = Mathf.Min(maxHealth, health + amount);
@@ -166,9 +174,12 @@ public class PlayerDamage : MonoBehaviour
     {
         if (!healthFill) return;
 
-        float t = (maxHealth > 0) ? (float)health / maxHealth : 0f; // 0..1
-        // Manté l'alçada i profunditat originals, només escala l'ample en X
-        healthFill.localScale = new Vector3(fillBaseScale.x * t, fillBaseScale.y, fillBaseScale.z);
+        float t = (maxHealth > 0) ? (float)health / maxHealth : 0f;
+        healthFill.localScale = new Vector3(
+            fillBaseScale.x * t,
+            fillBaseScale.y,
+            fillBaseScale.z
+        );
     }
 
     private IEnumerator FlashRed()
