@@ -70,10 +70,6 @@ public class Coin : MonoBehaviour
             player.coins++;
             Debug.Log("Monedes recollides: " + player.coins);
 
-            // Actualitza el HUD
-            var hud = FindFirstObjectByType<UIHUD>();
-            if (hud != null) hud.UpdateCoins(player.coins);
-
             Destroy(gameObject);
         }
     } 
