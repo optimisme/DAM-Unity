@@ -188,18 +188,20 @@ Per tal que el personatge es giri segons la direcció. Modifica l'script **"Play
     }
 ```
 
-- Modifica la funció **Update()**:
+- Afegeix la funció **SetOrientation()** i modifica la funció **Update()**:
 
 ```csharp
-    void Update()
-    {
-        SetAnimation();
-        
+    void UpdateFacing() {
         // Canvia l'orientació segons la direcció en X
         if (rb.linearVelocity.x < -0.01f)
             spriteRenderer.flipX = true;
         else if (rb.linearVelocity.x > 0.01f)
             spriteRenderer.flipX = false;
+    }
 
+    void Update()
+    {
+        UpdateFacing();
+        SetAnimation();
     }
 ```
