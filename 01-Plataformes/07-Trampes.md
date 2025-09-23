@@ -146,8 +146,8 @@ public class PlayerDamage : MonoBehaviour
 
         if (health <= 0)
         {
-            // TODO: afegeix lògica de mort si cal (Disable controls, animació, etc.)
-            StopFlashAndRestoreColor(); // opcional: deixar color base en morir
+            // TODO: Lògica de GameOver
+            StopFlashAndRestoreColor(); 
         }
     }
 
