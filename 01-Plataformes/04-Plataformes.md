@@ -366,3 +366,55 @@ public class Platform : MonoBehaviour
     }
 }
 ```
+
+### PlayerAnimation.cs
+
+Per evitar que el personatge mostri l'animació de moviment, quan està quiet a sobre de la plataforma. Cal modificar l'script **"PlayerAnimation".
+
+Defineix una nova variable, *"idleThreshold"* per decidir si el jugador està realment aturat a la plataforma.
+```csharp
+[SerializeField] private float idleThreshold = 0.05f;
+```
+
+Afegeix la nova funció que calcula la velocitat relativa:
+```csharp
+    private float GetRelativeVx()
+    {
+        // Velocitat X relativa al terra (si és plataforma mòbil, restem la seva).
+        float vx = rb.linearVelocity.x;
+
+        if (playerJump != null && playerJump.isGrounded)
+        {
+            var groundCol = playerJump.GroundCollider;       // exposat per PlayerJump
+            if (groundCol)
+            {
+                var platform = groundCol.GetComponentInParent<Platform>();
+                if (platform != null)
+                    vx -= platform.surfaceVelocity.x;         // restem la velocitat de la plataforma
+            }
+        }
+        return vx;
+    }
+```
+
+Modifica la funció **"SetAnimation"** per fer servir la nova funció de càlcul de la posició relativa:
+```csharp
+    private void SetAnimation()
+    {
+        float vy = rb.linearVelocity.y;
+
+        if (playerJump.isGrounded)
+        {
+            float vxRel = GetRelativeVx();
+            if (Mathf.Abs(vxRel) <= idleThreshold)
+                ChangeAnimationState("PlayerIdle");
+            else
+                ChangeAnimationState("PlayerRun");
+        }
+        else
+        {
+            if (vy > 0f) ChangeAnimationState("PlayerJump");
+            else ChangeAnimationState("PlayerFall");
+        }
+    }
+```
