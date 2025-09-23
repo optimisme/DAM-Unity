@@ -136,40 +136,26 @@ Arrosega el panell **"gameOver"** a la variable **"Game Over UI"** de l'objecte 
 <img src="./assets/gameover-gameover-draggameover.png" style="width: 90%; max-width: 600px">
 </center>
 
-Modifica l'script **"Player.cs"** per afegir una crida a **"ShowGameOver"** de l'objecte **"UIHUD"**
+Cal modificar l'script **"Player.cs"** per afegir una crida a **"ShowGameOver"** quan el **"Player"** cau per sota de la posició *Y=25*
 
+Afegeix noves variables:
 ```csharp
-using UnityEngine;
-using UnityEngine.InputSystem;
-
-[RequireComponent(typeof(Rigidbody2D), typeof(PlayerInput))]
-public class Player : MonoBehaviour
-{
-    public float moveSpeed = 5f;
-
-    private Rigidbody2D rb;
-    private Vector2 move;
-
-    private PlayerJump playerJump;
-
-    public int coins = 0;
-
     private UIHUD hud; 
     public int gameOverHeight = -25;
+```
 
-
+Actualitza la funció **"Awake"** amb l'inicialització de **"hud"**:
+```csharp
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         playerJump = GetComponent<PlayerJump>();
         hud = FindFirstObjectByType<UIHUD>();
     }
+```
 
-    public void OnMove(InputValue v)
-    {
-        move = v.Get<Vector2>();
-    }
-
+Afegeix la funció **"Update"**:
+```csharp
     void Update()
     {
         if (transform.position.y < gameOverHeight && hud != null)
@@ -177,32 +163,45 @@ public class Player : MonoBehaviour
             hud.ShowGameOver();
         }
     }
-
-    void FixedUpdate()
-    {
-        float vx = move.x * moveSpeed;
-
-        // si estem a terra i el terra és una plataforma mòbil, suma la seva velocitat X
-        if (playerJump != null && playerJump.isGrounded)
-        {
-            var groundCol = playerJump.GroundCollider;
-            if (groundCol)
-            {
-                // el collider acostuma a estar al fill "Sprites"; puja al pare que porta Platform
-                var platform = groundCol.GetComponentInParent<Platform>();
-                if (platform != null) vx += platform.surfaceVelocity.x;
-            }
-        }
-
-        rb.linearVelocity = new Vector2(vx, rb.linearVelocity.y);
-    }
-}
 ```
 
-Modifica l'script **"PlayerDamage.cs"** per afegir una crida a **"ShowGameOver"** de l'objecte **"UIHUD"**
+Modifica l'script **"PlayerDamage.cs"** per afegir una crida a **"ShowGameOver"** :
+
+Afegeix noves variables:
+```csharp
+    private UIHUD hud; 
+```
+
+Actualitza la funció **"Awake"** amb l'inicialització de **"hud"**:
+```csharp
+    void Awake()
+    {
+        sr = GetComponent<SpriteRenderer>();
+        baseColor = sr.color;
+        health = Mathf.Clamp(health <= 0 ? maxHealth : health, 0, maxHealth);
+        hud = FindFirstObjectByType<UIHUD>();
+    }
+```
+
+Modifica la funció **"ApplyDamage"** per afegir la crida a *"GameOver"*:
 
 ```csharp
-// TODO
+    private void ApplyDamage(int amount)
+    {
+        int prev = health;
+        health = Mathf.Max(0, health - amount);
+        Debug.Log($"Vida: {prev} -> {health}");
+
+        // Feedback de dany
+        StartFlash();
+        UpdateHealthUI();
+
+        if (health <= 0)
+        {
+            hud.ShowGameOver();
+            StopFlashAndRestoreColor(); 
+        }
+    }
 ```
 
 ## Reset de l'escena
