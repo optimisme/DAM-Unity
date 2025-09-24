@@ -2,19 +2,19 @@
 
 ## Estructura
 
-- Navega als assets:
+Navega als assets:
 
 *"Assets > Unity Technologies > EndlessRunner > Art"*
 
-- Arrosega **"SkySunset"** a la *"Hierarchy"* i posa els paràmetres:
+Arrosega **"SkySunset"** a la *"Hierarchy"* i posa els paràmetres:
 
     - Position X: 0
     - Position Y: 0
     - Additional Settings > Order in Layer: -5
 
-- A la *"Hierarchy"* crea un objecte buit amb *"Create Empty"* i anomena'l **"ParallaxRoot"**
+A la *"Hierarchy"* crea un objecte buit amb *"Create Empty"* i anomena'l **"ParallaxRoot"**
 
-- Desplega "Backdrop", arrossega les 4 imatges dins de l'objecte **"ParallaxRoot"**
+Desplega "Backdrop", arrossega les 4 imatges dins de l'objecte **"ParallaxRoot"**
 
 <center>
 <img src="./assets/parallax-dragbackdrops.png" style="width: 90%; max-width: 400px">
