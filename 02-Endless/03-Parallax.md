@@ -14,15 +14,32 @@
 
 - A la *"Hierarchy"* crea un objecte buit amb *"Create Empty"* i anomena'l **"ParallaxRoot"**
 
-- Desplega "Backdrop", arrossega les 4 imatges dins de l'objecte **"ParallaxRoot"**, per cada una:
-
-    - Position X: 0
-    - Position Y: 0
+- Desplega "Backdrop", arrossega les 4 imatges dins de l'objecte **"ParallaxRoot"**
 
 <center>
 <img src="./assets/parallax-dragbackdrops.png" style="width: 90%; max-width: 400px">
 </center>
 <br/>
+
+A l'inspector, configura "Backdrop 0":
+
+    - Position X: 0
+    - Position Y: -1
+
+A l'inspector, configura "Backdrop 1":
+
+    - Position X: 0
+    - Position Y: -2
+
+A l'inspector, configura "Backdrop 2":
+
+    - Position X: 0
+    - Position Y: -3
+
+A l'inspector, configura "Backdrop 3":
+
+    - Position X: 0
+    - Position Y: -4
 
 ## Script
 
