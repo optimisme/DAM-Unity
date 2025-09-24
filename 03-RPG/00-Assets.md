@@ -2,6 +2,11 @@
 
 En aquest tema veurem com fer un joc de plataformes amb Unity.
 
+## Explicacions
+
+https://www.youtube.com/shorts/EBZt_2NQwp0
+
+
 ## Nou projecte
 
 Crea un nou projecte Unity "Universal 2D" anometat "RPG".
