@@ -58,9 +58,7 @@ Veuràs que els assets ara estàn correctament dividits:
 
 ## Afegir tiles al TileSet
 
-Crea una nova carpeta dins de **"Assets > Sprites"** anomenada **"Grass Palette"**
-
-A la einta de **"Tile Palette"** creeu una nova paleta anomenada **"Grass Palette"**, guarda-la dins de:
+A la einta de **"Tile Palette"** dins la paleta anomenada **"Sprites"**, guarda-la dins de:
 
 *"Assets > Sprites > Grass Palette"*
 
@@ -69,7 +67,7 @@ A la einta de **"Tile Palette"** creeu una nova paleta anomenada **"Grass Palett
 </center>
 <br/>
 
-Arrossega els tiles de gespa cap aquesta nova paleta. Escull la carpeta que acabem de crear **"Grass Palette"**
+Arrossega els tiles de gespa cap aquesta nova paleta. Dins la paleta anomenada **"Sprites"**
 
 <center>
 <img src="./assets/terreny-addgrass.png" style="width: 90%; max-width: 500px">
@@ -119,7 +117,7 @@ Escull l'asset amb la herva de color diferent:
     - Slice
     - Apply
 
-- Arrossega els tiles generats cap a **"Tile Palette"** i guarda-la a una nova carpeta **"Sprites > Elevated Grass Pallete"**
+- Arrossega els tiles generats cap a **"Tile Palette"** i guarda-la dins la paleta anomenada **"Sprites"**
 
 <center>
 <img src="./assets/terreny-elevatedgrass.png" style="width: 90%; max-width: 300px">

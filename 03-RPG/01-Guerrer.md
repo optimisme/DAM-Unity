@@ -6,14 +6,12 @@ Afegirem un gerrer i li donarem moviment i les primeres animacions.
 
 Arrossega l'Sprite ubicat a:
 
-*"Assets > Tiny Swords (Free Pack) > Units > Blue Units > Warrior > Warrior Idle 0"*
+*"Assets > Tiny Swords > Factions > Knights > Troops > Warrior > Blue > Warrior_blue > Warrior_blue_0"*
 
-Com un nou objecte de l'escena, anomena'l "Warrior", ubica'l a:
+Com un nou objecte de l'escena, anomena'l **"Warrior"**, ubica'l a:
 
 - Pos X: 0
 - Pox Y: 0
-
-A la carpeta **"Assets"** fes una nova carpeta anomenada **"Animations"**
 
 Obre la finestra d'animacions: 
 
@@ -21,7 +19,14 @@ Obre la finestra d'animacions:
 
 Sel·lecciona l'objecte **"Warrior"**, i apreta el botó "Create". Guarda l'animació **"WarriorIdle"** a la carpeta **"Animations"**
 
-Arrossega cada un dels sprites *(Warrior_Idle_X)*, als frames d'animació cada 5 segons.
+Arrossega cada un dels sprites:
+
+- Warrior_Blue_0: 00:00
+- Warrior_Blue_1: 00:10
+- Warrior_Blue_2: 00:20
+- Warrior_Blue_3: 00:30
+- Warrior_Blue_4: 00:40
+- Warrior_Blue_4: 00:50
 
 ## Animació Run
 
@@ -32,7 +37,12 @@ Crea un nou "Clip d'animació" a la carpeta  **"Animations"** anomenat **"Warrio
 </center>
 <br/>
 
-Arrossega cada un dels sprites *(Warrior_Run_X)*, als frames d'animació cada 5 segons.
+Arrossega cada un dels sprites:
+
+- Warrior_Blue_6: 00:00
+- Warrior_Blue_7: 00:09
+- Warrior_Blue_8: 00:16
+- Warrior_Blue_7: 00:25
 
 ## Components
 
@@ -41,10 +51,10 @@ Afegeix un component tipus **"Rigid Body 2D"**, amb els paràmetres:
 - Gravity Scale: 0
 - Constrains: Freeze Rotation Z (actiu)
 
-Afegeix un component tipus **"Capsule Collider 2d"** i adapta'l per ocupar només el cos del guerrer, amb el botó **"Edit Collider"**
+Afegeix un component tipus **"Capsule Collider 2D"** i adapta'l per ocupar només el cos del guerrer, amb el botó **"Edit Collider"**
 
 <center>
-<img src="./assets/guerrer-capsulecollider.png" style="width: 90%; max-width: 400px">
+<img src="./assets/guerrer-capsule.png" style="width: 90%; max-width: 400px">
 </center>
 <br/>
 
@@ -52,7 +62,7 @@ Afegeix un component tipus **"Capsule Collider 2d"** i adapta'l per ocupar nomé
 
 A **"Assets"** crea una nova carpeta anomenada **"Scripts"**
 
-Dins de la carpeta **"Scripts"** crea un script tipus **"MonoBehaviour"** anomenat **"Warrior".
+Dins de la carpeta **"Scripts"** crea un script tipus **"MonoBehaviour"** anomenat **"Warrior"**.
 
 Assigna'l a l'objecte **"Warrior"** com a un nou component.
 

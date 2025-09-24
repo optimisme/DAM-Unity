@@ -15,14 +15,22 @@ Farem servir un asset gratuït **extern** a la Unity Asset Store anomenat:
 Descarrega la versió:
 
 ```text
-Tiny Swords (Free Pack).zip 1.5 MB
+TS_old version_CC0 Licensed 2.6MB
 ```
 
 Descomprimeix la carpeta i arrosega-la dins dels *"Assets"* del projecte.
 
+## Carpetes
+
+Defineix les següents carpetes dins de **"Assets"**:
+
+- Animations
+- Sprites
+- Scripts
+
+Ha de quedar l'estructura així:
+
 <center>
-<img src="./assets/assets-drag.png" style="width: 90%; max-width: 600px">
+<img src="./assets/assets-initial.png" style="width: 90%; max-width: 600px">
 </center>
 <br/>
-
-Ara ja hi ha els assets dins el projecte i els podem utilitzar.
