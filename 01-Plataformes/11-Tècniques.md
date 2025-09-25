@@ -37,6 +37,10 @@ CameraFollow segueix el jugador amb:
 
 ## 🎨 Animació i presentació
 
+Parallax:
+
+- Mou les capes de decoració segons la posició de la càmera.
+
 PlayerAnimation:
 
 - Canvia automàticament entre Idle, Run, Jump i Fall segons l’estat.
