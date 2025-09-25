@@ -10,8 +10,8 @@ Crea un nou projecte Unity "Universal 2D" anometat "Platform".
 
 També farem servir les imatges de fons:
 
-<a href="./BackgroundImages.zip" download>Backgrounds</a> 
-*("./BackgroundImages.zip")*
+<a href="./BackgroundImgs.zip" download>Backgrounds</a> 
+*("./BackgroundImgs.zip")*
 
 Descarrega l'arxiu, descomprimeix-lo i arrosegua'l als **"Assets"**
 
