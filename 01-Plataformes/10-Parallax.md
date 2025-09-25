@@ -78,9 +78,9 @@ public class ParallaxRoot : MonoBehaviour
     public float backParallaxMin = 0.1f; // per capes més properes al midground
     public float backParallaxMax = 0.8f; // per capes més llunyanes (gairebé càmera)
 
-    [Tooltip("FORE intensitat (0..1). El factor final és 1 - abs. Valors més ALTS = foreground més marcat (mou més).")]
-    public float foreParallaxAbsMin = 0.40f;   // Fore_0 → factor = 1 - 0.10 = 0.90
-    public float foreParallaxAbsMax = 0.50f;   // Fore_N → factor = 1 - 0.40 = 0.60
+    [Tooltip("FORE intensitat (0..1). El factor final és 1 + abs, i es desplaça en SENTIT CONTRARI a la càmera.")]
+    public float foreParallaxAbsMin = 0.40f;   // Fore_0 → factor efectiu = -(0.40)
+    public float foreParallaxAbsMax = 0.50f;   // Fore_N → factor efectiu = -(0.50)
 
     private const string PrefixBack = "Back_";
     private const string PrefixFore = "Fore_";
@@ -103,8 +103,8 @@ public class ParallaxRoot : MonoBehaviour
         public float widthWorld;     // amplada efectiva del sprite en món (inclou escales)
         public float localOffsetX;   // desplaçament local per col·locar _L/_R (widthWorld / lossyScale.x)
 
-        // parallax
-        public float parallaxFactor; // 0=fix (sky), 1=segueix càmera, (0..1) per back/fore
+        // parallax (valor base: 0..1 per Back/Mid, >1 per Fore)
+        public float parallaxFactor;
     }
 
     private readonly List<LayerTilingData> layers = new();
@@ -175,21 +175,21 @@ public class ParallaxRoot : MonoBehaviour
             if (left == null)  left  = CreateClone(layer, -localOffset, "_L", sr);
             if (right == null) right = CreateClone(layer, +localOffset, "_R", sr);
 
-            // --- Factor de parallax per capa (back/fore) ---
+            // --- Factor de parallax per capa ---
             float factor;
             if (TryParseIndexedName(layer.name, PrefixBack, out bidx))
             {
                 // Back_0 (molt llunya) → factor alt (proper a 1, mou poc relatiu)
                 float t = (maxBackIdx <= 0) ? 0f : Mathf.Clamp01((float)bidx / (float)maxBackIdx);
                 factor = Mathf.Lerp(backParallaxMax, backParallaxMin, t); // 0→max, 1→min
-                factor = Mathf.Clamp01(factor);
+                factor = Mathf.Clamp01(factor);                          // 0..1
             }
             else if (TryParseIndexedName(layer.name, PrefixFore, out fidx))
             {
-                // Fore_0 → 1-abs_min (ex. 0.90) ; Fore_max → 1-abs_max (ex. 0.60)
+                // Fore_0..N → factor base > 1 (després s'invertirà el sentit a LateUpdate)
                 float t = (maxForeIdx <= 0) ? 0f : Mathf.Clamp01((float)fidx / (float)maxForeIdx);
-                float abs = Mathf.Lerp(foreParallaxAbsMin, foreParallaxAbsMax, t);
-                factor = 1f - Mathf.Clamp01(abs);
+                float abs = Mathf.Lerp(foreParallaxAbsMin, foreParallaxAbsMax, t); // 0.40..0.50 (per ex.)
+                factor = 1f + Mathf.Max(0f, abs); // 1.40..1.50 (base)
             }
             else
             {
@@ -233,17 +233,26 @@ public class ParallaxRoot : MonoBehaviour
 
             if (d.widthWorld < 1e-6f) continue;
 
+            // --------- FACTOR EFECTIU (sentit + magnitud) ---------
+            // Back/Mid: 0..1 → mateix sentit (mou menys que la càmera)
+            // Fore: >1   → sentit contrari amb magnitud (factor - 1)
+            float eff;
+            if (d.parallaxFactor <= 1f)
+                eff = d.parallaxFactor;                  // 0..1 (mateix sentit)
+            else
+                eff = -(d.parallaxFactor - 1f);          // -(0..∞) (sentit contrari)
+
             // --------- HORITZONTAL (parallax + wrap ancorat a CÀMERA) ---------
-            float dx = (cx - d.x0_cam) * d.parallaxFactor; // desplaçament desenvolupat del layer (X)
+            float dx = (cx - d.x0_cam) * eff;            // desplaçament desenvolupat del layer (X)
             float W  = d.widthWorld;
 
-            float xUnwrapped = d.x0_layer + dx;                   // centre sense wrap
+            float xUnwrapped = d.x0_layer + dx;          // centre sense wrap
             int   n         = Mathf.RoundToInt((cx - xUnwrapped) / W); // múltiple més proper al centre de càmera
-            float xCentral  = xUnwrapped + n * W;                 // centre del tile central
+            float xCentral  = xUnwrapped + n * W;        // centre del tile central
 
             // --------- VERTICAL (parallax sense replicar) ---------
-            float dy        = (cy - d.y0_cam) * d.parallaxFactor; // desplaçament desenvolupat del layer (Y)
-            float yTarget   = d.y0_layer + dy;
+            float dy      = (cy - d.y0_cam) * eff;       // desplaçament desenvolupat del layer (Y)
+            float yTarget = d.y0_layer + dy;
 
             // Mou NOMÉS el tile central; _L/_R romanen a ±offset local
             var pos = d.layer.position;
