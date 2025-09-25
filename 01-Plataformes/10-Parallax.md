@@ -75,12 +75,12 @@ public class ParallaxRoot : MonoBehaviour
 
     [Header("Parallax Config")]
     [Tooltip("BACK factors (0..1) — valor ALT a capes MÉS LLUNYANES (mouen poc), valor MÉS BAIX a capes prop del midground.")]
-    public float backParallaxMin = 0.10f; // per capes més properes al midground
-    public float backParallaxMax = 0.95f; // per capes més llunyanes (gairebé càmera)
+    public float backParallaxMin = 0.1f; // per capes més properes al midground
+    public float backParallaxMax = 0.8f; // per capes més llunyanes (gairebé càmera)
 
     [Tooltip("FORE intensitat (0..1). El factor final és 1 - abs. Valors més ALTS = foreground més marcat (mou més).")]
-    public float foreParallaxAbsMin = 0.4f;   // Fore_0 → factor = 1 - 0.10 = 0.90
-    public float foreParallaxAbsMax = 0.5f;   // Fore_N → factor = 1 - 0.40 = 0.60
+    public float foreParallaxAbsMin = 0.40f;   // Fore_0 → factor = 1 - 0.10 = 0.90
+    public float foreParallaxAbsMax = 0.50f;   // Fore_N → factor = 1 - 0.40 = 0.60
 
     private const string PrefixBack = "Back_";
     private const string PrefixFore = "Fore_";
@@ -88,14 +88,22 @@ public class ParallaxRoot : MonoBehaviour
     [System.Serializable]
     private class LayerTilingData
     {
+        // duplicació horitzontal
         public Transform layer;      // tile central
         public Transform left;       // duplicat esquerra (local -offset)
         public Transform right;      // duplicat dreta (local +offset)
 
-        public float x0_cam;         // x inicial càmera (per a deltes)
-        public float x0_layer;       // x inicial del layer central
+        // orígens per a deltes (X i Y)
+        public float x0_cam;
+        public float y0_cam;
+        public float x0_layer;
+        public float y0_layer;
+
+        // mesures
         public float widthWorld;     // amplada efectiva del sprite en món (inclou escales)
         public float localOffsetX;   // desplaçament local per col·locar _L/_R (widthWorld / lossyScale.x)
+
+        // parallax
         public float parallaxFactor; // 0=fix (sky), 1=segueix càmera, (0..1) per back/fore
     }
 
@@ -127,7 +135,9 @@ public class ParallaxRoot : MonoBehaviour
                     left = null,
                     right = null,
                     x0_cam = cam ? cam.transform.position.x : 0f,
+                    y0_cam = cam ? cam.transform.position.y : 0f,
                     x0_layer = layer.position.x,
+                    y0_layer = layer.position.y,
                     widthWorld = 0f,
                     localOffsetX = 0f,
                     parallaxFactor = 0f
@@ -165,18 +175,18 @@ public class ParallaxRoot : MonoBehaviour
             if (left == null)  left  = CreateClone(layer, -localOffset, "_L", sr);
             if (right == null) right = CreateClone(layer, +localOffset, "_R", sr);
 
-            // --- Factor de parallax per capa (CORREGIT) ---
+            // --- Factor de parallax per capa (back/fore) ---
             float factor;
             if (TryParseIndexedName(layer.name, PrefixBack, out bidx))
             {
-                // Back_0 (molt llunya) → factor alt (proper a 1, mou poc)
+                // Back_0 (molt llunya) → factor alt (proper a 1, mou poc relatiu)
                 float t = (maxBackIdx <= 0) ? 0f : Mathf.Clamp01((float)bidx / (float)maxBackIdx);
-                factor = Mathf.Lerp(backParallaxMax, backParallaxMin, t); // swap: 0→max, 1→min
+                factor = Mathf.Lerp(backParallaxMax, backParallaxMin, t); // 0→max, 1→min
                 factor = Mathf.Clamp01(factor);
             }
             else if (TryParseIndexedName(layer.name, PrefixFore, out fidx))
             {
-                // Fore_0 (molt a prop) → factor 1 - abs_min (ex. 0.90) ; Fore_max → 1 - abs_max (ex. 0.60)
+                // Fore_0 → 1-abs_min (ex. 0.90) ; Fore_max → 1-abs_max (ex. 0.60)
                 float t = (maxForeIdx <= 0) ? 0f : Mathf.Clamp01((float)fidx / (float)maxForeIdx);
                 float abs = Mathf.Lerp(foreParallaxAbsMin, foreParallaxAbsMax, t);
                 factor = 1f - Mathf.Clamp01(abs);
@@ -194,7 +204,9 @@ public class ParallaxRoot : MonoBehaviour
                 left = left,
                 right = right,
                 x0_cam = cam ? cam.transform.position.x : 0f,
+                y0_cam = cam ? cam.transform.position.y : 0f,
                 x0_layer = layer.position.x,
+                y0_layer = layer.position.y,
                 widthWorld = worldWidth,
                 localOffsetX = localOffset,
                 parallaxFactor = factor
@@ -213,7 +225,7 @@ public class ParallaxRoot : MonoBehaviour
         {
             if (d.parallaxFactor == 0f)
             {
-                // SKY: enganxat a càmera
+                // SKY: enganxat del tot a la càmera (X i Y)
                 Vector3 p = d.layer.position;
                 d.layer.position = new Vector3(cx, cy, p.z);
                 continue;
@@ -221,20 +233,21 @@ public class ParallaxRoot : MonoBehaviour
 
             if (d.widthWorld < 1e-6f) continue;
 
-            // --- Parallax + wrap ancorat a CÀMERA ---
-            float dx = (cx - d.x0_cam) * d.parallaxFactor; // desplaçament desenvolupat del layer
+            // --------- HORITZONTAL (parallax + wrap ancorat a CÀMERA) ---------
+            float dx = (cx - d.x0_cam) * d.parallaxFactor; // desplaçament desenvolupat del layer (X)
             float W  = d.widthWorld;
 
-            // Centre "desenvolupat" del layer (sense wrap)
-            float xUnwrapped = d.x0_layer + dx;
+            float xUnwrapped = d.x0_layer + dx;                   // centre sense wrap
+            int   n         = Mathf.RoundToInt((cx - xUnwrapped) / W); // múltiple més proper al centre de càmera
+            float xCentral  = xUnwrapped + n * W;                 // centre del tile central
 
-            // Tria el múltiple de W que deixa el centre més a prop del centre de la càmera
-            int   n        = Mathf.RoundToInt((cx - xUnwrapped) / W);
-            float xCentral = xUnwrapped + n * W;
+            // --------- VERTICAL (parallax sense replicar) ---------
+            float dy        = (cy - d.y0_cam) * d.parallaxFactor; // desplaçament desenvolupat del layer (Y)
+            float yTarget   = d.y0_layer + dy;
 
             // Mou NOMÉS el tile central; _L/_R romanen a ±offset local
             var pos = d.layer.position;
-            d.layer.position = new Vector3(xCentral, pos.y, pos.z);
+            d.layer.position = new Vector3(xCentral, yTarget, pos.z);
         }
     }
 
