@@ -67,7 +67,9 @@ public class Player : MonoBehaviour
     }
 
     // Input System: callback d'una acció "Move" (Vector2)
-    void OnMove(InputValue value) => move = value.Get<Vector2>();
+    void OnMove(InputValue value) { 
+        move = value.Get<Vector2>();
+    }
 
     void FixedUpdate()
     {
