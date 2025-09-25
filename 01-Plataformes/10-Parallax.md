@@ -67,7 +67,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-public class ParallaxRootParallaxManager : MonoBehaviour
+public class ParallaxRoot : MonoBehaviour
 {
     [Header("References")]
     public Camera cam;
@@ -459,6 +459,13 @@ public class ParallaxRootParallaxManager : MonoBehaviour
     }
 }
 ```
+
+Assigna la **"Main Camera"** a la variable **"Cam"** de l'objecte **"ParallaxRoot"**
+
+<center>
+<img src="./assets/parallax-cam.png" style="width: 90%; max-width: 600px">
+</center>
+<br/>
 
 Aquest objecte, automàticament configura el *Parallax*
 
