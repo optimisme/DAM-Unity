@@ -61,401 +61,237 @@ Ha de quedar així:
 Crea l'arxiu **"ParallaxRoot"** a la carpeta **"Scripts"** i assigna'l a l'objecte **"ParallaxRoot"**
 
 ```csharp
-using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ParallaxRoot : MonoBehaviour
 {
-    [Header("References")]
+    [Header("Camera (si és null, farà servir Camera.main)")]
     public Camera cam;
 
-    [Header("Global")]
-    [Tooltip("Multiplicador global per a totes les capes (afinament ràpid).")]
-    public float globalSpeedMultiplier = 1f;
+    [Header("Nom de la capa de cel que ha de quedar fixa")]
+    public string skyName = "SKY";
 
-    [Tooltip("Si s'estableix, forçarà aquesta Sorting Layer a totes les capes.")]
-    public string overrideSortingLayerName = ""; // opcional
+    [Header("Parallax Config")]
+    [Tooltip("BACK factors (0..1) — valor ALT a capes MÉS LLUNYANES (mouen poc), valor MÉS BAIX a capes prop del midground.")]
+    public float backParallaxMin = 0.10f; // per capes més properes al midground
+    public float backParallaxMax = 0.95f; // per capes més llunyanes (gairebé càmera)
 
-    [Header("Vertical Parallax")]
-    [Tooltip("Activar efecte parallax vertical.")]
-    public bool enableVerticalParallax = true;
+    [Tooltip("FORE intensitat (0..1). El factor final és 1 - abs. Valors més ALTS = foreground més marcat (mou més).")]
+    public float foreParallaxAbsMin = 0.4f;   // Fore_0 → factor = 1 - 0.10 = 0.90
+    public float foreParallaxAbsMax = 0.5f;   // Fore_N → factor = 1 - 0.40 = 0.60
 
-    [Tooltip("Multiplicador global per parallax vertical (normalment més subtil que horitzontal).")]
-    public float globalVerticalMultiplier = 0.5f;
+    private const string PrefixBack = "Back_";
+    private const string PrefixFore = "Fore_";
 
-    [Tooltip("Parallax vertical BACK (0..1). Min a capes més llunyanes, Max a les més properes al midground.")]
-    public float backVerticalParallaxMin = 0.05f;
-    public float backVerticalParallaxMax = 0.8f;
-
-    [Tooltip("Parallax vertical per fallback (altres capes no etiquetades).")]
-    public float minVerticalParallax = 0.1f;
-    public float maxVerticalParallax = 1.2f;
-
-    [Header("Auto 'Rule' Generation")]
-    [Tooltip("Prefix dels noms de capa de fons (negatius). Exemple: Back_0, Back_1, ...")]
-    public string backPrefix = "Back_";
-
-    [Tooltip("Prefix dels noms de capa davanteres (positius). Exemple: Fore_0, Fore_1, ...")]
-    public string forePrefix = "Fore_";
-
-    [Tooltip("Ordre inicial per BACK (negatiu). Ex: -100 → -100, -99, -98...")]
-    public int backOrderStart = -100;
-
-    [Tooltip("Pas entre ordres BACK (normalment 1).")]
-    public int backOrderStep = 1;
-
-    [Tooltip("Parallax BACK (0..1). Min a capes més llunyanes, Max a les més properes al midground.")]
-    public float backParallaxMin = 0.10f;
-    public float backParallaxMax = 0.95f;
-
-    [Space(6)]
-    [Tooltip("Ordre inicial per FORE (positiu). Ex: +100 → 100, 101, 102...")]
-    public int foreOrderStart = +100;
-
-    [Tooltip("Pas entre ordres FORE (normalment 1).")]
-    public int foreOrderStep = 1;
-
-    [Tooltip("PARALLAX HORITZONTAL FORE (magnitud absoluta; s'aplica signe NEGATIU).")]
-    public float foreParallaxAbsMin = 0.10f;   // recomanat 0.05..0.50
-    public float foreParallaxAbsMax = 0.40f;
-
-    [Tooltip("PARALLAX VERTICAL FORE (magnitud absoluta; s'aplica signe NEGATIU).")]
-    public float foreVerticalAbsMin = 0.00f;   // recomanat 0.00..0.30
-    public float foreVerticalAbsMax = 0.20f;
-
-    [Space(6)]
-    [Tooltip("Nom exacte del fill que actuarà com a 'Sky' (segueix la càmera; sense loop per defecte).")]
-    public string skyName = "Sky";
-
-    [Tooltip("Ordre per al 'Sky' (pot ser positiu).")]
-    public int skyOrder = -100;
-
-    [Tooltip("El 'Sky' no crea tiles L/R (loop), queda desactivat per defecte.")]
-    public bool skyEnableLoop = false;
-
-    [Header("Fallback (altres capes no etiquetades)")]
-    public bool autoOrderFromSiblingIndex = true;
-    public float minParallax = 0.10f;
-    public float maxParallax = 1.20f;
-
-    [Header("Debug")]
-    public bool verboseLogs = true;
-
-    // --- Interns ---
-    private readonly List<LayerState> layers = new();
-
-    private class LayerState
+    [System.Serializable]
+    private class LayerTilingData
     {
-        public Transform root;                 // Capa (fill directe del Root)
-        public Transform visual;               // Transform del SpriteRenderer principal dins la capa
-        public SpriteRenderer visualSR;
-        public SpriteRenderer[] allSRsInLayer; // Tots els SRs de la capa (per aplicar-hi order)
-        public Transform[] tiles;              // [0]=L, [1]=C(visual), [2]=R
-        public float tileWorldWidth;
-        public float parallax;                 // horizontal
-        public float verticalParallax;         // vertical
-        public float anchorX;
-        public float anchorY;
-        public float startCamX;
-        public float startCamY;
-        public bool enableLoop = true;         // per desactivar loop (Sky)
+        public Transform layer;      // tile central
+        public Transform left;       // duplicat esquerra (local -offset)
+        public Transform right;      // duplicat dreta (local +offset)
+
+        public float x0_cam;         // x inicial càmera (per a deltes)
+        public float x0_layer;       // x inicial del layer central
+        public float widthWorld;     // amplada efectiva del sprite en món (inclou escales)
+        public float localOffsetX;   // desplaçament local per col·locar _L/_R (widthWorld / lossyScale.x)
+        public float parallaxFactor; // 0=fix (sky), 1=segueix càmera, (0..1) per back/fore
     }
 
-    // --- Utilitat: extreu índex numèric d'un nom amb prefix ---
-    private static bool TryParseIndexed(string name, string prefix, out int index)
+    private readonly List<LayerTilingData> layers = new();
+
+    void Awake()
     {
-        index = -1;
-        if (!name.StartsWith(prefix, StringComparison.Ordinal)) return false;
-
-        string tail = name.Substring(prefix.Length);
-        // accepta "Fore_0", "Fore_01", "Fore_12_extra" → agafa la primera seq numèrica
-        var m = Regex.Match(tail, @"(\d+)");
-        if (!m.Success) return false;
-
-        return int.TryParse(m.Groups[1].Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out index);
+        if (cam == null) cam = Camera.main;
+        if (cam == null) Debug.LogWarning("[ParallaxRoot] No s'ha trobat cap càmera!");
     }
 
     void Start()
     {
-        if (!cam) cam = Camera.main;
-
-        // --- 1) Escaneja fills i classifica per grups ---
-        var backChildren = new List<(Transform child, int idx)>();
-        var foreChildren = new List<(Transform child, int idx)>();
-        Transform skyChild = null;
+        int maxBackIdx = DetectMaxIndex(PrefixBack);
+        int maxForeIdx = DetectMaxIndex(PrefixFore);
 
         int childCount = transform.childCount;
         for (int i = 0; i < childCount; i++)
         {
-            var child = transform.GetChild(i);
+            var layer = transform.GetChild(i);
 
-            if (string.Equals(child.name, skyName, StringComparison.Ordinal))
+            // --- SKY: ordre i factor 0 (fix) ---
+            if (layer.name == skyName)
             {
-                skyChild = child;
-                continue;
-            }
-
-            if (TryParseIndexed(child.name, backPrefix, out int backIdx))
-            {
-                backChildren.Add((child, backIdx));
-                continue;
-            }
-
-            if (TryParseIndexed(child.name, forePrefix, out int foreIdx))
-            {
-                foreChildren.Add((child, foreIdx));
-                continue;
-            }
-        }
-
-        // Ordena per índex numèric ascendent: Back_0, Back_1, ... / Fore_0, Fore_1, ...
-        backChildren.Sort((a, b) => a.idx.CompareTo(b.idx));
-        foreChildren.Sort((a, b) => a.idx.CompareTo(b.idx));
-
-        // --- 2) Calcula 'rules' al vol per BACK/FORE/SKY ---
-        var rulesByName = new Dictionary<string, (int order, float parallax, float verticalParallax, bool enableLoop)>(StringComparer.Ordinal);
-
-        if (backChildren.Count > 0)
-        {
-            for (int k = 0; k < backChildren.Count; k++)
-            {
-                string name = backChildren[k].child.name;
-                int order = backOrderStart + k * backOrderStep;
-                float t = (backChildren.Count > 1) ? (float)k / (backChildren.Count - 1) : 0f;
-
-                float parallax = Mathf.Lerp(backParallaxMax, backParallaxMin, t);                                // < 1
-                float verticalParallax = Mathf.Lerp(backVerticalParallaxMax, backVerticalParallaxMin, t);        // < 1
-
-                rulesByName[name] = (order, parallax, verticalParallax, true);
-            }
-        }
-
-        if (foreChildren.Count > 0)
-        {
-            for (int k = 0; k < foreChildren.Count; k++)
-            {
-                string name = foreChildren[k].child.name;
-                int order = foreOrderStart + k * foreOrderStep;
-                float t = (foreChildren.Count > 1) ? (float)k / (foreChildren.Count - 1) : 0f;
-
-                // Magnitud petita i signe NEGATIU (mou en oposat a la càmera, però suau)
-                float magH = Mathf.Lerp(foreParallaxAbsMin, foreParallaxAbsMax, t);    // 0.10..0.40
-                float parallax = -magH;
-
-                float magV = Mathf.Lerp(foreVerticalAbsMin, foreVerticalAbsMax, t);   // 0.00..0.20
-                float verticalParallax = -magV;
-
-                // Evita valors exagerats
-                parallax = Mathf.Clamp(parallax, -1f, 1f);
-                verticalParallax = Mathf.Clamp(verticalParallax, -1f, 1f);
-
-                rulesByName[name] = (order, parallax, verticalParallax, true);
-            }
-        }
-
-        if (skyChild != null)
-        {
-            // Sky → segueix la càmera: parallax = 1f, sense loop per defecte
-            rulesByName[skyChild.name] = (skyOrder, 1f, 1f, skyEnableLoop);
-        }
-
-        // --- 3) Crea 'layers' + aplica settings ---
-        for (int i = 0; i < childCount; i++)
-        {
-            var child = transform.GetChild(i);
-
-            // Troba SpriteRenderers dins de la capa
-            var srs = child.GetComponentsInChildren<SpriteRenderer>(includeInactive: true);
-            if (srs == null || srs.Length == 0) continue; // capa no visual
-
-            var visualSR = srs[0];
-            var visualTf = visualSR.transform;
-
-            var state = new LayerState
-            {
-                root = child,
-                visual = visualTf,
-                visualSR = visualSR,
-                allSRsInLayer = srs,
-                tiles = new Transform[3],
-                enableLoop = true
-            };
-
-            // SortingLayer opcional
-            if (!string.IsNullOrEmpty(overrideSortingLayerName))
-            {
-                int layerId = SortingLayer.NameToID(overrideSortingLayerName);
-                if (layerId != 0 || overrideSortingLayerName == "Default")
+                SetSortingOrderRecursive(layer, -100);
+                layers.Add(new LayerTilingData
                 {
-                    foreach (var sr in srs) sr.sortingLayerID = layerId;
-                }
-                else
-                {
-                    Debug.LogWarning($"[ParallaxRoot] Sorting Layer \"{overrideSortingLayerName}\" no existeix.");
-                }
+                    layer = layer,
+                    left = null,
+                    right = null,
+                    x0_cam = cam ? cam.transform.position.x : 0f,
+                    x0_layer = layer.position.x,
+                    widthWorld = 0f,
+                    localOffsetX = 0f,
+                    parallaxFactor = 0f
+                });
+                continue;
             }
 
-            // Assigna ordre + parallax segons regla auto o fallback
-            if (rulesByName.TryGetValue(child.name, out var rule))
+            var sr = layer.GetComponent<SpriteRenderer>();
+            if (sr == null)
             {
-                ApplySortingOrderToAll(state, rule.order);
-                state.parallax = rule.parallax;
-                state.verticalParallax = rule.verticalParallax;
-                state.enableLoop = rule.enableLoop;
+                Debug.LogWarning($"[ParallaxRoot] El fill '{layer.name}' no té SpriteRenderer. S'omet.");
+                continue;
+            }
 
-                if (verboseLogs)
-                    Debug.Log($"[ParallaxRoot][RULE] {child.name}: order={rule.order}, parallax={rule.parallax:0.00}, vParallax={rule.verticalParallax:0.00}, loop={rule.enableLoop}");
+            // --- Assignació d'ordre segons prefix ---
+            int bidx, fidx;
+            if (TryParseIndexedName(layer.name, PrefixBack, out bidx))
+            {
+                SetSortingOrderRecursive(layer, -99 + bidx);
+            }
+            else if (TryParseIndexedName(layer.name, PrefixFore, out fidx))
+            {
+                SetSortingOrderRecursive(layer, 100 + fidx);
+            }
+
+            // --- Preparar duplicats _L/_R amb offset LOCAL ---
+            Transform left = layer.Find(layer.name + "_L");
+            Transform right = layer.Find(layer.name + "_R");
+
+            float worldWidth = Mathf.Abs(sr.bounds.size.x); // en món (inclou escales/ancestres)
+            float sx = Mathf.Abs(layer.lossyScale.x);
+            if (sx < 1e-6f) sx = 1e-6f;
+            float localOffset = worldWidth / sx; // perquè en món la separació sigui = worldWidth
+
+            if (left == null)  left  = CreateClone(layer, -localOffset, "_L", sr);
+            if (right == null) right = CreateClone(layer, +localOffset, "_R", sr);
+
+            // --- Factor de parallax per capa (CORREGIT) ---
+            float factor;
+            if (TryParseIndexedName(layer.name, PrefixBack, out bidx))
+            {
+                // Back_0 (molt llunya) → factor alt (proper a 1, mou poc)
+                float t = (maxBackIdx <= 0) ? 0f : Mathf.Clamp01((float)bidx / (float)maxBackIdx);
+                factor = Mathf.Lerp(backParallaxMax, backParallaxMin, t); // swap: 0→max, 1→min
+                factor = Mathf.Clamp01(factor);
+            }
+            else if (TryParseIndexedName(layer.name, PrefixFore, out fidx))
+            {
+                // Fore_0 (molt a prop) → factor 1 - abs_min (ex. 0.90) ; Fore_max → 1 - abs_max (ex. 0.60)
+                float t = (maxForeIdx <= 0) ? 0f : Mathf.Clamp01((float)fidx / (float)maxForeIdx);
+                float abs = Mathf.Lerp(foreParallaxAbsMin, foreParallaxAbsMax, t);
+                factor = 1f - Mathf.Clamp01(abs);
             }
             else
             {
-                // Fallback per capes no etiquetades com Back_/Fore_/Sky
-                if (autoOrderFromSiblingIndex)
-                {
-                    int idx = child.GetSiblingIndex();
-                    int total = transform.childCount;
-                    int order = idx;
-                    ApplySortingOrderToAll(state, order);
-
-                    float t = (total > 1) ? (float)idx / (total - 1) : 0f;
-                    state.parallax = Mathf.Lerp(minParallax, maxParallax, t);
-                    state.verticalParallax = Mathf.Lerp(minVerticalParallax, maxVerticalParallax, t);
-                    state.enableLoop = true;
-
-                    if (verboseLogs)
-                        Debug.Log($"[ParallaxRoot][AUTO] {child.name}: idx={idx}/{total} → order={order}, parallax={state.parallax:0.00}, vParallax={state.verticalParallax:0.00}, loop={state.enableLoop}");
-                }
-                else
-                {
-                    ApplySortingOrderToAll(state, 0);
-                    state.parallax = (minParallax + maxParallax) * 0.5f;
-                    state.verticalParallax = (minVerticalParallax + maxVerticalParallax) * 0.5f;
-                    state.enableLoop = true;
-
-                    if (verboseLogs)
-                        Debug.Log($"[ParallaxRoot][AUTO-Fallback] {child.name}: order=0, parallax={state.parallax:0.00}, vParallax={state.verticalParallax:0.00}, loop={state.enableLoop}");
-                }
+                // Sense prefix → midground (1.0)
+                factor = 1f;
             }
 
-            // Amplada del tile segons el visual
-            state.tileWorldWidth = state.visualSR.bounds.size.x;
-            if (state.tileWorldWidth <= 0f)
+            // --- Desa dades d'aquesta capa ---
+            layers.Add(new LayerTilingData
             {
-                var sp = state.visualSR.sprite;
-                if (sp != null)
-                {
-                    float ppu = sp.pixelsPerUnit > 0 ? sp.pixelsPerUnit : 100f;
-                    state.tileWorldWidth = (sp.rect.width / ppu) * state.visual.lossyScale.x;
-                }
-            }
-
-            // Crea L/C/R (excepte si loop està desactivat, p.ex. Sky)
-            state.tiles[1] = state.visual;
-            if (state.enableLoop && state.tileWorldWidth > 0f)
-            {
-                state.tiles[0] = CreateTileClone(state, -1);
-                state.tiles[2] = CreateTileClone(state, +1);
-            }
-            else
-            {
-                state.tiles[0] = null;
-                state.tiles[2] = null;
-            }
-
-            // Ancoratge i càmera (ara amb Y també)
-            state.anchorX = state.visual.position.x;
-            state.anchorY = state.visual.position.y;
-            state.startCamX = cam ? cam.transform.position.x : 0f;
-            state.startCamY = cam ? cam.transform.position.y : 0f;
-
-            layers.Add(state);
+                layer = layer,
+                left = left,
+                right = right,
+                x0_cam = cam ? cam.transform.position.x : 0f,
+                x0_layer = layer.position.x,
+                widthWorld = worldWidth,
+                localOffsetX = localOffset,
+                parallaxFactor = factor
+            });
         }
     }
 
     void LateUpdate()
     {
-        if (!cam) return;
+        if (cam == null) return;
 
-        foreach (var L in layers)
+        float cx = cam.transform.position.x;
+        float cy = cam.transform.position.y;
+
+        foreach (var d in layers)
         {
-            // Horizontal parallax (existent)
-            float camDeltaX = cam.transform.position.x - L.startCamX;
-            float targetX = L.anchorX + camDeltaX * L.parallax * globalSpeedMultiplier;
-
-            var pos = L.root.position;
-            float dx = targetX - L.visual.position.x;
-            pos.x += dx;
-
-            // Vertical parallax (nou)
-            if (enableVerticalParallax)
+            if (d.parallaxFactor == 0f)
             {
-                float camDeltaY = cam.transform.position.y - L.startCamY;
-                float targetY = L.anchorY + camDeltaY * L.verticalParallax * globalVerticalMultiplier;
-                float dy = targetY - L.visual.position.y;
-                pos.y += dy;
+                // SKY: enganxat a càmera
+                Vector3 p = d.layer.position;
+                d.layer.position = new Vector3(cx, cy, p.z);
+                continue;
             }
 
-            L.root.position = pos;
+            if (d.widthWorld < 1e-6f) continue;
 
-            if (L.enableLoop) RecenterTilesIfNeeded(L);
+            // --- Parallax + wrap ancorat a CÀMERA ---
+            float dx = (cx - d.x0_cam) * d.parallaxFactor; // desplaçament desenvolupat del layer
+            float W  = d.widthWorld;
+
+            // Centre "desenvolupat" del layer (sense wrap)
+            float xUnwrapped = d.x0_layer + dx;
+
+            // Tria el múltiple de W que deixa el centre més a prop del centre de la càmera
+            int   n        = Mathf.RoundToInt((cx - xUnwrapped) / W);
+            float xCentral = xUnwrapped + n * W;
+
+            // Mou NOMÉS el tile central; _L/_R romanen a ±offset local
+            var pos = d.layer.position;
+            d.layer.position = new Vector3(xCentral, pos.y, pos.z);
         }
     }
 
-    // --- Helpers ---
-    private void ApplySortingOrderToAll(LayerState state, int order)
+    // ===== Helpers =====
+
+    private int DetectMaxIndex(string prefix)
     {
-        foreach (var sr in state.allSRsInLayer)
-            sr.sortingOrder = order;
+        int maxIdx = -1;
+        var rx = new Regex("^" + Regex.Escape(prefix) + @"(\d+)$");
+        int childCount = transform.childCount;
+        for (int i = 0; i < childCount; i++)
+        {
+            var layer = transform.GetChild(i);
+            var m = rx.Match(layer.name);
+            if (m.Success && int.TryParse(m.Groups[1].Value, out int idx))
+                maxIdx = Mathf.Max(maxIdx, idx);
+        }
+        return maxIdx;
     }
 
-    private Transform CreateTileClone(LayerState L, int offsetIndex)
+    private bool TryParseIndexedName(string name, string prefix, out int index)
     {
-        var go = new GameObject(L.root.name + (offsetIndex < 0 ? "_L" : "_R"));
-        go.transform.SetParent(L.root, worldPositionStays: true);
+        index = 0;
+        if (!name.StartsWith(prefix)) return false;
+        var tail = name.Substring(prefix.Length);
+        return int.TryParse(tail, out index);
+    }
+
+    private void SetSortingOrderRecursive(Transform root, int order)
+    {
+        var srs = root.GetComponentsInChildren<SpriteRenderer>(includeInactive: true);
+        foreach (var s in srs) s.sortingOrder = order;
+    }
+
+    private Transform CreateClone(Transform parentLayer, float offsetLocalX, string suffix, SpriteRenderer srcSr)
+    {
+        string cloneName = parentLayer.name + suffix;
+        GameObject go = new GameObject(cloneName);
+        go.transform.SetParent(parentLayer, worldPositionStays: false);
+
+        // Posició LOCAL fixa (no es tocarà més)
+        go.transform.localPosition = new Vector3(offsetLocalX, 0f, 0f);
+        go.transform.localRotation = Quaternion.identity;
+        go.transform.localScale = Vector3.one; // hereta escala del pare
 
         var sr = go.AddComponent<SpriteRenderer>();
-        sr.sprite = L.visualSR.sprite;
-        sr.flipX = L.visualSR.flipX;
-        sr.flipY = L.visualSR.flipY;
-        sr.drawMode = L.visualSR.drawMode;
-        sr.sharedMaterial = L.visualSR.sharedMaterial;
-        sr.color = L.visualSR.color;
-        sr.sortingLayerID = L.visualSR.sortingLayerID;
-        sr.sortingOrder = L.visualSR.sortingOrder;
-
-        go.transform.position = L.visual.position + new Vector3(L.tileWorldWidth * offsetIndex, 0f, 0f);
-        go.transform.rotation = L.visual.rotation;
-        go.transform.localScale = L.visual.lossyScale;
-
-        if (verboseLogs)
-            Debug.Log($"[ParallaxRoot] + Tile {(offsetIndex < 0 ? "L" : "R")} per {L.root.name}");
+        sr.sprite = srcSr.sprite;
+        sr.sharedMaterial = srcSr.sharedMaterial;
+        sr.color = srcSr.color;
+        sr.flipX = srcSr.flipX;
+        sr.flipY = srcSr.flipY;
+        sr.drawMode = srcSr.drawMode;
+        sr.sortingLayerID = srcSr.sortingLayerID;
+        sr.sortingOrder = srcSr.sortingOrder;
+        sr.maskInteraction = srcSr.maskInteraction;
 
         return go.transform;
-    }
-
-    private void RecenterTilesIfNeeded(LayerState L)
-    {
-        if (L.tiles[1] == null) return; // loop desactivat
-
-        float camX = cam.transform.position.x;
-
-        // Dreta
-        while (camX - L.tiles[1].position.x > L.tileWorldWidth * 0.5f)
-        {
-            if (L.tiles[0] == null || L.tiles[2] == null) break;
-            L.tiles[0].position = L.tiles[2].position + new Vector3(L.tileWorldWidth, 0f, 0f);
-            var tmp = L.tiles[0]; L.tiles[0] = L.tiles[1]; L.tiles[1] = L.tiles[2]; L.tiles[2] = tmp;
-        }
-
-        // Esquerra
-        while (L.tiles[1].position.x - camX > L.tileWorldWidth * 0.5f)
-        {
-            if (L.tiles[0] == null || L.tiles[2] == null) break;
-            L.tiles[2].position = L.tiles[0].position - new Vector3(L.tileWorldWidth, 0f, 0f);
-            var tmp = L.tiles[2]; L.tiles[2] = L.tiles[1]; L.tiles[1] = L.tiles[0]; L.tiles[0] = tmp;
-        }
     }
 }
 ```
