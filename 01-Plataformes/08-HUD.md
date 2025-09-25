@@ -191,6 +191,7 @@ Afegeix un nou objecte *"UI > Text - TextMeshPro (TMP)"* a l'objecte **"Canvas"*
 - Pos Y: 435
 - Text: 0
 - Font Size: 50
+- Vertex Color: Negre *(o un color que contrasti amb el fons)*
 - Alignment: a la dreta
 
 <center>
