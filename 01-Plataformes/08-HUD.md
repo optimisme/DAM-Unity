@@ -41,7 +41,7 @@ Modifica el posicionament de l'objecte **"HealthFill"**, al valor *"middle/left"
 
 Modifica els paràmetres de l'objecte **"HealthFill"**:
 
-- Pos X: 51
+- Pos X: 50
 - Pivot X: 0 (automàticament canvia Pos X a 1)
 - Scale X: 0.98
 - Scale Y: 0.8
