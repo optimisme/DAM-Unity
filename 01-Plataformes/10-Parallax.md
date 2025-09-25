@@ -2,6 +2,8 @@
 
 Parallax permet moure les capes de decoració, a diferent velocitat, per donar sensació de profunditat al joc.
 
+[Explicació Parallax](https://www.youtube.com/shorts/I5lPwTqGDcU)
+
 Les capes més llunyanes es mouen més lentament que les més properes.
 
 - Les capes per darrera del jugador es mouen més lentament que el jugador
