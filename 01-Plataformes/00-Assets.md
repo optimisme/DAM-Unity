@@ -6,6 +6,13 @@ En aquest tema veurem com fer un joc de plataformes amb Unity.
 
 Crea un nou projecte Unity "Universal 2D" anometat "Platform".
 
+## Carpetes
+
+Crea aquestes carpetes als **"Assets"**
+
+- Animations
+- Sprites
+
 ## Arxius descarregats
 
 També farem servir les imatges de fons:
