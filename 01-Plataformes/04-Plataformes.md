@@ -109,95 +109,6 @@ A l'exemple:
 
 ## Scripts
 
-### PlayerJump.cs
-
-Modifica l'script **"PlayerJump.cs"** per:
-
-- Afegir la variable *GroundCollider* per saber en quin terra estem.
-- Modifica la funció *UpdateGrounded* per assignar el collider.
-
-```csharp
-    // Al final de les declaracions
-    public Collider2D GroundCollider { get; private set; }
-```
-
-```csharp
-    private void UpdateGrounded()
-    {
-        bool hitSomething = false;
-        GroundCollider = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, jumpableLayer);
-
-        if (GroundCollider)
-        {
-            if (validateGroundNormal)
-            {
-                RaycastHit2D hit = Physics2D.Raycast(
-                    groundCheck.position, Vector2.down, groundCheckRadius + 0.05f, jumpableLayer);
-                hitSomething = hit.collider && hit.normal.y >= groundNormalMinY;
-            }
-            else hitSomething = true;
-        }
-
-        isGrounded = hitSomething;
-        if (isGrounded) lastGroundedTime = Time.time;
-    }
-```
-
-### Player.cs
-
-Modifica l'script **"Player.cs"**:
-
-- Afegir la variable *PlayerJump*
-- Modifica la funció *Awake*, per iniciaritzar la variable *PlayerJump*
-- Afegeix la funció *OnMove* per rebre l'input
-- Modifica la funció *FixedUpdate* per tenir en compte la plataforma
-
-```csharp
-using UnityEngine;
-using UnityEngine.InputSystem;
-
-[RequireComponent(typeof(Rigidbody2D), typeof(PlayerInput))]
-public class Player : MonoBehaviour
-{
-    public float moveSpeed = 5f;
-
-    private Rigidbody2D rb;
-    private Vector2 move;
-
-    private PlayerJump playerJump;
-
-    void Awake()
-    {
-        rb = GetComponent<Rigidbody2D>();
-        playerJump = GetComponent<PlayerJump>();
-    }
-
-    public void OnMove(InputValue v)
-    {
-        move = v.Get<Vector2>();
-    }
-
-    void FixedUpdate()
-    {
-        float vx = move.x * moveSpeed;
-
-        // si estem a terra i el terra és una plataforma mòbil, suma la seva velocitat X
-        if (playerJump != null && playerJump.isGrounded)
-        {
-            var groundCol = playerJump.GroundCollider;
-            if (groundCol)
-            {
-                // el collider acostuma a estar al fill "Sprites"; puja al pare que porta Platform
-                var platform = groundCol.GetComponentInParent<Platform>();
-                if (platform != null) vx += platform.surfaceVelocity.x;
-            }
-        }
-
-        rb.linearVelocity = new Vector2(vx, rb.linearVelocity.y);
-    }
-}
-```
-
 ### Platform.cs
 
 Crea un script tipus **MonoBehaviour** anomenat **"Platform"** i arrossega'l a l'objecte **Platform**.
@@ -363,6 +274,95 @@ public class Platform : MonoBehaviour
         // Punts
         Gizmos.color = Color.yellow;
         foreach (var p in gizmoPts) Gizmos.DrawSphere(p.position, 0.05f);
+    }
+}
+```
+
+### PlayerJump.cs
+
+Modifica l'script **"PlayerJump.cs"** per:
+
+- Afegir la variable *GroundCollider* per saber en quin terra estem.
+- Modifica la funció *UpdateGrounded* per assignar el collider.
+
+```csharp
+    // Al final de les declaracions
+    public Collider2D GroundCollider { get; private set; }
+```
+
+```csharp
+    private void UpdateGrounded()
+    {
+        bool hitSomething = false;
+        GroundCollider = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, jumpableLayer);
+
+        if (GroundCollider)
+        {
+            if (validateGroundNormal)
+            {
+                RaycastHit2D hit = Physics2D.Raycast(
+                    groundCheck.position, Vector2.down, groundCheckRadius + 0.05f, jumpableLayer);
+                hitSomething = hit.collider && hit.normal.y >= groundNormalMinY;
+            }
+            else hitSomething = true;
+        }
+
+        isGrounded = hitSomething;
+        if (isGrounded) lastGroundedTime = Time.time;
+    }
+```
+
+### Player.cs
+
+Modifica l'script **"Player.cs"**:
+
+- Afegir la variable *PlayerJump*
+- Modifica la funció *Awake*, per iniciaritzar la variable *PlayerJump*
+- Afegeix la funció *OnMove* per rebre l'input
+- Modifica la funció *FixedUpdate* per tenir en compte la plataforma
+
+```csharp
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+[RequireComponent(typeof(Rigidbody2D), typeof(PlayerInput))]
+public class Player : MonoBehaviour
+{
+    public float moveSpeed = 5f;
+
+    private Rigidbody2D rb;
+    private Vector2 move;
+
+    private PlayerJump playerJump;
+
+    void Awake()
+    {
+        rb = GetComponent<Rigidbody2D>();
+        playerJump = GetComponent<PlayerJump>();
+    }
+
+    public void OnMove(InputValue v)
+    {
+        move = v.Get<Vector2>();
+    }
+
+    void FixedUpdate()
+    {
+        float vx = move.x * moveSpeed;
+
+        // si estem a terra i el terra és una plataforma mòbil, suma la seva velocitat X
+        if (playerJump != null && playerJump.isGrounded)
+        {
+            var groundCol = playerJump.GroundCollider;
+            if (groundCol)
+            {
+                // el collider acostuma a estar al fill "Sprites"; puja al pare que porta Platform
+                var platform = groundCol.GetComponentInParent<Platform>();
+                if (platform != null) vx += platform.surfaceVelocity.x;
+            }
+        }
+
+        rb.linearVelocity = new Vector2(vx, rb.linearVelocity.y);
     }
 }
 ```
