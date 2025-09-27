@@ -76,14 +76,14 @@ Veuràs que dins de l'element tipus botó hi ha un text, posa-li el valor *"Rese
 
 ## Scripting
 
-Modifica l'script **"UIHUD.cs"**
+Modifica l'script **"Canvas.cs"**
 
 ```csharp
 using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
 
-public class UIHUD : MonoBehaviour
+public class Canvas : MonoBehaviour
 {
 
     [SerializeField] private TextMeshProUGUI coinsText; // assigna-hi CoinsNumber al Canvas
@@ -140,7 +140,7 @@ Cal modificar l'script **"Player.cs"** per afegir una crida a **"ShowGameOver"**
 
 Afegeix noves variables:
 ```csharp
-    private UIHUD hud; 
+    private Canvas hud; 
     public int gameOverHeight = -25;
 ```
 
@@ -150,7 +150,7 @@ Actualitza la funció **"Awake"** amb l'inicialització de **"hud"**:
     {
         rb = GetComponent<Rigidbody2D>();
         playerJump = GetComponent<PlayerJump>();
-        hud = FindFirstObjectByType<UIHUD>();
+        hud = FindFirstObjectByType<Canvas>();
     }
 ```
 
@@ -169,7 +169,7 @@ Modifica l'script **"PlayerDamage.cs"** per afegir una crida a **"ShowGameOver"*
 
 Afegeix noves variables:
 ```csharp
-    private UIHUD hud; 
+    private Canvas hud; 
 ```
 
 Actualitza la funció **"Awake"** amb l'inicialització de **"hud"**:
@@ -179,7 +179,7 @@ Actualitza la funció **"Awake"** amb l'inicialització de **"hud"**:
         sr = GetComponent<SpriteRenderer>();
         baseColor = sr.color;
         health = Mathf.Clamp(health <= 0 ? maxHealth : health, 0, maxHealth);
-        hud = FindFirstObjectByType<UIHUD>();
+        hud = FindFirstObjectByType<Canvas>();
     }
 ```
 
@@ -221,7 +221,7 @@ Sel·lecciona l'objecte **"Button"** a l'inspector, i arrosega l'object **"Canva
 <img src="./assets/gameover-click-drag.png" style="width: 90%; max-width: 600px">
 </center>
 
-Al desplegable de la dreta (on diu *"No Function"*) escollir el mètode de la ruta *"UIHUD > ResetScene()"*
+Al desplegable de la dreta (on diu *"No Function"*) escollir el mètode de la ruta *"Canvas > ResetScene()"*
 
 <center>
 <img src="./assets/gameover-click-reset.png" style="width: 90%; max-width: 600px">

@@ -201,13 +201,13 @@ Afegeix un nou objecte *"UI > Text - TextMeshPro (TMP)"* a l'objecte **"Canvas"*
 
 ### Scripts
 
-Afegeix un nou script tipus "MonoBehaviour" anomenat **"UIHUD.cs"**, i posa'l com a component de l'objecte **"Canvas"**
+Afegeix un nou script tipus "MonoBehaviour" anomenat **"Canvas.cs"**, i posa'l com a component de l'objecte **"Canvas"**
 
 ```csharp
 using UnityEngine;
 using TMPro;
 
-public class UIHUD : MonoBehaviour
+public class Canvas : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI coinsText; // assigna-hi CoinsNumber al Canvas
 
@@ -234,7 +234,7 @@ public class Coin : MonoBehaviour
         player.coins++;
         Debug.Log($"Monedes recollides: {player.coins}");
 
-        var hud = Object.FindFirstObjectByType<UIHUD>(); 
+        var hud = Object.FindFirstObjectByType<Canvas>(); 
         if (hud) hud.UpdateCoins(player.coins);
 
         // Evita triggers dobles abans del Destroy
@@ -246,7 +246,7 @@ public class Coin : MonoBehaviour
 }
 ```
 
-Arrosega l'objecte **"CoinsNumber"** a la variable **"Coins Text"** de l'script **"UIHUD"** de l'objecte **"Canvas"**.
+Arrosega l'objecte **"CoinsNumber"** a la variable **"Coins Text"** de l'script **"Canvas.cs"** de l'objecte **"Canvas"**.
 
 <center>
 <img src="./assets/hud-dragcoinstext.png" style="width: 90%; max-width: 600px">

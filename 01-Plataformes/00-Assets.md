@@ -12,6 +12,8 @@ Crea aquestes carpetes als **"Assets"**
 
 - Animations
 - Sprites
+- Prefabs
+- Scritps
 
 ## Arxius descarregats
 

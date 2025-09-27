@@ -45,9 +45,9 @@ Edita la caixa de col·lisió del personatge, amb el botó de **Edit Collider**:
 
 Fixa't que apareix com arrodonida als extrems. Per tal d'evitar problemes amb els canvis de rajoles/tiles.
 
-## Moviment dreta/esquerra
+## Script dreta/esquerra
 
-A la carpeta **"Assets"**, crea un spript tipus "MonoBehaviour" anomenat **Player** i arrosega'l a l'inspector de l'objecte **Player**.
+A la carpeta **"Scripts"**, crea un spript tipus "MonoBehaviour" anomenat **Player** i arrosega'l a l'inspector de l'objecte **Player**.
 
 ```csharp
 using UnityEngine;
