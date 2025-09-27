@@ -76,13 +76,28 @@ public class Coin : MonoBehaviour
 }
 ```
 
+## Prefabs
+
+Els **Prefabs** són objectes pre definits que podem copiar moltes vegades, i si volem fer canvis a la configuració només caldrà modificar el *Prefab* principal.
+
+Arrossega l'objecte **"Coin"** a la carpeta **"Prefabs"** dels assets.
+
+<center>
+<img src="./assets/items-prefabs.png" style="width: 90%; max-width: 500px">
+</center>
+<br/>
+
+Veuràs que es queda de color blau indicant que és un *Prefab*.
+
 Fes un nou objecte buit amb **"Create Empty"** a la jerarquia d'objectes, anomenat **"Coins"**. 
 
-Mou l'objecte **"Coin"** dins del nou objecte i copia'l tants cops com vulguis.
+Mou el nou objecte l'objecte **"Coin"** de la carpeta **"Prefabs"** dins del nou objecte **"Coins"** tants cops com vulguis.
 
 <center>
 <img src="./assets/items-list.png" style="width: 90%; max-width: 500px">
 </center>
 <br/>
+
+Posa'ls on creguis més divertit.
 
 Fixa't que quan s'executa el joc, els objectes desapareixen de la llista al agafar-los (alliberant memòria). Això ho fa el *Destroy*
