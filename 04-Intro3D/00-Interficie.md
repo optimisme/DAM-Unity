@@ -16,6 +16,7 @@ A la pestanya **"Project"**, escull la carpeta **"Assets"** i afegeix aquestes n
 - Prefabs
 - Scripts
 - Shaders
+- Textures
 
 ## Interfície 3D
 
