@@ -45,3 +45,24 @@ Simula una **superfície lluminosa rectangular** (o en HDRP també disc).
 <img src="./assets/llums-lightarea.png" style="width: 90%; max-width: 400px">
 </center>
 <br/>
+
+# Proves
+
+Afegeix una *Light > Spot light* a l'escena, amb els paràmetres:
+
+- Position X: 3
+- Position Y: 5
+- Position Z: -3
+- Rotation X: 65
+- Rotation Y: 0
+- Rotation Z: 0
+- Light > Emission > Intensity: 500
+- Light > Shadows > Shadow Type: Hard Shadows
+- Light > Shadows > Shadow Type > Resolution: Low
+
+**Nota:** Fixa't que no ha mostrat la sombra fins que l'hem activat. *"Hard Shadows amb Resolution low"* requereix menys recursos que *"Soft Shadows amb Resolution High"*
+
+<center>
+<img src="./assets/llums-spotparams.png" style="width: 90%; max-width: 600px">
+</center>
+<br/>
