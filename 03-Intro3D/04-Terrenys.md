@@ -267,3 +267,72 @@ Des de la carpeta *"Assets > Simple Nature Pack > Prefabs"*
 
 ## Textures al terra
 
+Els terrenys **no accepten materials**, per especificar le textures del terra s'han de definir **"Terrain Layers"**.
+
+A l'inspector del **"Terrain"**, dins de l'apartat **"Terrain"**, canvia el desplegable i escull **"Paint Texture"**:
+
+<center>
+<img src="./assets/terrenys-selectpainttexture.png" style="width: 90%; max-width: 400px">
+</center>
+<br/>
+
+- Aleshores, afegeix un *Layer*
+
+<center>
+<img src="./assets/terrenys-createlayer.png" style="width: 90%; max-width: 300px">
+</center>
+<br/>
+
+- Escull la textura **"rocky_terrain_diff_2k.jpg"**
+
+<center>
+<img src="./assets/terrenys-selectlayertexture.png" style="width: 90%; max-width: 300px">
+</center>
+
+- De la carpeta *"Assets > Textures"*, arrossega **"rocky_terrain_nor_gl_2k.jpg"** cap a l'espai d'imatge de **"Normal Map"**
+
+<center>
+<img src="./assets/terrenys-draglayernormal.png" style="width: 90%; max-width: 500px">
+</center>
+
+Per igualar la textura al material **"Rocky terrain"**, defineix les propietats del layer com:
+
+- Normal Scale: 1.5
+- Channel Default Values > Metallic: 0
+- Channel Default Values > AO: 1
+- Channel Default Values > Smothness: 0.5
+- Tiling Settings > Size X: 10
+- Tiling Settings > Size Y: 10
+
+<center>
+<img src="./assets/terrenys-layerproperties.png" style="width: 90%; max-width: 400px">
+</center>
+<br/>
+
+S'ha de veure algo semblant a:
+
+<center>
+<img src="./assets/terrenys-layersapplied.png" style="width: 90%; max-width: 400px">
+</center>
+<br/>
+
+### Múltiples textures al terra
+
+Veuràs que la primera textura s'ha aplicat a tot el terra, i no es pot *esborrar*.
+
+- Amb el botó *"Edit terrain layers"*
+- Crea un nou layer amb *"Create Layer"*
+- Escull la textura *"Default Checker Gray"*
+
+<center>
+<img src="./assets/terrenys-layersadddefault.png" style="width: 90%; max-width: 300px">
+</center>
+
+Ara pots escollir entre el terra *"principal"* i un nou terra, en aquest cas el de *"esborrar"*
+
+<center>
+<img src="./assets/terrenys-layerserase.png" style="width: 90%; max-width: 300px">
+</center>
+<br/>
+
+Fes servir el mateix mètode per definir altres tipus de layers per millorar el terreny amb més textures.
