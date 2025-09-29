@@ -1,0 +1,1 @@
+Fer aquesta teoria!!!!
