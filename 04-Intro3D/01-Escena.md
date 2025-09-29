@@ -296,7 +296,7 @@ using UnityEngine.InputSystem;
 public class PlayerMove : MonoBehaviour
 {
     [Header("Movement")]
-    public float moveSpeed = 3.5f;
+    public float moveSpeed = 1.6f;
     public float turnSpeed = 720f;   // graus/segon
     public float gravity = -9.81f;
     public float inputDeadzone = 0.05f;
