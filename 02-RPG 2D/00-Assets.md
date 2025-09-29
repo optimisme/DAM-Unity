@@ -2,7 +2,7 @@
 
 En aquest tema veurem com fer un joc de plataformes amb Unity.
 
-## Explicacions
+## Explicacions 
 
 https://www.youtube.com/shorts/EBZt_2NQwp0
 
