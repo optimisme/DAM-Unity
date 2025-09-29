@@ -140,6 +140,38 @@ Veuràs que pots definir a nivell de arbre on els vols posar:
 </center>
 <br/>
 
+## LOD (level of detail)
+
+Cal fixar-se que els objectes **prefab** per afegir **"arbres"** o decoracions als terrenys. Tenen diverses representacions, segons la distànca que estàn del càmera. 
+
+D'això se'n diu **"Level of detail (LOD)"**, és a dir tenir models més detallats quan estàn aprop de la càmera i amb menys polígons quan estàn més lluny.
+
+<center>
+<img src="./assets/terrenys-lodgroup.png" style="width: 90%; max-width: 400px">
+</center>
+<br/>
+
+A la imatge anterior veiem dos objectes amb dos nivells de detall diferents. A la **"hierarchy"** del *prefab* també es pot veure:
+
+<center>
+<img src="./assets/terrenys-lodhierarchy.png" style="width: 90%; max-width: 400px">
+</center>
+<br/>
+
+I al *prefab* per cada objecte:
+
+**LOD0**:
+<center>
+<img src="./assets/terrenys-lod0.png" style="width: 90%; max-width: 200px">
+</center>
+
+**LOD1**:
+<center>
+<img src="./assets/terrenys-lod1.png" style="width: 90%; max-width: 200px">
+</center>
+<br/>
+
+
 ## Paint Details
 
 La opció **"Paint Details"** serveix per afegir detalls petits i nombrosos al un terreny.
@@ -150,11 +182,57 @@ La opció **"Paint Details"** serveix per afegir detalls petits i nombrosos al u
 
 Són objectes molt més lleugers que els “Trees”, pensats perquè se’n puguin instanciar milers sense col·lapsar el rendiment.
 
+### Crear herva 'Mesh'
+
+- Navega a:
+
+*"Assets > Simple Nature Pack > Models"*
+
+- Arrossega **"Grass_01"** a la **"Hierarchy"**
+
+- Amb el *"botó dret"* sobre l'objecte **"Gras_01"** escull la opció:
+
+*"Prefab > Unpack"*
+
+Veuràs que ha deixat de ser un objecte amb dos nivells de detall **LOD** i han passat a ser dos objectes *"normals"*
+<center>
+<img src="./assets/terrenys-detailsunpack.png" style="width: 90%; max-width: 300px">
+</center>
+<br/>
+
+Crea un nou material a la carpeta **"Assets > Materials"**, anomena'l **Grass**, dona-li un **Base Map**, amb les propietats:
+
+- Base Map: (color verd)
+- Enable GPU Instancig: **activat**
+
+<center>
+<img src="./assets/terrenys-grassmaterial.png" style="width: 90%; max-width: 300px">
+</center>
+<br/>
+
+Assigna'l a l'objecte **"Grass_01_LOD0"**
+
+<center>
+<img src="./assets/terrenys-grassassign.png" style="width: 90%; max-width: 300px">
+</center>
+<br/>
+
+Arrossega l'objecte **"Grass_01_LOD0"** cap a la carpeta **"Assets > Prefabs"** i renombra'l a **"Grass Mesh"**
+
+<center>
+<img src="./assets/terrenys-grassmeshprefab.png" style="width: 90%; max-width: 600px">
+</center>
+<br/>
+
+Esborra l'objecte **"Grass_01"** de la hierarchy.
+
+### Assignar herva 'Mesh'
+
 Igual que amb els arbres (objectes grans), cal definir els objectes que farem servir per "pintar" detalls.
 
 - Escull la opció **"Paint Details"**
 <center>
-<img src="./assets/terrenys-adddetails0.png" style="width: 90%; max-width: 400px">
+<img src="./assets/terrenys-adddetails0.png" style="width: 90%; max-width: 600px">
 </center>
 <br/>
 
@@ -166,9 +244,26 @@ Igual que amb els arbres (objectes grans), cal definir els objectes que farem se
 
 Des de la carpeta *"Assets > Simple Nature Pack > Prefabs"*
 
-- Arrossega el tipus d'herva que vols afegir al terreny, arrossegant-lo cap a la opció **"Detail Prefab"**
+- Arrossega el tipus d'herva que vols afegir al terreny, arrossegant-lo cap a la opció **"Detail Prefab"** i apreta **"Add"**
 
 <center>
-<img src="./assets/terrenys-add2.png" style="width: 90%; max-width: 400px">
+<img src="./assets/terrenys-dragmesh.png" style="width: 90%; max-width: 400px">
 </center>
 <br/>
+
+- Pinta la herva sobre el terreny:
+
+<center>
+<img src="./assets/terrenys-grasspaint.png" style="width: 90%; max-width: 400px">
+</center>
+<br/>
+
+- Mira com es veu al joc:
+
+<center>
+<img src="./assets/terrenys-grassplay.png" style="width: 90%; max-width: 400px">
+</center>
+<br/>
+
+## Textures al terra
+
