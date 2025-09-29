@@ -6,7 +6,7 @@ En una escena buida afegeix:
 
 - 3D Object > **Plane**
     - Pos X: 0
-    - Pos Y: 0
+    - Pos Y: 0.01
     - Pos Z: 0
 
 - 3D Object > **Cube**
