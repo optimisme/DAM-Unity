@@ -99,6 +99,10 @@ Escull per descarregar, i les opcions de la imatge:
 
 - 2K
 - Zip
+- Diffuse JPG
+- Displacement JPG
+- Normal (GL)
+- Rough (GL)
 
 <center>
 <img src="./assets/materials-download.png" style="width: 90%; max-width: 400px">
@@ -114,9 +118,36 @@ Arrossega els materials descarregats a la carpeta:
 </center>
 <br/>
 
+Escull la textura **"rocky_terrain_nor_gl_2k.jpg"** *(la de color lila), i al seu inspector marca la com a:
+
+- **Texture type**: Normal map
+
+<center>
+<img src="./assets/materials-normalmap.png" style="width: 90%; max-width: 700px">
+</center>
+
 Cada una d'aquestes textures, informa d'unes propietats que fan falta per fer el material més realistic:
 
-- **rocy_terrain_ao_2k**: 
-- **rocy_terrain_arm_2k**: 
-- **rocy_terrain_diff_2k**: 
-- **rocy_terrain_disp_2k**: 
+- **rocky_terrain_diff_2k.jpg**: el color *"albedo"* de la textura
+- **rocky_terrain_disp_2k.jpg**: per donar relleu a la textura (gasta potència de càlcul)
+- **rocky_terrain_nor_gl_2k.jpg**: determina com reacciona la llum a la superfície
+- **rocky_terrain_rough_2k.jpg**: indica la rugositat/pulidesa de la superfície
+
+### Terra amb textura
+
+A la carpeta **"Assets > Materials"** crea un nou material amb:
+
+*Create > Material*
+
+Anomena al material **"Rocky Terrain"**.
+
+Aplica el terreny a l'objecte **"Plane"**, de moment no es veuen massa canvis.
+
+Per fer que es reflexi més la llum, canvia el valor de:
+
+- Normal Map: 1.5
+
+<center>
+<img src="./assets/materials-maps.png" style="width: 90%; max-width: 700px">
+</center>
+
