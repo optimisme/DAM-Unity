@@ -1,3 +1,0 @@
-# Animacions
-
-A part d

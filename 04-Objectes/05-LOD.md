@@ -1,3 +1,0 @@
-# LOD
-
-A part d
