@@ -67,7 +67,7 @@ Per rotar al voltant d'un objecte:
 
 - Sel·leccionar l'objecte que volem enfocar
 - Apretar la tecla **F**
-- Mantenir apretat Mayus+Alt (Mayus+Option)
+- Mantenir apretat Alt (Option)
 - Mantenir el botó esquerra del mouse aptretat
 - Moure el mouse
 

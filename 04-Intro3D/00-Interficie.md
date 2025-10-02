@@ -119,3 +119,14 @@ Activant l'icona de càmera, podem veure la imatge captada per la càmera, i pos
 </center>
 <br/>
 
+## Visualització a l'escena
+
+Per poder modificar objectes, és necessari veure bé certes parts d'aquests objectes a l'escena.
+
+Per rotar al voltant d'un objecte:
+
+- Sel·leccionar l'objecte que volem enfocar
+- Apretar la tecla **F**
+- Mantenir apretat Alt (Option)
+- Mantenir el botó esquerra del mouse aptretat
+- Moure el mouse
