@@ -77,6 +77,10 @@ Fixa't com afecta cada propietat a la textura de l'objecte:
 <video src="./assets/uv-texturesplay.mov" width="600" controls></video>
 </center>
 
+- *Fill mode*:
+    - *Fit*: Escala i centra la textura perquè quedi encaixada exactament dins dels límits de la cara.
+    - *Tile*: Manté la proporció original de la textura i la repeteix (tiling) dins de la cara fins que la cobreix.
+    - *Strech*: Força la textura a omplir tota la cara exactament, encara que s’hagi de deformar.
 - **Offset**: mou la base de la textura
 - **Rotation**: gira la textura
 - **Tiling**: canvia la mida de la textura provocant repeticions (si cal)

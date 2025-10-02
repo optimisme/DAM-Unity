@@ -59,6 +59,23 @@ Aquesta barra, permet fer modificacions bàsiques als objectes, per canviar-ne l
 <video src="./assets/probuilder-modifybasics.mov" width="600" controls></video>
 </center>
 
+## Moure la càmera
+
+Per poder modificar objectes, és necessari veure bé certes parts d'aquests objectes.
+
+Per rotar al voltant d'un objecte:
+
+- Sel·leccionar l'objecte que volem enfocar
+- Apretar la tecla **F**
+- Mantenir apretat Mayus+Alt (Mayus+Option)
+- Mantenir el botó esquerra del mouse aptretat
+- Moure el mouse
+
+<br/>
+<center>
+<video src="./assets/probuilder-focus.mov" width="600" controls></video>
+</center>
+
 ## Modificar Objectes
 
 Entre altres, les principals opcions disponibles per modificar objectes són:
@@ -123,3 +140,25 @@ La eina **"Cut Tool"** permet dividir cares de manera personalitzada.
 </center>
 
 > *Nota:* A l'exemple anterior, primer es fa servir **"Cut Tool"** i després un **"Extrude"**
+
+## Canviar la posició del Pivot
+
+A Unity, el **pivot point** és el punt de referència a partir del qual un objecte:
+
+- Rota (rotacions al voltant del pivot).
+- Escala (s’expandeix o es contrau respecte al pivot).
+- Es mou si estàs editant en modes especials.
+
+És bàsicament l’origen de coordenades local de l’objecte.
+
+Per canviar la posició del *pivot* amb **ProBuilder**:
+
+- Sel·lecciona l'objecte
+- Canvia a mode edició de cares
+- Ctrl+A per sel·leccionar totes les cares
+- Mou l'objecte respecte la referència inicial
+
+<br/>
+<center>
+<video src="./assets/probuilder-pivot.mov" width="600" controls></video>
+</center>
