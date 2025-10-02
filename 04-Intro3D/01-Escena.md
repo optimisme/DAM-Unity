@@ -90,6 +90,8 @@ Desplega la carpeta:
 
 Arrossega un dels personatges a l'escena i modifica els paràmetres del personatge:
 
+Afegir el component *"Character Controller"*
+
 - Nom: Player
 - Pos X: -2
 - Pos Y: 0
@@ -455,4 +457,10 @@ Arrossega les següents animacions, cap els camps *"Clip"* de l'script **"Player
 
 <center>
 <img src="./assets/escena-characteranims.png" style="width: 90%; max-width: 700px">
+</center>
+
+Selecciona la càmera i arrossega l'objecte **"Player"** a la variable **"Pivot"** de l'script de la càmera.
+
+<center>
+<img src="./assets/escena-pivotdrag.png" style="width: 90%; max-width: 700px">
 </center>
