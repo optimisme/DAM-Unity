@@ -103,7 +103,7 @@ Assigna aquest nou material a l'objecte **"Cube"**
 </center>
 <br/>
 
-**Important!** Un material *"Emissive"* no emet sombres! Cal afegir algun tipus de llum aprop seu, que faci aquesta funció.
+> **Important!** Un material *"Emissive"* no emet sombres! Cal afegir algun tipus de llum aprop seu, que faci aquesta funció.
 
 Afegeix una **"Light > Point Light"** com a filla de l'objecte **"Cube"**, amb paràmetres:
 
