@@ -145,39 +145,11 @@ Aplica el terreny a l'objecte **"Plane"**, de moment no es veuen massa canvis.
 
 Per fer que es reflexi més la llum, canvia el valor de:
 
+- Arrossega la textura principal *(albedo)* a **"Base Map"**
+- Arrossega la textura lila a **"Normal Map"**
 - Normal Map: 1.5
 
 <center>
 <img src="./assets/materials-maps.png" style="width: 90%; max-width: 700px">
 </center>
 
-## Materials emissius
-
-No són pròpiament llums, però es pot fer que un material sembli que emet radiació llumínica.
-
-A la carpeta **"Assets > Materials"** crea un nou material amb:
-
-*Create > Material*
-
-Anomena al material **Emissive light"**. Amb propietats:
-
-- Emission: (activat)
-- Emission map:
-    - Red: 190
-    - Green: 170
-    - Blue: 0
-    - Intensity: 4
-
-<center>
-<img src="./assets/materials-emission.png" style="width: 90%; max-width: 400px">
-</center>
-<br/>
-
-Assigna aquest nou material a l'objecte **"Cube"**
-
-<center>
-<img src="./assets/materials-lightedcube.png" style="width: 90%; max-width: 500px">
-</center>
-<br/>
-
-**Important!** Un material *"Emissive"* no emet sombres! Cal afegir algun tipus de llum aprop seu, que faci aquesta funció.
