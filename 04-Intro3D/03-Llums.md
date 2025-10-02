@@ -73,3 +73,56 @@ Afegeix una *Light > Spot light* a l'escena, amb els paràmetres:
 <img src="./assets/llums-doubleshadow.png" style="width: 90%; max-width: 200px">
 </center>
 <br/>
+
+## Materials emissius
+
+No són pròpiament llums, però es pot fer que un material sembli que emet radiació llumínica.
+
+A la carpeta **"Assets > Materials"** crea un nou material amb:
+
+*Create > Material*
+
+Anomena al material **"Emissive light"**. Amb propietats:
+
+- Emission: (activat)
+- Emission map:
+    - Red: 190
+    - Green: 170
+    - Blue: 0
+    - Intensity: 4
+
+<center>
+<img src="./assets/llums-emission.png" style="width: 90%; max-width: 400px">
+</center>
+<br/>
+
+Assigna aquest nou material a l'objecte **"Cube"**
+
+<center>
+<img src="./assets/llums-lightedcube.png" style="width: 90%; max-width: 500px">
+</center>
+<br/>
+
+**Important!** Un material *"Emissive"* no emet sombres! Cal afegir algun tipus de llum aprop seu, que faci aquesta funció.
+
+Afegeix una **"Light > Point Light"** com a filla de l'objecte **"Cube"**, amb paràmetres:
+
+- Color: Groc
+    - Red: 190
+    - Green: 170
+    - Blue: 0
+- Intensity: 10
+- Shadow Type: Hard Shadows
+- Resolution: Low
+
+<center>
+<img src="./assets/llums-pointlightchild.png" style="width: 90%; max-width: 300px">
+</center>
+<br/>
+
+Així quan el cub es mogui, iluminarà els objectes propers.
+
+<center>
+<img src="./assets/llums-pointlight.png" style="width: 90%; max-width: 500px">
+</center>
+<br/>
