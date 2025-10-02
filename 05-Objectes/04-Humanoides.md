@@ -243,6 +243,8 @@ Fes el mateix amb l'animació **"crouched sneaking left.fbx"**
 - Apreta **"Apply"**
 - Apreta **"Done"**
 
+> **Nota:** Opcionalment, es pot aprofitar l'avatar que s'ha creat inicialment, i fer la opció **"Copy from other avatar"**, per simplificar el procés.
+
 Repeteix amb totes les animacions que volguis tenir disponibles (o veure'n la previsualització).
 
 Desplega l'arxiu **"crouched sneaking left.fbx"** i escull l'icona triangular anomenada *"mixamo.com"*.
