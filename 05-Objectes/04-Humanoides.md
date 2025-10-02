@@ -101,7 +101,7 @@ A la carpeta **"Assets"** hi ha el nou objecte, sel·lecciona'l, i a la pestana 
 - **Important!** Apreta el botó **"Apply"**
 - Apreta el botó **"Done"**
 
-Ara ja tenim un objecte **.fbx** amb les animacions tipus **humanoide**
+Ara cal substitur l'antic personatge sene **Humanoid** pel nou:
 
 - Esborra el personatge de l'escena
 - Mou el nou personatge **.fbx** a l'escena
@@ -188,6 +188,8 @@ Arrossega la carpeta descomprimida **"Action Adventure Pack"** cap a la carpeta 
 </center>
 <br/>
 
+> **Nota:** Veuràs que no es pot fer preview de les animacions, almenys no fins que estiguin els *Humanoids* definits.
+
 Ves a la carpeta **"Assets > Action Adventure Pack"** i escull **"Jumping Up"**, a la pestana **"Inspector"** escull:
 
 - Pestanya: **"Rig"**
@@ -212,28 +214,51 @@ Ves a la carpeta **"Assets > Action Adventure Pack"** i escull **"Jumping Up"**,
 - **Important!** Apreta el botó **"Apply"**
 - Apreta el botó **"Done"**
 
-L'objecte **.fbx** ha canviat i ara té dos icones
+Ara ja tenim un nou objecte **.fbx** amb les animacions tipus **humanoide** i pots veure el *preview*. Desplegar l'arxiu **.fbx**, ara hi ha dos icones:
 
-- Un humanoide
-- Un icona d'animació triangular amb nom (mixamo.com)
+- Una personeta que és l'*humanoide*
+- Un triangle que és l'animació
 
 <center>
-<img src="./assets/humanoides-createmixamohumanoid.png" style="width: 90%; max-width: 400px">
+<img src="./assets/humanoides-fixedhumanoid.png" style="width: 90%; max-width: 400px">
 </center>
 <br/>
 
-Copia l'icona triangular anomenat *"mixamo.com"* a la carpeta **"Assets > Animations"** i renomana'l com a **"Jump"**
+Apreta sobre del tirangle, i a l'apartat de **preview** apreta **"play"** per veure l'animació:
+
+<center>
+<img src="./assets/humanoides-preview.png" style="width: 90%; max-width: 300px">
+</center>
+<br/>
+
+Fes el mateix amb l'animació **"crouched sneaking left.fbx"**
+
+- A l'**"Inspector"** pestanya **"Rig"**
+- Animation Type: **"Humanoid"**
+- Avatar Definition: **"Create from this model"**
+- Apretar **"Apply"**
+- S'activa **"Configure"**
+- Apretar **"Configure"**
+- Desplegable **"Pose"** escull **"Enforce T-Pose"**
+- Apreta **"Apply"**
+- Apreta **"Done"**
+
+Repeteix amb totes les animacions que volguis tenir disponibles (o veure'n la previsualització).
+
+Desplega l'arxiu **"crouched sneaking left.fbx"** i escull l'icona triangular anomenada *"mixamo.com"*.
+
+Copia aquest objecte amb **"Ctrl+C"** a la carpeta **"Assets > Animations"** i renomana'l com a **"Senaking"**
 
 Sel·lecciona el personatge, mostra la pestanya **"Animator"** i arrossega la nova animació **"Jump"** cap a l'*animator*:
 
 <center>
-<img src="./assets/humanoides-dragjump.png" style="width: 90%; max-width: 600px">
+<img src="./assets/humanoides-dragsneaking.png" style="width: 90%; max-width: 600px">
 </center>
 <br/>
 
-Comprova a l'escena, i a la pestanya **"Animation"** que la nova animació **"Jump"** està disponible:
+Comprova a l'escena, i a la pestanya **"Animation"** que la nova animació **"Sneaking"** està disponible:
 
+<br/>
 <center>
-<img src="./assets/humanoides-jumpavailable.png" style="width: 90%; max-width: 600px">
+<video src="./assets/humanoides-sneakinganim.mov" width="600" controls></video>
 </center>
-<br/>
