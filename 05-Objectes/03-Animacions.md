@@ -1,6 +1,6 @@
 # Animacions
 
-## Crear un objecte per animar (porta)
+## Crear un objecte per animar (porta)
 
 Per fer aquesta part cal tenir **ProBuilder** instal·lat.
 
