@@ -222,7 +222,7 @@ A l'inspector, a l'apartat **"Motion"** busca l'animació **"HumanM@Idle01"**
 </center>
 <br/>
 
-### Triggers
+### Transicions
 
 Per canviar d'estat necessitem transicions.
 
@@ -241,6 +241,8 @@ Per canviar d'estat necessitem transicions.
 <br/>
 
 > **Nota**: Si simules el joc ara, veuràs que farà un bucle amb les animacions **"Idle"** i **"Run"**
+
+### Estats
 
 - A la pestanya **"Parameters"**, apreta el símbol **"+"** i escull **"Trigger"** per afegir un *disparador*
 
@@ -728,3 +730,5 @@ public class PlayerMoveAnimator : MonoBehaviour
     }
 }
 ```
+
+Prova el joc, amb el moviment i salts del personatge en mode **"Iddle"** i mode **"Run"**
