@@ -1,10 +1,16 @@
 # Animacions
 
-## Crear un objecte per animar (porta)
+## Projecte
+
+Fes un nou projecte tipus **"Universal 3d"** anomenat **DoorAnim**
+
+## Requeriments
 
 Per fer aquesta part cal tenir **ProBuilder** instal·lat.
 
 Desde *"Window > Package Management > Package Manager > Unity Registry > Busca ProBuilder"*
+
+## Crear un objecte per animar (porta)
 
 Amb *ProBuilder* afegeix un objecte a la *Hierarchy*:
 
