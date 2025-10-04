@@ -1,4 +1,4 @@
-## FBX Exporter
+# FBX Exporter
 
 Sovint volem exportar objectes d'un projecte per poder-los compartir amb altres projectes.
 
@@ -18,3 +18,7 @@ Amb el **Package Manager** instal·la **FBX Exporter**
 <img src="./assets/humanoides-fbxexporterinstall.png" style="width: 90%; max-width: 600px">
 </center>
 <br/>
+
+## Crear arxius ".fbx"
+
+// TODO
