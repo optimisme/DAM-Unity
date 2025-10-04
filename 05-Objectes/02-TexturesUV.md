@@ -2,8 +2,17 @@
 
 A part de la forma de l'objecte, l'aparença també depèn dels materials de l'objecte, i en concret de les textures que es dibuixen a les cares de l'objecte.
 
-Farem servir aquesta textura:
+## Projecte
 
+Fes un nou projecte tipus **"Universal 3d"** anomenat **TexturedBox**
+
+## Requeriments
+
+Per fer aquesta part cal tenir **ProBuilder** instal·lat.
+
+Desde *"Window > Package Management > Package Manager > Unity Registry > Busca ProBuilder"*
+
+Farem servir aquesta textura:
 
 [Wall Textures](https://www.freepik.com/free-vector/different-wall-textures_959312.htm#fromView=keyword&page=1&position=1&uuid=df66f88c-b4c2-43cf-a603-40915279bf63&query=Minecraft+texture+tutorial)
 
@@ -13,6 +22,10 @@ Farem servir aquesta textura:
 <br/>
 
 - Copia la textura anterior a la carpeta **"Assets"**
+
+## Objectes
+
+- Al **"Hierarchy"** afegeix un nou **"Cube"** tipus **"ProBuilder"**
 
 - Crea un nou material anomenat **"Test"**
 
