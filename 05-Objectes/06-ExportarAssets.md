@@ -5,6 +5,8 @@ Els *Assets* es poden compartir amb altres projectes *Unity* o eines 3D, per fer
 - **Unitypackage**: per compartir-ho amb projectes *Unity*
 - **FBX**: per compartir-ho amb altres eines 3D
 
+> **Important!**: Els objectes creats en una escena, es poden exportar si s'arrosseguen a la carpeta **"Prefabs**. És a dir, si primer es transformen en un *prefab*
+
 ## Format Unitypackage
 
 Unity té una eina pròpia per *guardar* assets en arxius **.unitypackage**.
