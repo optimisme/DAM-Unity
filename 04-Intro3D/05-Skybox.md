@@ -48,7 +48,6 @@ skybox-dragetexture
 <center>
 <img src="./assets/skybox-dragtexture.png" style="width: 90%; max-width: 600px">
 </center>
-<br/>
 
 ## Skybox d'escena
 
