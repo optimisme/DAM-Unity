@@ -76,7 +76,7 @@ Afegeix una *Light > Spot light* a l'escena, amb els paràmetres:
 
 ## Materials emissius
 
-No són pròpiament llums, però es pot fer que un material sembli que emet radiació llumínica.
+**No són pròpiament llums**, però es pot fer que un material sembli que emet radiació llumínica.
 
 A la carpeta **"Assets > Materials"** crea un nou material amb:
 

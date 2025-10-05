@@ -1,4 +1,4 @@
-# Terrenys
+# Terrenys
 
 Unity té una eina específica per definir terrenys.
 
