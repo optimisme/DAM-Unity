@@ -23,9 +23,7 @@ Farem servir aquesta textura:
 
 - Copia la textura anterior a la carpeta **"Assets"**
 
-## Objectes
-
-- Al **"Hierarchy"** afegeix un nou **"Cube"** tipus **"ProBuilder"**
+## Materials
 
 - Crea un nou material anomenat **"Test"**
 
@@ -36,12 +34,18 @@ Farem servir aquesta textura:
 </center>
 <br/>
 
+## Objectes
+
+- Al **"Hierarchy"** afegeix un nou **"Cube"** tipus **"ProBuilder"**
+
 - Assigna el material a l'objecte, arrossegant-lo al damunt.
 
 <center>
 <img src="./assets/uv-dragmaterial.png" style="width: 90%; max-width: 600px">
 </center>
 <br/>
+
+> **Nota**: Fixa't que amb *ProBuilder* pots definir diferents materials per cada cara. Sel·leccionant la cara i arrossegant el material.
 
 ## UV Mapping
 
