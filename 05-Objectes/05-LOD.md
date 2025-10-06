@@ -37,6 +37,22 @@ Escull l'arxiu **"Pachycephalasaurus"**, a l'inspector veuràs que aquest model 
 
 En aquest cas han definit 5 nivells de detall.
 
+A la carpeta :
+
+*Assets > FerociousIndustries > PBRDinosaurs > PBRPachycephalasaurus > Models > LODG*
+
+Arrossega aquest objecte a l'escena:
+
+- **"Pachycephalasaurus"**
+
+Comprova a l'inspector com es poden modificar les distàncies on s'aplica LOD i fins i tot els objectes de cada distància:
+
+<center>
+<video src="./assets/lod-modifydistances.mov" width="400" controls></video>
+</center>
+
+> **Nota**: El *component* **"LOD Group"** permet definir els nivells de *LOD*, així com els objectes i distàncies de cada nivell.
+
 ## Settings del projecte
 
 La manera en que **Unity** decideix com es mostren els diferents nivells de detall, es configura a:
@@ -51,7 +67,7 @@ En aquesta configuració, canviar **"Mesh LOD Threshold"** canvia la distància 
 <img src="./assets/lod-settings.png" style="width: 90%; max-width: 600px">
 </center>
 
-## Crear els nivells de detall
+## Nivells LOD automàtics
 
 En aquest exemple, copiarem un model sense nivell de detall i el generarem amb *Unity* automàticament.
 
