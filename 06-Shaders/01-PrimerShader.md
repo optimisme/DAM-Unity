@@ -10,6 +10,8 @@ Els shaders d'aquest tutorial estàn a:
 
 *Assets > DemoShaders.unitypackage*
 
+*Cal tenir **ProBuilder** per veure els exemples.*
+
 ## Projecte
 
 Fes un nou projecte tipus **"Universal 3d"** anomenat **ShadersTest**
