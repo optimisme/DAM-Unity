@@ -192,6 +192,8 @@ Anomena aquest estat com a **"Idle"**
 
 > **Nota**: És de color taronja, perquè és l'estat que s'executa per defecte.
 
+> **Nota**: Amb la tectla *Alt/Option* pots moure l'espai de definició d'animation controller.
+
 A l'inspector, a l'apartat **"Motion"** busca l'animació **"HumanM@Idle01"**
 
 <center>
