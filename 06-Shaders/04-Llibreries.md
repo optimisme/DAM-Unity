@@ -43,3 +43,11 @@ Exemples professionals avançats, obrir l'escena de demostració a:
 <img src="./assets/libs-productionready.png" style="width: 90%; max-width: 600px">
 </center>
 <br/>
+
+Alguns materials es poden fer servir directament sobre objectes. Per exemple, arrossega aquest material a un cub:
+
+*Assets > Samples > Shader Graph > XX.Y.Z > Production Ready Shaders > Environment > Ice > Ice Shader.mat*
+
+<center>
+<video src="./assets/libs-icematerial.mov" width="500" controls></video>
+</center>
