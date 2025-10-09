@@ -1,4 +1,6 @@
-# Vertex Shader
+# Tècniques
+
+## Vertex Shader
 
 Els *shaders* no només permeten modificar el color de cada píxel, també permeten modificar la posició dels vèrtex.
 
