@@ -1,5 +1,7 @@
 # Tècniques
 
+> **Nota**: En aquest apartat s'expliquen algunes tècniques per definir *shaders*, hi ha maneres més òptimes i realistes de definir aigua (veure apartat **Llibreries**).
+
 ## Vertex Shader
 
 Els *shaders* no només permeten modificar el color de cada píxel, també permeten modificar la posició dels vèrtex.
