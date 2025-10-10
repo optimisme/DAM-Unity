@@ -50,7 +50,7 @@ public class CameraFOVKeys : MonoBehaviour
 
 Cada joc tindrà la seva pròpia lògica. Aquí van alguns exemples:
 
-### Exemple 1: Seguir al jugador
+### Exemple 0: Seguir al jugador
 
 Cal assignar l'objecte a seguir, arrossegant-lo sobre el paràmtetre **"target"**
 
@@ -74,7 +74,7 @@ public class CameraFollow : MonoBehaviour
 }
 ```
 
-### Exemple 2: Rotar i acostar-se al jugador
+### Exemple 1: Rotar i acostar-se al jugador
 
 Cal assignar l'objecte a seguir, arrossegant-lo sobre el paràmtetre **"target"**
 
@@ -132,7 +132,7 @@ public class CameraOrbit : MonoBehaviour
 }
 ```
 
-### Exemple 3: Observar al voltant del jugador
+### Exemple 2: Observar al voltant del jugador
 
 Cal assignar l'objecte a seguir, arrossegant-lo sobre el paràmtetre **"target"**
 
@@ -202,7 +202,7 @@ public class CameraFreeLook : MonoBehaviour
 }
 ```
 
-### Exemple 4: Moure la càmera amb els inputs
+### Exemple 3: Moure la càmera amb els inputs
 
 Per canviar els angles:
 
