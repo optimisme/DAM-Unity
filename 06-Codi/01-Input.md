@@ -328,7 +328,6 @@ public class DragObjectCameraPlane : MonoBehaviour
     private bool dragging;
     private Vector3 offset;          // diferència entre posició de l'objecte i punt d'impacte
     private Plane dragPlane;         // pla fix paral·lel a la càmera
-    private Vector3 vel;             // per a SmoothDamp
 
     void Awake()
     {
