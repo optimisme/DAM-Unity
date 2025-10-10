@@ -151,7 +151,12 @@ A Unity, el **pivot point** és el punt de referència a partir del qual un obje
 
 És bàsicament l’origen de coordenades local de l’objecte.
 
-Per canviar la posició del *pivot* amb **ProBuilder**:
+Per canviar la posició del *pivot* amb **ProBuilder**, assegura't de tenir escollida la opció **"Pivot"**:
+
+<center>
+<img src="./assets/probuilder-selectpivot.png" style="width: 90%; max-width: 100px">
+</center>
+<br/>
 
 - Sel·lecciona l'objecte
 - Canvia a mode edició de cares
