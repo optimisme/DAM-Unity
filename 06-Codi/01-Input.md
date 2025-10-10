@@ -143,7 +143,7 @@ public class SimpleInputCallbacks : MonoBehaviour
 
 Aquests petits exemples de codi, mostren com fer servir l'input system per diferents objectius.
 
-### Exemple 1: Moure un cub amb WASD/fletxes
+### Exemple 0: Moure un cub amb WASD/fletxes
 
 - **Objectiu**: moure un cub pel pla amb el teclat.
 - **Inputs**: 
@@ -211,7 +211,7 @@ public class MoveCube : MonoBehaviour
 }
 ```
 
-### Exemple 2: Canviar el color del cub
+### Exemple 1: Canviar el color del cub
 
 - **Objectiu**: canviar de color en prémer les tecles 1–9
 - **Inputs**: 
@@ -305,7 +305,7 @@ public class ColorChangeNumbers : MonoBehaviour
 }
 ```
 
-### Exemple 3: Arrossegar amb el ratolí
+### Exemple 2: Arrossegar amb el ratolí
 
 - **Objectiu**: drag & drop d’un objecte 3D amb el ratolí
 - **Inputs**: 
