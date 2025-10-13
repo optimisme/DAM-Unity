@@ -143,7 +143,7 @@ La eina **"Cut Tool"** permet dividir cares de manera personalitzada.
 
 ## Canviar la posició del Pivot
 
-A Unity, el **pivot point** és el punt de referència a partir del qual un objecte:
+A Unity, el **pivot point** és el punt de referència a partir del qual un objecte.
 
 - Rota (rotacions al voltant del pivot).
 - Escala (s’expandeix o es contrau respecte al pivot).
@@ -151,7 +151,22 @@ A Unity, el **pivot point** és el punt de referència a partir del qual un obje
 
 És bàsicament l’origen de coordenades local de l’objecte.
 
-Per canviar la posició del *pivot* amb **ProBuilder**, assegura't de tenir escollida la opció **"Pivot"**:
+### Escollint el vèrtex pivot (opció A)
+
+Es pot sel·leccionar un *vèrtex* i amb el *"botó dret"* escollir la opció:
+
+*"Set Pivot To Selection"*
+
+Aquesta opció és la més fàcil però no val si vols un *pivot* que no coincideixi amb un vèrtex.
+
+<center>
+<img src="./assets/probuilder-pivot.png" style="width: 90%; max-width: 400px">
+</center>
+<br/>
+
+### Movent tots els vètex (opció B)
+
+Si es vol el pivot en un punt que no coincideix amb cap vèrtex, assegura't de tenir escollida la opció **"Pivot"**:
 
 <center>
 <img src="./assets/probuilder-selectpivot.png" style="width: 90%; max-width: 100px">
@@ -167,3 +182,4 @@ Per canviar la posició del *pivot* amb **ProBuilder**, assegura't de tenir esco
 <center>
 <video src="./assets/probuilder-pivot.mov" width="600" controls></video>
 </center>
+
