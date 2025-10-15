@@ -392,3 +392,104 @@ Apareix a l'inspector, a l'apartat del codi, com:
 <img src="./assets/objectes-inspectorsettings.png" style="width: 90%; max-width: 500px">
 </center>
 <br/>
+
+## Cicle de vida dels objectes
+
+A Unity, tots els elements d’una escena són objectes *"GameObject"* amb components **"MonoBehaviour"**.
+
+Unity segueix una seqüència de vida molt concreta:
+
+**Creació o “Spawn”**
+
+- Crea una còpia de l’objecte original
+- L’afegeix a l’escena actual.
+- Executa en aquest ordre: Awake(), OnEnable(), Start()
+
+**Objecte actiu**
+
+S'executen: Update(), FixedUpdate(), OnTrigger ...
+
+**Desactivació**
+
+Quan un objecte s’amaga o desactiva (gameObject.SetActive(false)):
+
+- Es deixa d’actualitzar (no es criden Update() ni OnTrigger...)
+- S’executa OnDisable()
+
+**Destrucció**
+
+Quan es vol eliminar definitivament un objecte:
+
+- Es OnDisable() si estava actiu
+- Es crida OnDestroy()
+- Unity elimina l’objecte de l’escena i allibera memòria
+
+### Exemple:
+
+- Crear una plantilla assignada a partir d'un objecte o prefab a l'inspector
+- Clonar objectes apretant la tecla 'a'
+- Destruir l'objecte més antic apretant la tecla 'espai'
+
+```csharp
+using System.Collections.Generic;
+using UnityEngine;
+
+public class TemplateABSpawner : MonoBehaviour
+{
+    [Header("Template source (Prefab o objecte d'escena)")]
+    public GameObject source;
+
+    GameObject template;                 // plantilla (inactiva)
+    readonly List<GameObject> spawned = new(); // instàncies vives en ordre de creació
+
+    void Awake()
+    {
+        if (source == null)
+        {
+            Debug.LogWarning("Falta 'source' (objecte/prefab) al spawner.", this);
+            return;
+        }
+
+        // Fem un clon per usar-lo com a plantilla (quedarà inactiu)
+        template = Instantiate(source);
+        template.name = source.name + "_Template";
+        template.SetActive(false);                 // plantilla no visible
+        template.transform.SetParent(transform);   // opcional: ordenar a la jerarquia
+        // Nota: els Awake dels components del template ja s'hauran executat
+    }
+
+    void Update()
+    {
+        // Spawn amb tecla 'A'
+        if (Input.GetKeyDown(KeyCode.A) && template != null)
+        {
+            var go = SpawnFromTemplate(template, new Vector3(+1f, 0f, 0f));
+            spawned.Add(go);
+        }
+
+        // Destruir el més vell amb ESPAI
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            DestroyOldest(spawned);
+        }
+    }
+
+    GameObject SpawnFromTemplate(GameObject tpl, Vector3 offset)
+    {
+        var go = Instantiate(tpl, transform.position + offset, Quaternion.identity);
+        go.SetActive(true); // per si el template era inactiu
+        return go;
+    }
+
+    void DestroyOldest(List<GameObject> list)
+    {
+        // Salta nuls del cap de la llista
+        while (list.Count > 0 && list[0] == null) list.RemoveAt(0);
+        if (list.Count == 0) return;
+
+        var oldest = list[0];
+        list.RemoveAt(0);
+        if (oldest) Destroy(oldest);
+    }
+}
+```
