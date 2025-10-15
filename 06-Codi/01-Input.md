@@ -151,6 +151,7 @@ Aquests petits exemples de codi, mostren com fer servir l'input system per difer
     - Alt/Shift/Ctrl + Up/Down → moure Y
 
 1 - Afegeix un Plane i un Cube a l’escena.
+
 2 - Afegeix l’script MoveCube.cs al Cube.
 
 ```csharp
@@ -167,14 +168,6 @@ public class MoveCube : MonoBehaviour
     void Awake()
     {
         _input = GetComponent<PlayerInput>();
-    }
-
-    void Start()
-    {
-        // (Opcional) desactivar mapes addicionals
-        foreach (var map in _input.actions.actionMaps)
-            map.Disable();
-        _input.actions.FindActionMap("Player").Enable();
     }
 
     public void OnMove(InputValue value)
