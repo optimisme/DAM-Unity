@@ -7,7 +7,6 @@ A Unity HUB, crea un nou projecte tipus **"Universal 3D"** anomenat **"Intro3D"*
 <center>
 <img src="./assets/projecte-create.png" style="width: 90%; max-width: 700px">
 </center>
-<br/>
 
 A la pestanya **"Project"**, escull la carpeta **"Assets"** i afegeix aquestes noves carpetes amb **"Create > Folder"**
 
