@@ -116,7 +116,7 @@ public class CameraController : MonoBehaviour
     public Transform pivot;
 
     [Header("Camera Mode")]
-    public bool use3rdPersonFollow = true; // TRUE = 3rd person, FALSE = orbit
+    public bool use3rdPersonFollow = false; // TRUE = 3rd person, FALSE = orbit
 
     [Header("3rd Person Follow Settings")]
     public Vector3 followOffset = new Vector3(0f, 2f, -4f);
