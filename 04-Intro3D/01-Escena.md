@@ -296,7 +296,7 @@ using UnityEngine.InputSystem;
 
 public class CameraController : MonoBehaviour
 {
-    public Transform pivot;
+    public Transform pivot; 
 
     [Header("Camera Mode")]
     public bool use3rdPersonFollow = true; // TRUE = 3rd person, FALSE = orbit
