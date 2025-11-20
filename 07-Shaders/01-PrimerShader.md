@@ -12,6 +12,22 @@ Els shaders d'aquest tutorial estàn a:
 
 *Cal tenir **ProBuilder** per veure els exemples.*
 
+## Avantatges dels shaders vs textures
+
+**Escalabilitat infinita**: Els patrons generats amb matemàtiques no tenen resolució fixa: es veuen sempre nítids, a qualsevol mida o distància.
+
+**Zero memòria de textures**: No cal carregar imatges pesades a la GPU; el shader calcula els detalls a temps real.
+
+**Variació il·limitada**: Un sol shader pot generar infinites versions (canviant paràmetres, soroll, colors…) sense necessitat de crear nous fitxers.
+
+**Animacions naturals**: Valors com time, sin, noise permeten animar el resultat sense seqüències d’imatges.
+
+**Reutilització i flexibilitat**: El mateix codi serveix per múltiples objectes i materials simplement canviant inputs (colors, velocitats, escales…).
+
+**Més fàcil d’optimitzar**: Les textures grans consumeixen més VRAM i bandwidth; els shaders matemàtics gasten només càlcul, que la GPU fa molt eficientment.
+
+**Resultats paramètrics i interactius**: Pots modificar l’aparença en temps real (joc, editor, slider), cosa impossible amb una textura estàtica.
+
 ## Projecte
 
 Fes un nou projecte tipus **"Universal 3d"** anomenat **ShadersTest**
