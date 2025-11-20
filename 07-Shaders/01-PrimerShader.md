@@ -6,13 +6,7 @@ Així es poden fer efectes especials, amb acceleració gràfica.
 
 **Unity** a més, té una eina per definir *shaders* de manera gràfica, sense aprendre el llenguatge de programació de cada motor gràfic *(Vulkan, DirectX, Metal, ...)*
 
-Els shaders d'aquest tutorial estàn a:
-
-*Assets > DemoShaders.unitypackage*
-
-*Cal tenir **ProBuilder** per veure els exemples.*
-
-## Avantatges dels shaders vs textures
+## Avantatges dels shaders vs textures
 
 **Escalabilitat infinita**: Els patrons generats amb matemàtiques no tenen resolució fixa: es veuen sempre nítids, a qualsevol mida o distància.
 
