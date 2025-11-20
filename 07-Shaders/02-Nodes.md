@@ -208,14 +208,23 @@ Per modificar individualment els valors U i V de la posició UV de la textura es
 - **Split**: divideix les coordenades en components
 - **Combine**: ajunta els components en coordenades
 
-Un cop separades les coordenades en components, se'ls poden aplicar funcions i animacions, abans de tornar-les a combinar i fer-les servir com a coordenades UV:
+Un cop separades les coordenades en components, se'ls poden aplicar funcions i animacions, abans de tornar-les a combinar i fer-les servir com a coordenades UV. 
 
 <center>
 <img src="./assets/nodes-pixeluvanim.png" style="width: 90%; max-width: 800px">
 </center>
 <br/>
 
-Cal recordar que la tarja gràfica fa aquests càlculs per cada píxel de manera paral·lela, el resultat és:
+Cal recordar que la tarja gràfica fa aquests càlculs per cada píxel de manera paral·lela.
+
+En concret s'apliquen les operacions:
+
+```text
+u' = u + cos(v * freq2 + time * speed2) * amp2
+v' = v + sin(u * freq1 + time * speed1) * amp1
+```
+
+El resultat és:
 
 <center>
 <video src="./assets/nodes-pixeluvanimvideo.mov" width="500" controls loop></video>
