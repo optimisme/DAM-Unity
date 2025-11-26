@@ -58,7 +58,7 @@ Igualment necessitem un shader transparent.
 Apliquem un moviment de sinus a les coordenades UV.
 
 <center>
-<img src="./assets/tecniques-filterDeform.png" style="width: 90%; max-width: 800px">
+<img src="./assets/tecniques-filterDeform.png" style="width: 90%; max-width: 1024px">
 </center>
 <br/>
 
