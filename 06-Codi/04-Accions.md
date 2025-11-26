@@ -2,6 +2,8 @@
 
 Mentre es juga, hi ha diverses accions que poden requerir cridar funcions del codi.
 
+[Vídeo Guinxu, Mario Hitboxes](https://www.youtube.com/watch?v=lV62_2BGh1M)
+
 ## Alguns exemples:
 
 | Funció                                         | Quan es crida                                                      | Exemple                     |
