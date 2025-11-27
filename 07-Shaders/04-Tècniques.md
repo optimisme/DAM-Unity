@@ -47,7 +47,7 @@ Graph Inspector > Graph Settings > Surface Type > Transparent
 Després ja només queda operar aquell píxel per canviar-lo de color:
 
 <center>
-<img src="./assets/tecniques-filterColor.png" style="width: 90%; max-width: 500px">
+<img src="./assets/tecniques-filterColor.png" style="width: 90%; max-width: 1024px">
 </center>
 <br/>
 
