@@ -2,6 +2,14 @@
 
 Has de fer un videojoc amb Unity. 
 
+Mira primer aquests vídeos:
+
+[https://www.youtube.com/watch?v=yYYtBFSxoCg](https://www.youtube.com/watch?v=yYYtBFSxoCg)
+
+[https://www.youtube.com/watch?v=fEty0eb53XU](https://www.youtube.com/watch?v=fEty0eb53XU)
+
+[https://www.youtube.com/watch?v=4ZAEU-je9Kg](https://www.youtube.com/watch?v=4ZAEU-je9Kg)
+
 Opcional:
 
 - Grups de 1 o 2 persones
