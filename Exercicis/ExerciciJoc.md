@@ -15,7 +15,7 @@ Opcional:
 - Grups de 1 o 2 persones
 - Que sigui en 2D o en 3D
 - Que sigui offline (o online websockets)
-- Que no sigui una còpia d'un joc ja existent
+- Que NO sigui una còpia d'un joc ja existent
 
 No és opcional:
 
