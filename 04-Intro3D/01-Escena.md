@@ -92,6 +92,8 @@ Arrossega un dels personatges a l'escena i modifica els paràmetres del personat
 
 Afegir el component *"Character Controller"*
 
+**Nota**: Aquest component permet moure personatges sense depèndre de la física.
+
 - Nom: Player
 - Pos X: -2
 - Pos Y: 0

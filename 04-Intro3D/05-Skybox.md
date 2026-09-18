@@ -38,8 +38,8 @@ Aleshores:
 - A l'inspector del material **"Skybox"**
 
     - Desplega **"Shader"**
-    - Busca **"Skybox"**
-    - Escull **"Skybox Panoramic"**
+    - Busca **"Panoramic"**
+    - Escull **"Skybox/Panoramic"**
 
 skybox-dragetexture
 
