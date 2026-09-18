@@ -35,17 +35,6 @@ Una llum amb forma de **con**.
 </center>
 <br/>
 
-## 🟨 Area Light
-Simula una **superfície lluminosa rectangular** (o en HDRP també disc).  
-- No és un punt, sinó una àrea que emet llum.  
-- En el render en temps real està limitat (no funciona en totes les pipelines sense baking).  
-- S’usa per fluorescents, pantalles, finestres amb llum entrant…  
-- **Efecte**: ombres més suaus i realistes perquè la llum ve d’una superfície gran, no d’un punt.  
-<center>
-<img src="./assets/llums-lightarea.png" style="width: 90%; max-width: 400px">
-</center>
-<br/>
-
 # Spot Light amb sombres
 
 Afegeix una *Light > Spot light* a l'escena, amb els paràmetres:

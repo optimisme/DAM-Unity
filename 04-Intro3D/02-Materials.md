@@ -143,6 +143,13 @@ Anomena al material **"Rocky Terrain"**.
 
 Aplica el terreny a l'objecte **"Plane"**, de moment no es veuen massa canvis.
 
+A l'espai **"Surface Inputs"** de l'inspector, canvia:
+
+    - Tiling X: 2
+    - Tiling Y: 2
+
+**Nota**: Són els cops que repeteix la textura a l'espai disponible
+
 Per fer que es reflexi més la llum, canvia el valor de:
 
 - Arrossega la textura principal *(albedo)* a **"Base Map"**
@@ -152,4 +159,5 @@ Per fer que es reflexi més la llum, canvia el valor de:
 <center>
 <img src="./assets/materials-maps.png" style="width: 90%; max-width: 700px">
 </center>
+
 

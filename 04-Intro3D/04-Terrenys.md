@@ -33,6 +33,13 @@ El primer que cal fer és definir les parts del terreny que estàn més elevades
 
 Amb el mode **Sculpt** es pot *pintar* sobre del terreny, per canviar el nivell d'alçada.
 
+Assegura't d'escollir la opció *"Raise or Lower Terrain"*
+
+<center>
+<img src="./assets/terrenys-raiselower.png" style="width: 90%; max-width: 400px">
+</center>
+<br/>
+
 - Amb el 'mouse apretat' 'eleves' el terreny.
 - Amb 'mayúscules/shift' i el 'mouse apretat' l'enfonses.
 
