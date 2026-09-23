@@ -35,7 +35,10 @@ Perquè funcioni una col·lisió tots dos objectes han de tenir **`Box Collider`
 
 # Exemple
 
-Afegeix un plà a l'escena
+Afegeix un plà a l'escena, escala el plà amb:
+
+- **x**: 10
+- **z**: 10
 
 A sobre del plà, afegeix diferents objectes (caixes, esferes, capsules) sobreposades amb:
 
@@ -44,4 +47,14 @@ A sobre del plà, afegeix diferents objectes (caixes, esferes, capsules) sobrepo
 
 Assigna'ls **`Rigidbody`** i el **`Collider`** que li correspon (Box, Sphere, Capsule)
 
+<center>
+<img src="./assets/fisiques-escena.png" style="width: 90%; max-width: 600px">
+</center>
+<br/>
+
 Activa el programa i comprova com cauen els objectes sobre el plà, i xoquen entre ells.
+
+<center>
+<video src="./assets/fisiques-anim.mov" controls style="width: 50%; max-width: 400px; max-width: 600px"></video>
+</center>
+<br/>
