@@ -44,7 +44,7 @@ public class SimpleRotation : MonoBehaviour
     }
 
     /// Es crida un cop, abans del primer frame.
-    /// Ideal per configurar valors inicials quan ja s’han inicialitzat tots els Awake().    void Start()
+    /// Ideal per configurar valors inicials quan ja s’han inicialitzat tots els Awake(). 
     void Start()
     {
         Debug.Log("Start(): preparació inicial completada.");
@@ -72,6 +72,7 @@ public class SimpleRotation : MonoBehaviour
 
 
     /// S'executa a intervals fixos (per defecte cada 0.02s).
+    /// La freqüència es configura a "Project Settings > Time".
     /// Ideal per a física, forces o moviments amb Rigidbody.
     void FixedUpdate()
     {
@@ -95,6 +96,40 @@ public class SimpleRotation : MonoBehaviour
 }
 ```
 
+### Variables públiques del codi
+
+Modifica el codi anterior, per afegir una variable de velocitat, i fes-la servir per definir la velocitat de rotació de l'objecte:
+
+```csharp
+public class SimpleRotation : MonoBehaviour
+{
+    public float speed = 60f; 
+    // ...
+    void Update()
+    {
+        // multiplicar per Time.deltaTime 
+        // permet mantenir la velocitat de rotació, 
+        // encara que hi hagi variacions de FPS
+        float deltaTime = Time.deltaTime;
+        transform.Rotate(0, speed * deltaTime, 0);
+    }
+    // ...
+}
+```
+
+Les variables públiques dels objectes apareixen a la interfície de l'script de Unity i es poden modificar en temps d'execució.
+
+- Apreta "Play"
+- Modifica el valor a 200
+- Torna'l a 60
+
+Veuràs com canvia la velocitat de gir de l'objecte.
+
+<center>
+<img src="./assets/objectes-publicvars.png" style="width: 90%; max-width: 400px">
+</center>
+<br/>
+
 ## Propietats de l'objecte
 
 Cada objecte de la escena pot tenir components associats, 
@@ -109,7 +144,7 @@ Aquests components es poden veure i configurar des de *l’Inspector*.
 
 ### Propietats de *gameObject*
 
-- **"active"*: si es visualitza l'objecte:
+- **"active"**: si es visualitza l'objecte:
 ```csharp
 // Desactiva completament l'objecte (no s'actualitza ni es veu)
 gameObject.SetActive(false);
@@ -125,6 +160,8 @@ Debug.Log("Objecte actiu? " + actiu);
 - **"static"**: si es poden modificar les propietats de l'objecte durant l'execució
 ```csharp
 // Marca l'objecte com a estàtic
+// A 'true' avises a Unity que no el modificaràs
+// per tal que Unity li apliqui optimitzacions
 gameObject.isStatic = true;
 
 // Consultar si és estàtic
@@ -132,7 +169,13 @@ bool esStatic = gameObject.isStatic;
 Debug.Log("És estàtic? " + esStatic);
 ```
 
-- **"tag"**: etiqueta de l'objecte
+- **"tag"**: etiqueta de l'objecte (per defecte 'Untagged')
+
+<center>
+<img src="./assets/objectes-tag.png" style="width: 90%; max-width: 400px">
+</center>
+<br/>
+
 ```csharp
 // Obtenir el tag actual
 string etiqueta = gameObject.tag;
