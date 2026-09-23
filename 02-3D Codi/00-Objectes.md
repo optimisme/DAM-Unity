@@ -1,3 +1,7 @@
+# Arxiu "CodeTest.unitypackage"
+
+Obre un arxiu buit i arrosega **`CodeTest.unitypackage`** als assets, apareixen alguns exemples.
+
 # Objectes Unity
 
 Tots els objectes *Unity* permeten afegir un o més arxius de codi per afectar-ne el comportament.
