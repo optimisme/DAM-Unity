@@ -46,7 +46,7 @@ Escull l'objecte **"Main Camera"** i al *Inspector*:
 - Position Y: 2
 - Position Z: 5.5
 - Rotation X: 14
-- Rotation Y: 182
+- Rotation Y: -182
 - Rotation Z: 0
 
 ## Pla (terra)
@@ -77,9 +77,11 @@ En aquest cas, ja tenim un **"Avatar"** i per tant no cal crear-lo.
 - Arrossega el model a l'escena.
 
 - Mou el model a:
+
     - Position X: -1
     - Position Y: 0
     - Position Z: 1.5
+    - Character Controller > Center Y: 1
 
 ## Afegir models sense avatar (LowPolyPeople)
 
@@ -123,6 +125,7 @@ Escull un model, veurà que no té *Avatar*, caldrà crear-lo:
     - Position X: 1
     - Position Y: 0
     - Position Z: 1
+    - Character Controller > Center Y: 1
 
 - Afegeix un component "Animator" a aquest objecte
 
