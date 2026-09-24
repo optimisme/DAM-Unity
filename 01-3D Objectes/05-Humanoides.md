@@ -124,6 +124,17 @@ Escull un model, veurà que no té *Avatar*, caldrà crear-lo:
     - Position Y: 0
     - Position Z: 1
 
+- Afegeix un component "Animator" a aquest objecte
+
+- Assigna l'avatar "normal-man-aAvatar" a "Avatar" del "Animator" si no està assignat.
+
+- Marca l'opció "Apply Root Motion"
+
+<center>
+<img src="./assets/humanoides-modelavatar.png" style="width: 90%; max-width: 400px">
+</center>
+<br/>
+
 ## Retargeting
 
 **Retargeting** és l'acció d'assignar un avatar creat per un model diferent.
