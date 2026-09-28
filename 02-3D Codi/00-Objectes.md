@@ -107,6 +107,7 @@ Modifica el codi anterior, per afegir una variable de velocitat, i fes-la servir
 ```csharp
 public class SimpleRotation : MonoBehaviour
 {
+    [Header("Velocitat de rotació")]
     public float speed = 60f; 
     // ...
     void Update()
@@ -120,6 +121,8 @@ public class SimpleRotation : MonoBehaviour
     // ...
 }
 ```
+
+**Nota**: el camp `[Header("Velocitat de rotació")]` serveix per definir una etiqueta i és opcional
 
 Les variables públiques dels objectes apareixen a la interfície de l'script de Unity i es poden modificar en temps d'execució.
 
@@ -270,273 +273,271 @@ Debug.Log("Escala global efectiva: " + worldScale);
 
 > **Important!** la propietat **"loosyScale"** és només de lectura.
 
-## Propietats d'altres components
+## Moure l'objecte amb el teclat
 
-Les propietats de l'objecte, depenen dels components que té associats.
-
-### Forçar components
-
-Algunes vegades el codi necessita que l'objecte tingui components específics, si l'usuari no els ha afegit *manualment* a través de l'inspector, els podem incloure automàticament amb atributs **"RequireComponent"**:
-
-```csharp
-using UnityEngine;
-
-// Components requerits en aquest objecte
-// per tal que el codi funcioni
-[RequireComponent(typeof(Rigidbody))]
-[RequireComponent(typeof(Collider))]   
-public class PlayerMover : MonoBehaviour
-{
-    // Unity s’assegura que aquest GameObject tingui Rigidbody i Collider.
-}
-```
-
-## Referències a components de l'objecte
-
-Hi ha diverses maneres d'obtenir referències als components de l'objecte.
-
-| Tipus                                    | Exemple                                                   | Com s’assigna                          |
-| :--------------------------------------- | :-------------------------------------------------------- | :------------------------------------- |
-| `GetComponent<>()`** | `_rb = GetComponent<Rigidbody>();`                        | Unity busca dins el mateix objecte     |
-| **Arrossegar a l’Inspector**      | `[SerializeField] private Light llum;`                    | Manual (assignes a mà a l’Inspector)   |
-| **Buscar amb `Find` o `tag`**       | `GameObject.FindWithTag("Player");`                       | Busca a tota l’escena (poc eficient)   |
-| **Per fills o pares**                 | `GetComponentInChildren<>()` / `GetComponentInParent<>()` | Busca en jerarquia propera             |
-| **Per injecció (paràmetre)**          | `Init(Light l)` o via Singleton                           | Passada directament per altres scripts |
-
-### Definició de les referències
-
-Totes les referències a components o altres objectes s’han de definir a la capçalera de la classe,
-com a variables.
-
-- **private**: si només es fan servir dins l'objecte i l'usuari no les ha de poder configurar a l'inspector
-- **public**: si s'han d'accedir des d'altres objectes i/o l'usuari **les pot configurar des de l'inspector**
-
-Les referències a components del pròpi objecte s'inicien a la funció **"Awake()"**
-```csharp
-using UnityEngine;
-
-[RequireComponent(typeof(Rigidbody))]
-public class PlayerMove : MonoBehaviour
-{
-    private Rigidbody _rb;   // Component del mateix objecte
-
-    void Awake()
-    {
-        // Obtenim el component Rigidbody del mateix objecte
-        _rb = GetComponent<Rigidbody>();
-    }
-
-    void FixedUpdate()
-    {
-        // Utilitzem la referència cachejada
-        _rb.AddForce(Vector3.forward * 5f, ForceMode.Acceleration);
-    }
-}
-```
-
-Les referències a components d'altres objectes s'inicien a la funció **"Start()"**
-```csharp
-using UnityEngine;
-
-public class LightFollower : MonoBehaviour
-{
-    private Light _sceneLight;     // Referència a un altre objecte (la llum principal)
-    [SerializeField] private Transform _target;  // Assignable per Inspector
-
-    void Awake() {
-    }
-
-    void Start()
-    {
-        // Busquem la primera llum de l’escena
-        _sceneLight = FindObjectOfType<Light>();
-
-        // Si hi ha una llum, la situem sobre el nostre objectiu
-        if (_sceneLight != null && _target != null)
-            _sceneLight.transform.position = _target.position + Vector3.up * 2f;
-    }
-}
-```
-
-> **Nota:** Les referències d'un fill o un pare es poden assignar a totes dues funcions **"Awake()"** i **"Start()"**
-
-Les referències assignades des de l'inspector:
-
-- No cal iniciar-les. 
-- Cal que siguin **public** (o [SerializeField])
-- Es pot comprovar si s'han referenciat 
-
-```csharp
-using UnityEngine;
-
-public class TargetFollower : MonoBehaviour
-{
-    [SerializeField] private Transform target;  // Assigna’l des de l’Inspector
-
-    void Start()
-    {
-        // Comprovem si la referència ha estat assignada
-        if (target == null)
-        {
-            Debug.LogWarning("⚠️ No s'ha assignat cap objectiu al camp 'target'.");
-        }
-    }
-
-    void Update()
-    {
-        // Només mou l'objecte si la referència és vàlida
-        if (target != null)
-            transform.position = target.position + Vector3.up * 2f;
-    }
-
-    void OnValidate()
-    {
-        if (target == null)
-            Debug.LogWarning("Assigna un objectiu al component TargetFollower.");
-    }
-}
-```
-
-## Atributs
-
-Els atributs com [Header], [Tooltip], [Range] o [SerializeField] són anotacions que Unity llegeix a l’editor, no en temps d’execució.
-
-Serveixen per fer més clar, segur i visual l’ús de variables a l’Inspector.
-
-| Atribut                              | Exemple                                                  | Ús                                            |
-| :----------------------------------- | :------------------------------------------------------- | :-------------------------------------------- |
-| `[SerializeField]`                   | `[SerializeField] private int vida;`                     | Mostra una variable privada a l’Inspector     |
-| `[Header("Títol")]`                  | `[Header("Ajustos de moviment")]`                        | Agrupa variables a l’Inspector                |
-| `[Tooltip("Velocitat del jugador")]` | `[Tooltip("Velocitat del jugador")] public float speed;` | Mostra ajuda a l’Inspector                    |
-| `[Range(0, 10)]`                     | `[Range(0,10)] public float volum;`                      | Slider numèric a l’Inspector                  |
-| `[DisallowMultipleComponent]`        | `[DisallowMultipleComponent]`                            | Evita duplicar el component al mateix objecte |
-
-Aquest exemple:
-```csharp
-using UnityEngine;
-
-/// Exemple d’ús d’atributs i validació automàtica a l’editor.
-[DisallowMultipleComponent]                     // Evita afegir el script més d’un cop al mateix objecte
-[RequireComponent(typeof(Light))]               // Assegura que hi hagi un component Light
-public class LightController : MonoBehaviour
-{
-    [Header("Ajustos generals")]                 // Títol de secció a l’Inspector
-    [Tooltip("Velocitat d'oscil·lació de la intensitat (Hz)")]
-    [Range(0f, 10f)]                             // Slider de 0 a 10
-    public float oscillationSpeed = 2f;
-
-    [Header("Colors del cicle")]
-    [SerializeField] private Color colorA = Color.red;
-    [SerializeField] private Color colorB = Color.yellow;
-
-    private Light _light;  // Referència al component Light
-}
-```
-
-Apareix a l'inspector, a l'apartat del codi, com:
+Per moure l'objecte amb el teclat, cal afegir un component de tipus *Rigidbody* a l'objecte, i després afegir un script que llegeixi les tecles i modifiqui la seva posició.
 
 <center>
-<img src="./assets/objectes-inspectorsettings.png" style="width: 90%; max-width: 500px">
+<img src="./assets/objectes-miniscene.png" style="width: 90%; max-width: 400px">
 </center>
 <br/>
 
-## Cicle de vida dels objectes
-
-A Unity, tots els elements d’una escena són objectes *"GameObject"* amb components **"MonoBehaviour"**.
-
-Unity segueix una seqüència de vida molt concreta:
-
-**Creació o “Spawn”**
-
-- Crea una còpia de l’objecte original
-- L’afegeix a l’escena actual.
-- Executa en aquest ordre: Awake(), OnEnable(), Start()
-
-**Objecte actiu**
-
-S'executen: Update(), FixedUpdate(), OnTrigger ...
-
-**Desactivació**
-
-Quan un objecte s’amaga o desactiva (gameObject.SetActive(false)):
-
-- Es deixa d’actualitzar (no es criden Update() ni OnTrigger...)
-- S’executa OnDisable()
-
-**Destrucció**
-
-Quan es vol eliminar definitivament un objecte:
-
-- Es OnDisable() si estava actiu
-- Es crida OnDestroy()
-- Unity elimina l’objecte de l’escena i allibera memòria
-
-### Exemple:
-
-- Crear una plantilla assignada a partir d'un objecte o prefab a l'inspector
-- Clonar objectes apretant la tecla 'a'
-- Destruir l'objecte més antic apretant la tecla 'espai'
+- Afegeix un plà, una esfera i un cilindre a l'escena, per tenir punts de referència.
+- Crea un nou script amb nom **"SimpleMovement"**, amb el següent codi
 
 ```csharp
-using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+public class SimpleMovement : MonoBehaviour
+{
+    public float speed = 5f;
+
+    void Update()
+    {
+        Vector3 movement = Vector3.zero;            // zero = (0,0,0)
+
+        if (Keyboard.current.upArrowKey.isPressed)
+            movement += Vector3.forward;            // forward = (0,0,1)
+
+        if (Keyboard.current.downArrowKey.isPressed)
+            movement += Vector3.back;               // back = (0,0,-1)
+
+        if (Keyboard.current.leftArrowKey.isPressed)
+            movement += Vector3.left;               // left = (-1,0,0)
+
+        if (Keyboard.current.rightArrowKey.isPressed)
+            movement += Vector3.right;              // right = (1,0,0)
+
+        transform.position += movement.normalized * speed * Time.deltaTime;
+    }
+}
+```
+
+**Important!** Cal tenir en compte:
+
+- **movement.normalized**: evita que es mogui més ràpid en diagonal
+- **Time.deltaTime**: permet que la velocitat sigui constant encara que hi hagi variacions de FPS
+
+### Vector 3
+
+**Vector3** és una classe/estructura de Unity que representa tres valors numèrics: X, Y i Z.
+
+S'utilitza principalment per representar:
+
+- una posició en l'espai 3D
+- una direcció
+- un desplaçament
+- una escala
+
+```csharp
+    transform.position = new Vector3(2, 1, 5); // x,y,z
+```
+
+En Unity, normalment:
+
+```text
+        +Y
+        ↑
+        |
+        |
+        +------→ +X
+       /
+      /
+    +Z
+```
+
+Hi ha valors predefinits per a les direccions principals:
+
+```csharp
+Vector3.up       // (0, 1, 0)
+Vector3.down     // (0, -1, 0)
+
+Vector3.right    // (1, 0, 0)
+Vector3.left     // (-1, 0, 0)
+
+Vector3.forward  // (0, 0, 1)
+Vector3.back     // (0, 0, -1)
+```
+
+## Seguir l'objecte amb la càmera
+
+Crea un script amb nom **"CameraFollow"**, amb el següent codi:
+
+```csharp
 using UnityEngine;
 
-public class TemplateABSpawner : MonoBehaviour
+public class CameraFollow : MonoBehaviour
 {
-    [Header("Template source (Prefab o objecte d'escena)")]
-    public GameObject source;
+    public Transform target;
 
-    GameObject template;                 // plantilla (inactiva)
-    readonly List<GameObject> spawned = new(); // instàncies vives en ordre de creació
+    public float distance = 5f;
+    public float height = 5f;
 
-    void Awake()
+    void LateUpdate()
     {
-        if (source == null)
-        {
-            Debug.LogWarning("Falta 'source' (objecte/prefab) al spawner.", this);
-            return;
-        }
+        Vector3 offset = new Vector3(0, height, -distance);
 
-        // Fem un clon per usar-lo com a plantilla (quedarà inactiu)
-        template = Instantiate(source);
-        template.name = source.name + "_Template";
-        template.SetActive(false);                 // plantilla no visible
-        template.transform.SetParent(transform);   // opcional: ordenar a la jerarquia
-        // Nota: els Awake dels components del template ja s'hauran executat
+        transform.position = target.position + offset;
+
+        transform.LookAt(target);
+    }
+}
+```
+
+Per tal que funcioni:
+
+- Afegeix aquest script a la càmera
+- Assigna l'objecte que vols seguir a la variable **target** de l'inspector
+
+## Col·lisions amb *Character Controller*
+
+- Afegeix un component *Character Controller* al cub/player
+- Afegeix un component **Sphere Collider** a l'esfera (si no el té)
+- Defineix l'sphere collider com a *Trigger* (Is Trigger = true)
+- Afegeix el *tag* **"ColorHit"** a l'esfera (crea el tag si no existeix)
+
+El cub podrà travessar l'esfera: es tornarà vermella en entrar-hi i recuperarà el color original en sortir-ne.
+
+**Important!** Substitueix el moviment amb `transform.position`:
+
+```csharp
+transform.position += movement.normalized * speed * Time.deltaTime;
+```
+
+pel moviment del *Character Controller*:
+
+```csharp
+controller.Move(movement.normalized * speed * Time.deltaTime);
+```
+
+`controller.Move(...)` mou el jugador respectant els colliders sòlids. Els *triggers* es poden travessar i detecten l'entrada i la sortida amb `OnTriggerEnter` i `OnTriggerExit`.
+
+Obtén el component amb `GetComponent<CharacterController>()` a `Start()`, com al codi següent.
+
+Modifica el codi de **SimpleMovement** així:
+
+```csharp
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+public class SimpleMovement : MonoBehaviour
+{
+    public float speed = 5f;
+
+    private CharacterController controller;
+    private Color defaultColor;
+
+    void Start()
+    {
+        controller = GetComponent<CharacterController>();
     }
 
     void Update()
     {
-        // Spawn amb tecla 'A'
-        if (Input.GetKeyDown(KeyCode.A) && template != null)
-        {
-            var go = SpawnFromTemplate(template, new Vector3(+1f, 0f, 0f));
-            spawned.Add(go);
-        }
+        Vector3 movement = Vector3.zero;
 
-        // Destruir el més vell amb ESPAI
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Keyboard.current.upArrowKey.isPressed)
+            movement += Vector3.forward;
+
+        if (Keyboard.current.downArrowKey.isPressed)
+            movement += Vector3.back;
+
+        if (Keyboard.current.leftArrowKey.isPressed)
+            movement += Vector3.left;
+
+        if (Keyboard.current.rightArrowKey.isPressed)
+            movement += Vector3.right;
+
+        controller.Move(
+            movement.normalized * speed * Time.deltaTime
+        );
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        Debug.Log("Entrada al trigger: " + other.gameObject.name);
+        Debug.Log("Tag de l'objecte: " + other.gameObject.tag);
+
+        if (other.CompareTag("ColorHit"))
         {
-            DestroyOldest(spawned);
+            Renderer objectRenderer = other.GetComponent<Renderer>();
+            Material objectMaterial = objectRenderer.material;
+            
+            defaultColor = objectMaterial.GetColor("_BaseColor");
+            objectMaterial.SetColor("_BaseColor", Color.red);
         }
     }
 
-    GameObject SpawnFromTemplate(GameObject tpl, Vector3 offset)
+    void OnTriggerExit(Collider other)
     {
-        var go = Instantiate(tpl, transform.position + offset, Quaternion.identity);
-        go.SetActive(true); // per si el template era inactiu
-        return go;
-    }
+        Debug.Log("Sortida del trigger: " + other.gameObject.name);
+        Debug.Log("Tag de l'objecte: " + other.gameObject.tag);
 
-    void DestroyOldest(List<GameObject> list)
-    {
-        // Salta nuls del cap de la llista
-        while (list.Count > 0 && list[0] == null) list.RemoveAt(0);
-        if (list.Count == 0) return;
+        if (other.CompareTag("ColorHit"))
+        {
+            Renderer objectRenderer = other.GetComponent<Renderer>();
+            Material objectMaterial = objectRenderer.material;
 
-        var oldest = list[0];
-        list.RemoveAt(0);
-        if (oldest) Destroy(oldest);
+            objectMaterial.SetColor("_BaseColor", defaultColor);
+        }
     }
 }
 ```
+
+**Cal tenir en compte:**
+
+- `OnTriggerEnter`: guarda el color original a `defaultColor` i pinta l'esfera de vermell.
+- `OnTriggerExit`: recupera el color guardat.
+- `defaultColor` permet aquest exemple amb una sola esfera; si entres en diversos objectes `ColorHit` alhora, cal guardar un color per objecte.
+
+**NOTA:** Amb **Is Trigger** desactivat, aquest jugador amb *Character Controller* detectaria els impactes amb `OnControllerColliderHit`. `OnCollisionEnter` i `OnCollisionExit` corresponen a col·lisions físiques amb *Rigidbody*, no substitueixen aquests callbacks del controlador.
+
+## Col·lisions d'objectes normals (no *Character Controller*)
+
+El jugador podrà travessar el **cilindre**, que es tornarà vermell en entrar-hi i recuperarà el color original en sortir-ne. La detecció es fa des del codi del cilindre.
+
+- Deixa el cilindre amb tag **Untagged**, perquè **SimpleMovement** no li canviï el color.
+- Activa **Is Trigger** al seu *Capsule Collider*. Només cal aquest collider.
+- Afegeix un *Rigidbody* al cilindre amb **Is Kinematic** activat i **Use Gravity** desactivat.
+- Crea **CylinderColor.cs** amb aquest codi i **afegeix-lo com a component del cilindre**; tenir l'arxiu a *Assets* no és suficient.
+
+```csharp
+using UnityEngine;
+
+public class CylinderColor : MonoBehaviour
+{
+    public Color contactColor = Color.red;
+
+    private Material objectMaterial;
+    private Color originalColor;
+
+    void Awake()
+    {
+        objectMaterial = GetComponent<Renderer>().material;
+        originalColor = objectMaterial.GetColor("_BaseColor");
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (!other.CompareTag("Player"))
+            return;
+
+        Debug.Log("El jugador ha entrat al trigger de: " + gameObject.name);
+        objectMaterial.SetColor("_BaseColor", contactColor);
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        if (!other.CompareTag("Player"))
+            return;
+
+        Debug.Log("El jugador ha sortit del trigger de: " + gameObject.name);
+        objectMaterial.SetColor("_BaseColor", originalColor);
+    }
+}
+```
+
+**Important!** `other` és el jugador, que ja té el tag **Player**. El cilindre guarda el seu color a `Awake()`, el canvia a `OnTriggerEnter()` i el recupera a `OnTriggerExit()`.
+
+Mantén **SimpleMovement**, el cub i l'esfera igual que a l'exemple anterior.
