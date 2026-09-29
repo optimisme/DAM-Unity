@@ -504,10 +504,12 @@ El jugador podrà travessar el **cilindre**, que es tornarà vermell en entrar-h
 
 ```csharp
 using UnityEngine;
+using System.Collections;
 
 public class CylinderColor : MonoBehaviour
 {
     public Color contactColor = Color.red;
+    public float resetTime = 2f;
 
     private Material objectMaterial;
     private Color originalColor;
@@ -524,20 +526,21 @@ public class CylinderColor : MonoBehaviour
             return;
 
         Debug.Log("El jugador ha entrat al trigger de: " + gameObject.name);
+
         objectMaterial.SetColor("_BaseColor", contactColor);
+
+        StartCoroutine(ResetColor());
     }
 
-    void OnTriggerExit(Collider other)
+    IEnumerator ResetColor()
     {
-        if (!other.CompareTag("Player"))
-            return;
+        yield return new WaitForSeconds(resetTime);
 
-        Debug.Log("El jugador ha sortit del trigger de: " + gameObject.name);
         objectMaterial.SetColor("_BaseColor", originalColor);
     }
 }
 ```
 
-**Important!** `other` és el jugador, que ja té el tag **Player**. El cilindre guarda el seu color a `Awake()`, el canvia a `OnTriggerEnter()` i el recupera a `OnTriggerExit()`.
+**Important!** `other` és el jugador, que ja té el tag **Player**. El cilindre guarda el seu color a `Awake()`, el canvia a `OnTriggerEnter()` i el recupera a `ResetColor()`.
 
-Mantén **SimpleMovement**, el cub i l'esfera igual que a l'exemple anterior.
+
