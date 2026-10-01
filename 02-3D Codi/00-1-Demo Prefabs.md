@@ -9,7 +9,9 @@ En aquesta demo:
 
 # Crear l'escena
 
-Crea una escena nova.
+Crea una escena **Basic**, amb **Main Camera** i **Directional Light** (o crea-les amb **GameObject > Camera** i **GameObject > Light > Directional Light** si l’escena és buida), i desa-la com a **DemoPrefabs**.
+
+Comprova que **Input System** està instal·lat a **Window > Package Manager > Unity Registry**. A **Edit > Project Settings > Player > Other Settings**, **Active Input Handling** ha de ser **Input System Package (New)** o **Both**; reinicia Unity si ho demana.
 
 Mou la càmera a:
 
@@ -17,12 +19,13 @@ Mou la càmera a:
 Position X: 0
 Position Y: 5
 Position Z: -5
-Rotation X: 45
+Rotation: 45, 0, 0
+Field of View: 60
 ```
 
 Afegeix:
 
-- Un **Plane**
+- Un **Plane** a `(0, 0, 0)`, amb rotació zero i escala `(1, 1, 1)`
 - Un **Cube** que farà de jugador, a 
   ```text
   Position X: 0
@@ -35,8 +38,8 @@ Al **Cube**:
 
 - Canvia el nom a `Player`
 - Afegeix el tag `Player`
-- Afegeix un component **Character Controller** amb:
-- Esborra el `Box Collider` que té per defecte, la del `Character Controller` ja és suficient.
+- Afegeix un component **Character Controller** amb els valors següents.
+- Esborra el `Box Collider` que té per defecte: el `Character Controller` ja és suficient. Deixa el Player sense Rigidbody.
 
 ```text
 Center: 0, 0, 0
@@ -48,13 +51,13 @@ Radius: 0.5
 
 Crea i completa els quatre scripts abans de configurar els components a l’Inspector.
 
-Crea l'script **PlayerMovement.cs** i afegeix-lo al `Player`.
+Crea l'script **PrefabPlayerMovement.cs** i afegeix-lo al `Player`. El nom evita confondre’l amb el PlayerMovement d’altres demos.
 
 ```csharp
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerMovement : MonoBehaviour
+public class PrefabPlayerMovement : MonoBehaviour
 {
     public float speed = 5f;
 
@@ -67,6 +70,9 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        if (Keyboard.current == null)
+            return;
+
         Vector3 movement = Vector3.zero;
 
         if (Keyboard.current.upArrowKey.isPressed)
@@ -217,13 +223,13 @@ Configura'l:
 
 - Nom: `Collectable`
 - Escala: aproximadament `0.5, 0.5, 0.5`
-- Afegeix el tag `Collectable`
+- Crea el tag `Collectable` a **Inspector > Tag > Add Tag** i després assigna’l a l’esfera
 - Activa **Is Trigger** al seu `Sphere Collider`
 - Afegeix un **Rigidbody**
 - Activa **Is Kinematic**
 - Desactiva **Use Gravity**
 
-Assigna l'script `Collectable.cs` a aquesta esfera.
+Assigna l'script `Collectable.cs` a aquesta esfera. Deixa el seu camp **Generator** a **None**: ItemGenerator l’assigna per codi quan crea cada instància.
 
 Arrossega `Collectable` des de la jerarquia fins a **Assets** per convertir-lo en un **Prefab**.
 
@@ -241,16 +247,13 @@ Y: 0.5
 Z: 3
 ```
 
-Afegeix l'script a `ItemGenerator`.
+Comprova que `ItemGenerator.cs` està afegit una sola vegada a `ItemGenerator`.
 
 A l'Inspector:
 
-<center>
-<img src="./assets/prefabs-drag.png" style="width: 90%; max-width: 400px">
-</center>
-<br/>
+![ItemGenerator amb el prefab Collectable assignat i Generate Delay a 2](assets/demoprefabs-generador.png)
 
-- Arrossega el prefab des de *Assets* cap a `Collectable` al camp **Item Prefab**
+- Arrossega el prefab **Collectable** des de *Assets* al camp **Item Prefab** del component **Item Generator**
 - Deixa **Generate Delay** a `2`
 
 # Provar la demo
@@ -260,7 +263,7 @@ Comprova que:
 - `Player` té:
   - Tag `Player`
   - `Character Controller`
-  - `PlayerMovement`
+  - `PrefabPlayerMovement`
   - `PlayerQueue`
 
 - El prefab `Collectable` té:
@@ -273,7 +276,7 @@ Comprova que:
   - `ItemGenerator.cs`
   - El prefab assignat a **Item Prefab**
 
-Fes **Play**.
+Fes **Play**, clica la vista **Game** i mou el jugador amb les fletxes fins a l’objecte del generador. Després allunya-te’n perquè es vegi com el recollible el segueix.
 
 El funcionament ha de ser:
 
@@ -292,3 +295,7 @@ El jugador el recull
         ↓
 La cua creix
 ```
+
+![Tres objectes recollits a la cua i un altre disponible al generador](assets/demoprefabs-cua.png)
+
+En aturar Play, desapareixen les instàncies creades durant la partida. En tornar a fer Play, la cua comença buida i el generador crea un únic recollible.

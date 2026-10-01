@@ -1,26 +1,30 @@
 # Arxiu "CodeTest.unitypackage"
 
-Obre un arxiu buit i arrosega **`CodeTest.unitypackage`** als assets, apareixen alguns exemples.
+El fitxer **`CodeTest.unitypackage`** actual només conté una disposició de finestres de l’Editor (`Layout.wlt`), no escenes ni scripts d’exemple. No cal importar-lo per seguir aquesta demo.
 
 # Objectes Unity
 
-Tots els objectes *Unity* permeten afegir un o més arxius de codi per afectar-ne el comportament.
+Els GameObjects de *Unity* permeten afegir un o més arxius de codi per afectar-ne el comportament.
+
+Crea una escena **Basic** amb **Main Camera** i **Directional Light** (si parteixes d’una escena buida, crea-les amb **GameObject > Camera** i **GameObject > Light > Directional Light**), i desa-la com a **DemoObjectes**. Utilitza un projecte **Universal 3D (URP)**: els exemples de color fan servir la propietat `_BaseColor` dels seus materials.
+
+Per als apartats de teclat, comprova a **Window > Package Manager > Unity Registry** que **Input System** està instal·lat. A **Edit > Project Settings > Player > Other Settings**, posa **Active Input Handling = Input System Package (New)** o **Both** i reinicia Unity si ho demana.
 
 ## MonoBehaviour
 
 **El codi que s'associa a un objecte** s'ha de derivar de *MonoBehaviour*, i aquestes són les principals funcions:
 
-- Afegeix un objecte tipus *"3D Object > Cube"* a l'escena
+- Afegeix un objecte tipus *"3D Object > Cube"* a l'escena, anomena’l **Player**, posa’l a `(0, 0.5, 0)` i assigna-li el tag **Player**.
+- Posa **Main Camera** a `(0, 5, -5)`, amb rotació `(45, 0, 0)` i Field of View `60`.
 - Crea un nou script amb nom **"SimpleRotation"**, amb el següent codi
 - Afegeix aquest script com a component del cub
 - Fes play, s'ha de veure com gira el cub 
-- A la pestanya **"Terminal"** es veuen els missatges de *"Debug.Log"*
+- A la pestanya **"Console"** es veuen els missatges de *"Debug.Log"*
 
 Aquest codi té explicacions de les principals funcions dels objectes *MonoBehaviour*
 
 ```csharp
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 /// Exemple complet per entendre el cicle de vida dels scripts Unity.
 /// Mostra les funcions més importants i la seva execució en ordre.
@@ -105,6 +109,8 @@ public class SimpleRotation : MonoBehaviour
 Modifica el codi anterior, per afegir una variable de velocitat, i fes-la servir per definir la velocitat de rotació de l'objecte:
 
 ```csharp
+using UnityEngine;
+
 public class SimpleRotation : MonoBehaviour
 {
     [Header("Velocitat de rotació")]
@@ -121,6 +127,8 @@ public class SimpleRotation : MonoBehaviour
     // ...
 }
 ```
+
+Conserva la resta del primer script: aquest fragment només mostra els canvis.
 
 **Nota**: el camp `[Header("Velocitat de rotació")]` serveix per definir una etiqueta i és opcional
 
@@ -139,7 +147,7 @@ Veuràs com canvia la velocitat de gir de l'objecte.
 
 ## Propietats de l'objecte
 
-Cada objecte de la escena pot tenir components associats, 
+Cada objecte de l’escena pot tenir components associats. 
 Aquests components es poden veure i configurar des de *l’Inspector*.
 
 **Unity** dóna accés directe a alguna informació de l'objecte:
@@ -149,9 +157,11 @@ Aquests components es poden veure i configurar des de *l’Inspector*.
 - **tag**: etiqueta assignada a l'objecte
 - **transform**: posició, rotació, escalat
 
+Els fragments d’aquest apartat són exemples independents: van dins d’un mètode del component, no fora de la classe ni tots seguits dins d’Update.
+
 ### Propietats de *gameObject*
 
-- **"active"**: si es visualitza l'objecte:
+- **"activeSelf"**: si l’objecte està activat localment (un pare desactivat també desactiva els seus fills):
 ```csharp
 // Desactiva completament l'objecte (no s'actualitza ni es veu)
 gameObject.SetActive(false);
@@ -164,11 +174,12 @@ bool actiu = gameObject.activeSelf;
 Debug.Log("Objecte actiu? " + actiu);
 ```
 
-- **"static"**: si es poden modificar les propietats de l'objecte durant l'execució
+- **"static"**: indica als sistemes d’optimització de l’Editor que l’objecte no es mourà; no bloqueja els canvis per codi
 ```csharp
 // Marca l'objecte com a estàtic
 // A 'true' avises a Unity que no el modificaràs
-// per tal que Unity li apliqui optimitzacions
+// Les optimitzacions es preparen a l’Editor; canviar aquesta
+// propietat durant la partida no les recalcula.
 gameObject.isStatic = true;
 
 // Consultar si és estàtic
@@ -194,7 +205,8 @@ if (gameObject.tag == "Player")
     Debug.Log("És el jugador!");
 }
 
-// Assignar una nova etiqueta
+// Crea abans el tag Enemy a Inspector > Tag > Add Tag.
+// Assignar un tag inexistent provoca un error.
 gameObject.tag = "Enemy";
 ```
 
@@ -271,19 +283,18 @@ Vector3 worldScale = transform.lossyScale;
 Debug.Log("Escala global efectiva: " + worldScale);
 ```
 
-> **Important!** la propietat **"loosyScale"** és només de lectura.
+> **Important!** la propietat **"lossyScale"** és només de lectura.
 
 ## Moure l'objecte amb el teclat
 
-Per moure l'objecte amb el teclat, cal afegir un component de tipus *Rigidbody* a l'objecte, i després afegir un script que llegeixi les tecles i modifiqui la seva posició.
+Aquest primer moviment modifica directament el **Transform** i no necessita Rigidbody. Deixa el Player sense Rigidbody; les col·lisions es configuraran a l’apartat del Character Controller.
 
-<center>
-<img src="./assets/objectes-miniscene.png" style="width: 90%; max-width: 400px">
-</center>
-<br/>
+![Escena amb Player, Sphere i Cylinder](assets/demoobjectes-escena.png)
 
-- Afegeix un plà, una esfera i un cilindre a l'escena, per tenir punts de referència.
-- Crea un nou script amb nom **"SimpleMovement"**, amb el següent codi
+- Atura Play abans de modificar l’escena. Deixa el Player amb el tag **Player**; si has provat l’exemple del tag Enemy, torna’l a Player.
+- Afegeix un **Plane** a `(0, 0, 0)` amb escala `(2, 1, 2)`, una **Sphere** a `(-2, 0.5, 3)` i un **Cylinder** a `(2, 1, 3)`, tots amb rotació zero. L’esfera i el cilindre conserven escala `(1, 1, 1)`.
+- Crea dos materials **Universal Render Pipeline/Lit**, un per a l’esfera i un per al cilindre, i assigna’ls als seus Mesh Renderers. Tria colors inicials diferents del vermell.
+- Crea un nou script amb nom **"SimpleMovement"**, amb el següent codi, i **afegeix-lo al Player**. Fes Play i clica la vista Game abans de prémer les fletxes.
 
 ```csharp
 using UnityEngine;
@@ -295,6 +306,9 @@ public class SimpleMovement : MonoBehaviour
 
     void Update()
     {
+        if (Keyboard.current == null)
+            return;
+
         Vector3 movement = Vector3.zero;            // zero = (0,0,0)
 
         if (Keyboard.current.upArrowKey.isPressed)
@@ -321,7 +335,7 @@ public class SimpleMovement : MonoBehaviour
 
 ### Vector 3
 
-**Vector3** és una classe/estructura de Unity que representa tres valors numèrics: X, Y i Z.
+**Vector3** és una estructura de Unity que representa tres valors numèrics: X, Y i Z.
 
 S'utilitza principalment per representar:
 
@@ -392,7 +406,8 @@ Per tal que funcioni:
 
 ## Col·lisions amb *Character Controller*
 
-- Afegeix un component *Character Controller* al cub/player
+- Atura Play. Afegeix un component *Character Controller* al **Player**, amb **Center = (0, 0, 0)**, **Height = 1**, **Radius = 0.5** i **Min Move Distance = 0**.
+- Elimina el **Box Collider** original del Player i qualsevol **Rigidbody** que hi hagis afegit. Mantén el tag **Player**.
 - Afegeix un component **Sphere Collider** a l'esfera (si no el té)
 - Defineix l'sphere collider com a *Trigger* (Is Trigger = true)
 - Afegeix el *tag* **"ColorHit"** a l'esfera (crea el tag si no existeix)
@@ -415,6 +430,8 @@ controller.Move(movement.normalized * speed * Time.deltaTime);
 
 Obtén el component amb `GetComponent<CharacterController>()` a `Start()`, com al codi següent.
 
+![Player amb Character Controller i SimpleMovement, sense Box Collider ni Rigidbody](assets/demoobjectes-player.png)
+
 Modifica el codi de **SimpleMovement** així:
 
 ```csharp
@@ -435,6 +452,9 @@ public class SimpleMovement : MonoBehaviour
 
     void Update()
     {
+        if (Keyboard.current == null)
+            return;
+
         Vector3 movement = Vector3.zero;
 
         if (Keyboard.current.upArrowKey.isPressed)
@@ -493,23 +513,23 @@ public class SimpleMovement : MonoBehaviour
 
 **NOTA:** Amb **Is Trigger** desactivat, aquest jugador amb *Character Controller* detectaria els impactes amb `OnControllerColliderHit`. `OnCollisionEnter` i `OnCollisionExit` corresponen a col·lisions físiques amb *Rigidbody*, no substitueixen aquests callbacks del controlador.
 
-## Col·lisions d'objectes normals (no *Character Controller*)
+## Trigger del cilindre (detecció al mateix objecte)
 
-El jugador podrà travessar el **cilindre**, que es tornarà vermell en entrar-hi i recuperarà el color original en sortir-ne. La detecció es fa des del codi del cilindre.
+El jugador podrà travessar el **cilindre**, que es tornarà vermell en entrar-hi i recuperarà el color original **en sortir-ne**. La detecció es fa des del codi del cilindre.
 
 - Deixa el cilindre amb tag **Untagged**, perquè **SimpleMovement** no li canviï el color.
 - Activa **Is Trigger** al seu *Capsule Collider*. Només cal aquest collider.
 - Afegeix un *Rigidbody* al cilindre amb **Is Kinematic** activat i **Use Gravity** desactivat.
 - Crea **CylinderColor.cs** amb aquest codi i **afegeix-lo com a component del cilindre**; tenir l'arxiu a *Assets* no és suficient.
 
+![Inspector del cilindre amb trigger, Rigidbody cinemàtic i CylinderColor](assets/demoobjectes-cilindre.png)
+
 ```csharp
 using UnityEngine;
-using System.Collections;
 
 public class CylinderColor : MonoBehaviour
 {
     public Color contactColor = Color.red;
-    public float resetTime = 2f;
 
     private Material objectMaterial;
     private Color originalColor;
@@ -529,18 +549,20 @@ public class CylinderColor : MonoBehaviour
 
         objectMaterial.SetColor("_BaseColor", contactColor);
 
-        StartCoroutine(ResetColor());
     }
 
-    IEnumerator ResetColor()
+    void OnTriggerExit(Collider other)
     {
-        yield return new WaitForSeconds(resetTime);
+        if (!other.CompareTag("Player"))
+            return;
 
         objectMaterial.SetColor("_BaseColor", originalColor);
     }
 }
 ```
 
-**Important!** `other` és el jugador, que ja té el tag **Player**. El cilindre guarda el seu color a `Awake()`, el canvia a `OnTriggerEnter()` i el recupera a `ResetColor()`.
+**Important!** `other` és el jugador, que ja té el tag **Player**. El cilindre guarda el seu color a `Awake()`, el canvia a `OnTriggerEnter()` i el recupera a `OnTriggerExit()`.
 
+![Cilindre vermell mentre el jugador és dins i color original en sortir](assets/demoobjectes-entrada-sortida.png)
 
+Fes Play, entra i surt de l’esfera i del cilindre: tots dos han de mantenir el vermell mentre hi siguis dins i recuperar el seu color quan en surtis.
