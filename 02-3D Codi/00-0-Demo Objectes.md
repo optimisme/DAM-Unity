@@ -1,6 +1,3 @@
-# Arxiu "CodeTest.unitypackage"
-
-El fitxer **`CodeTest.unitypackage`** actual només conté una disposició de finestres de l’Editor (`Layout.wlt`), no escenes ni scripts d’exemple. No cal importar-lo per seguir aquesta demo.
 
 # Objectes Unity
 
