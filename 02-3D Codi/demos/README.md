@@ -31,6 +31,7 @@ Les mides són aproximades, en MB decimals; la mida descomprimida és abans que 
 | [Demo-3-Nivells](<Demo-3-Nivells.zip>) | `DemoNivells.unity` | 0.88 MB | 4.25 MB | [Veure tutorial](<../Demo-3-Nivells.md>) |
 | [Demo-4-Mecanismes](<Demo-4-Mecanismes.zip>) | `DemoMecanismes.unity` | 0.88 MB | 4.24 MB | [Veure tutorial](<../Demo-4-Mecanismes.md>) |
 | [Demo-5-Palanca](<Demo-5-Palanca.zip>) | `DemoPalanca.unity` | 0.89 MB | 4.27 MB | [Veure tutorial](<../Demo-5-Palanca.md>) |
+| [Demo-6-Guardia](<Demo-6-Guardia.zip>) | `DemoGuardia.unity` | 0.87 MB | 4.28 MB | [Veure tutorial](<../Demo-6-Guardia.md>) |
 
 ## Què inclouen els ZIP?
 
@@ -52,6 +53,8 @@ Els projectes utilitzen **URP**, **Input System** i càmeres en **perspectiva**,
 
 ## Comprovació dels projectes
 
-Els set ZIP s’han descomprimit en carpetes independents i s’han provat amb Unity 6000.6.3f1 a macOS: importació, compilació, obertura de l’escena i sis segons en Play. No s’han detectat scripts perduts ni errors dels scripts durant aquesta prova d’arrencada. No és una prova completa de totes les mecàniques ni una validació en Windows o Linux.
+Els vuit ZIP s’han descomprimit en carpetes independents i s’han provat amb Unity 6000.6.3f1 a macOS: importació, compilació, obertura de l’escena i sis segons en Play. No s’han detectat scripts perduts ni errors dels scripts durant aquesta prova d’arrencada. No és una prova completa de totes les mecàniques ni una validació en Windows o Linux.
 
 En la prova automàtica sense interfície gràfica, Unity ha mostrat una excepció del seu cercador intern (`UnityEditor.Search.SearchDatabase`). S’ha registrat separadament dels errors dels scripts; queda pendent comprovar si també apareix en obrir els projectes amb la interfície habitual.
+
+La demo **Guardia** també s’ha reconstruït en una escena buida a partir de les taules i els quatre scripts del tutorial. S’han comprovat distància, angle, oclusió per parets, persecució, memòria, retorn, captura, moviment i col·lisions, clau, porta, victòria i reinici. S’ha completat el repte amb entrada de teclat. El camp de visió és una malla plana semitransparent sense collider; els scripts del Markdown coincideixen amb els del ZIP.
