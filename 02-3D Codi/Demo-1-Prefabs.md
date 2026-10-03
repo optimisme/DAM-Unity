@@ -20,6 +20,7 @@ Position X: 0
 Position Y: 5
 Position Z: -5
 Rotation: 45, 0, 0
+Projection: Perspective
 Field of View: 60
 ```
 

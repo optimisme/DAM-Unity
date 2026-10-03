@@ -40,6 +40,8 @@ Mou la **Main Camera** a:
 ```text
 Position: 2, 12, -12
 Rotation: 45, 0, 0
+Projection: Perspective
+Field of View: 60
 ```
 
 Afegeix un **3D Object > Plane**:

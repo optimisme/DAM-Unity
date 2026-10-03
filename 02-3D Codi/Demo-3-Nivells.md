@@ -155,7 +155,7 @@ El moviment s’obté a partir dels eixos de la càmera, projectats sobre el ter
 
 El jugador guarda l’elevador sobre el qual està recolzat i n’aplica el desplaçament al fotograma següent. Això permet pujar i baixar amb la plataforma. Si cau fora del diorama, reapareix a l’inici i conserva les esferes recollides.
 
-## 4. Càmera ortogràfica giratòria
+## 4. Càmera en perspectiva giratòria
 
 Crea un objecte buit amb **GameObject > Create Empty**, anomena’l **CameraPivot** i posa’l a `(0, 1.5, 0)`, amb rotació zero i escala un. No el facis fill del jugador: representa el centre del diorama.
 
@@ -163,15 +163,15 @@ Configura **Main Camera**:
 
 | Propietat | Valor |
 |---|---|
-| Position | `(-10.426, 11.824, -10.426)` |
+| Position | `(-13.902, 15.266, -13.902)` |
 | Rotation | `(35, 45, 0)` |
-| Projection | Orthographic |
-| Size | `8.5` |
+| Projection | Perspective |
+| Field of View | `45` |
 | Clipping Planes | Near `0.3`, Far `100` |
 | Environment > Background Type | Solid Color |
 | Background | Blau molt fosc |
 
-A la vista **Game**, escull **Full HD (1920×1080)** o una relació **16:9**. La càmera ortogràfica manté la mida dels objectes encara que siguin més lluny; això dona l’aspecte de maqueta.
+A la vista **Game**, escull **Full HD (1920×1080)** o una relació **16:9**. La perspectiva fa que els objectes propers es vegin més grans que els llunyans. El Field of View de 45° i la distància de 24 unitats mantenen una vista del diorama complet mentre girem.
 
 Crea **DioramaCamera.cs**:
 
@@ -183,7 +183,7 @@ using UnityEngine.InputSystem;
 public class DioramaCamera : MonoBehaviour
 {
     public Transform pivot;
-    public float distance = 18f;
+    public float distance = 24f;
     public float pitch = 35f;
     public float turnSpeed = 180f;
     private float yaw = 45f;
@@ -204,7 +204,7 @@ public class DioramaCamera : MonoBehaviour
 }
 ```
 
-Afegeix-lo a **Main Camera** i assigna **CameraPivot** al camp **Pivot**. Deixa **Distance = 18**, **Pitch = 35** i **Turn Speed = 180**.
+Afegeix-lo a **Main Camera** i assigna **CameraPivot** al camp **Pivot**. Deixa **Distance = 24**, **Pitch = 35** i **Turn Speed = 180**.
 
 **Q** gira 90° en un sentit i **E** en l’altre. `MoveTowardsAngle` fa la transició gradual. La posició inicial de la càmera coincideix amb la que calcula l’script.
 
@@ -342,11 +342,12 @@ public class DioramaOcclusion : MonoBehaviour
     void LateUpdate()
     {
         obstructing.Clear();
-        // Orthographic rays are parallel to the camera's forward direction.
-        Vector3 target = player.position;
-        float distance = Vector3.Dot(target - transform.position, transform.forward);
-        Vector3 origin = target - transform.forward * distance;
-        RaycastHit[] hits = Physics.SphereCastAll(origin, 0.25f, transform.forward,
+        // In perspective, trace the line from the camera to the player.
+        Vector3 origin = transform.position;
+        Vector3 toPlayer = player.position - origin;
+        float distance = toPlayer.magnitude;
+        Vector3 direction = distance > 0.001f ? toPlayer / distance : transform.forward;
+        RaycastHit[] hits = Physics.SphereCastAll(origin, 0.25f, direction,
             distance, wallsMask, QueryTriggerInteraction.Ignore);
         foreach (RaycastHit hit in hits)
         {
@@ -364,7 +365,7 @@ Afegeix **DioramaOcclusion** a **Main Camera**:
 - Arrossega **Player** al camp **Player**.
 - Al desplegable **Walls Mask**, selecciona només **DioramaWalls**. Si queda a **Nothing**, no detectarà cap paret.
 
-La comprovació es fa després de moure la càmera. Com que és ortogràfica, la línia de visió és paral·lela a `camera.forward`; no va des del centre de la càmera fins al jugador com en perspectiva. `SphereCastAll` comprova un petit gruix i permet detectar més d’una paret.
+La comprovació es fa després de moure la càmera. En perspectiva, la línia de visió va des de la posició de la càmera fins al centre del jugador: calculem la direcció i la distància amb `player.position - transform.position`. No fem servir raigs paral·lels a camera.forward. `SphereCastAll` comprova un petit gruix i permet detectar més d’una paret.
 
 Només les parets que tapen el centre de la càpsula baixen fins al 25% d’opacitat. Les altres recuperen gradualment l’alfa original. **No es desactiva cap collider**: encara que vegis el jugador a través de la paret, has de rodejar-la per passar. També es poden veure altres objectes que quedin darrere de la mateixa paret.
 
