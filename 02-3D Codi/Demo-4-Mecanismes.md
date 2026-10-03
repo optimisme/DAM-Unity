@@ -53,10 +53,10 @@ Configura **Main Camera**:
 | Propietat | Valor |
 |---|---|
 | Tag | MainCamera |
-| Position | `(0, 12, -14)` |
+| Position | `(0, 14, -17)` |
 | Rotation | `(40, 0, 0)` |
-| Projection | Orthographic |
-| Size | `8` |
+| Projection | Perspective |
+| Field of View | `45` |
 | Clipping Planes | Near `0.3`, Far `100` |
 | Environment > Background Type | Solid Color |
 | Background | Blau molt fosc |

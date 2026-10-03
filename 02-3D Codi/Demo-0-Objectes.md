@@ -15,7 +15,7 @@ Per als apartats de teclat, comprova a **Window > Package Manager > Unity Regist
 **El codi que s'associa a un objecte** s'ha de derivar de *MonoBehaviour*, i aquestes són les principals funcions:
 
 - Afegeix un objecte tipus *"3D Object > Cube"* a l'escena, anomena’l **Player**, posa’l a `(0, 0.5, 0)` i assigna-li el tag **Player**.
-- Posa **Main Camera** a `(0, 5, -5)`, amb rotació `(45, 0, 0)` i Field of View `60`.
+- Posa **Main Camera** a `(0, 5, -5)`, amb rotació `(45, 0, 0)` i **Projection = Perspective**, **Field of View = 60**.
 - Crea un nou script amb nom **"SimpleRotation"**, amb el següent codi
 - Afegeix aquest script com a component del cub
 - Fes play, s'ha de veure com gira el cub 
