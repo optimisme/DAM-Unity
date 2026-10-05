@@ -6,7 +6,7 @@ La placa també s’activa quan la trepitja el jugador, però es desactiva quan 
 
 **Comencem de zero:** no cal continuar cap altra demo ni copiar-ne scripts. La càmera és fixa per centrar-nos en la física de la caixa, els triggers i els esdeveniments.
 
-![El diorama inicial amb la càpsula, la caixa i la placa](assets/demomecanismes-escena.png)
+<img src="assets/demomecanismes-escena.png" alt="El diorama inicial amb la càpsula, la caixa i la placa" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 ## 1. Preparar el projecte i l’escena
 
@@ -150,7 +150,7 @@ El Character Controller mou la càpsula i respecta els colliders sòlids. Cal ca
 
 La comprovació de `hit.normal.y` evita empènyer la caixa quan el contacte és sobre la seva cara superior. El tag **Pushable**, que crearem a continuació, limita quins objectes es poden empènyer. Consulta la funció a la [documentació de CharacterController](https://docs.unity3d.com/6000.0/Documentation/ScriptReference/CharacterController.OnControllerColliderHit.html).
 
-![Player amb Character Controller i MechanismPlayer](assets/demomecanismes-player.png)
+<img src="assets/demomecanismes-player.png" alt="Player amb Character Controller i MechanismPlayer" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 ## 4. La caixa amb Rigidbody
 
@@ -181,7 +181,7 @@ Conserva el **Box Collider**, amb **Is Trigger** desactivat, i afegeix un **Rigi
 
 El bloqueig de rotació evita que la caixa bolqui. **Linear Damping** frena el lliscament quan deixem d’empènyer-la. No necessita cap script propi: **MechanismPlayer** reconeix el seu Rigidbody i el tag.
 
-![Configuració física de la caixa](assets/demomecanismes-caixa.png)
+<img src="assets/demomecanismes-caixa.png" alt="Configuració física de la caixa" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 ## 5. La reixa mòbil
 
@@ -340,7 +340,7 @@ A **Plate > MechanismPlate > On Pressed Changed (Boolean)**:
 
 La placa només comunica si està activada. La reixa decideix com moure’s en resposta: no hi ha una referència directa a MechanismGate dins del codi de la placa.
 
-![Trigger de Plate i esdeveniment connectat a Gate.SetOpen](assets/demomecanismes-placa.png)
+<img src="assets/demomecanismes-placa.png" alt="Trigger de Plate i esdeveniment connectat a Gate.SetOpen" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 ## 7. Reiniciar el puzle i mostrar el resultat
 
@@ -428,7 +428,7 @@ El reinici recupera les posicions inicials, atura la caixa, buida els contactes 
 
 El Canvas és el contenidor de la interfície; TextMeshPro mostra els textos que hi ha dins. No necessitem botons.
 
-![Referències completes del component MechanismPuzzle](assets/demomecanismes-referencies.png)
+<img src="assets/demomecanismes-referencies.png" alt="Referències completes del component MechanismPuzzle" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 ## 8. El tresor
 
@@ -465,7 +465,7 @@ Comprova que la Console no té errors, desa l’escena i fes **Play**. Clica din
 
 Rodeja la caixa sense empènyer-la i trepitja la placa blava. Ha de tornar-se verda i la reixa ha de pujar. Surt de la placa: recupera el blau i la reixa es tanca. Amb aquesta distribució no dona temps de deixar la placa i passar abans que es tanqui.
 
-![La càpsula activa la placa i obre la reixa](assets/demomecanismes-jugador-placa.png)
+<img src="assets/demomecanismes-jugador-placa.png" alt="La càpsula activa la placa i obre la reixa" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 ### Solució: deixar-hi la caixa
 
@@ -475,9 +475,9 @@ Rodeja la caixa sense empènyer-la i trepitja la placa blava. Ha de tornar-se ve
 4. Camina cap al pas central, travessa la reixa i toca l’esfera daurada.
 5. Ha d’aparèixer **Tresor aconseguit! Prem R per tornar a començar.**
 
-![La caixa manté la placa activa mentre el jugador s’allunya](assets/demomecanismes-caixa-placa.png)
+<img src="assets/demomecanismes-caixa-placa.png" alt="La caixa manté la placa activa mentre el jugador s’allunya" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
-![El jugador arriba al tresor](assets/demomecanismes-tresor.png)
+<img src="assets/demomecanismes-tresor.png" alt="El jugador arriba al tresor" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 ### Comprovacions finals
 

@@ -10,7 +10,7 @@ En aquesta demo:
 
 Treballarem **triggers, prefabs, estat de partida, Canvas, TextMeshPro i moviment d'un Rigidbody cinemàtic**. No cal Animator.
 
-![Escena DemoMonedes amb cinc monedes i el comptador a zero](assets/demomonedes-escena.png)
+<img src="assets/demomonedes-escena.png" alt="Escena DemoMonedes amb cinc monedes i el comptador a zero" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 *Resultat inicial: el jugador blanc recull les monedes grogues per obrir la porta taronja i arribar a la marca verda.*
 
@@ -432,7 +432,7 @@ public class CoinDoor : MonoBehaviour
 
 Afegeix **CoinDoor.cs** a Door i deixa **Open Height = 3.5** i **Speed = 2**.
 
-![Inspector de Door amb Box Collider sòlid, Rigidbody cinemàtic i CoinDoor](assets/demomonedes-porta.png)
+<img src="assets/demomonedes-porta.png" alt="Inspector de Door amb Box Collider sòlid, Rigidbody cinemàtic i CoinDoor" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 *Is Trigger desactivat; Use Gravity desactivat; Is Kinematic activat. El script mou tot l’objecte Door, inclòs el collider.*
 
@@ -470,7 +470,7 @@ Scale: 0.6, 0.08, 0.6
 - Selecciona el pare Coin i arrossega el fill **Visual** al camp **Visual** de CoinPickup.
 - Deixa **Rotation Speed = 90**.
 
-![Inspector de Coin amb trigger i referència al seu fill Visual](assets/demomonedes-moneda.png)
+<img src="assets/demomonedes-moneda.png" alt="Inspector de Coin amb trigger i referència al seu fill Visual" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 *El pare Coin detecta el jugador amb un Sphere Collider de radi 0.55. El camp Visual apunta al seu propi fill.*
 
@@ -497,7 +497,7 @@ Coins
 
 Totes comparteixen el mateix prefab i el mateix comportament. Només canvia la posició de cada instància. El camp Visual es conserva apuntant al fill de cada moneda; no l'assignis a un fill d'una altra instància.
 
-![Cinc instàncies del prefab i Inspector de Visual](assets/demomonedes-prefab.png)
+<img src="assets/demomonedes-prefab.png" alt="Cinc instàncies del prefab i Inspector de Visual" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 *La icona blava identifica les instàncies del prefab. Visual només té la geometria i el material: no hi ha cap collider al fill.*
 
@@ -508,7 +508,7 @@ Totes comparteixen el mateix prefab i el mateix comportament. Només canvia la p
 3. Al Canvas, deixa **Render Mode = Screen Space - Overlay**.
 4. A **Canvas Scaler**, selecciona **UI Scale Mode = Scale With Screen Size**, **Reference Resolution = 1920 × 1080** i **Match = 0.5**.
 
-![Jerarquia del Canvas i configuració de Canvas Scaler](assets/demomonedes-canvas.png)
+<img src="assets/demomonedes-canvas.png" alt="Jerarquia del Canvas i configuració de Canvas Scaler" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 *TextMonedes és fill del Canvas. Screen Space - Overlay dibuixa el comptador directament a la pantalla.*
 
@@ -542,7 +542,7 @@ En aquesta versió de TextMeshPro, trobaràs **Raycast Target** desplegant **Ext
 
 El `0/5` de l'Inspector és només una previsualització: CoinCollector l'actualitza quan comença Play.
 
-![Rect Transform de TextMonedes i component TextMeshPro UI](assets/demomonedes-text.png)
+<img src="assets/demomonedes-text.png" alt="Rect Transform de TextMonedes i component TextMeshPro UI" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 *Les àncores i el pivot són (0, 1). La posició (32, -24) deixa un marge a la cantonada superior esquerra.*
 
@@ -570,7 +570,7 @@ Selecciona **Player** a la Hierarchy i afegeix **CoinCollector.cs**:
 
 No arrosseguis el fitxer Coin.prefab a Coins Root: necessitem el pare de les **instàncies de l'escena**. Tampoc no arrosseguis els fitxers `.cs` als camps; selecciona els objectes que contenen els components.
 
-![Components del Player i referències de CoinCollector](assets/demomonedes-referencies.png)
+<img src="assets/demomonedes-referencies.png" alt="Components del Player i referències de CoinCollector" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 *Coins Root → Coins; Counter Text → TextMonedes; Door → Door. Cap d’aquests tres camps ha de quedar a None.*
 
@@ -638,7 +638,7 @@ Fes **Play**, selecciona **Game** i mou-te amb les fletxes.
 - Torna a passar pel mateix lloc: el comptador no torna a pujar.
 - Recull-ne quatre: a `Monedes: 4/5`, la porta encara està tancada.
 
-![Partida amb quatre monedes recollides i la porta tancada](assets/demomonedes-quatre.png)
+<img src="assets/demomonedes-quatre.png" alt="Partida amb quatre monedes recollides i la porta tancada" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 *Prova real a Unity: encara queda una moneda i el collider de la porta atura el jugador davant del pas.*
 
@@ -649,7 +649,7 @@ Fes **Play**, selecciona **Game** i mou-te amb les fletxes.
 - Espera que deixi espai i travessa el pas fins a la marca verda Exit.
 - Atura Play i torna a començar: les monedes reapareixen, el comptador torna a zero i la porta torna a estar tancada.
 
-![Partida amb totes les monedes recollides i el jugador a la sortida](assets/demomonedes-oberta.png)
+<img src="assets/demomonedes-oberta.png" alt="Partida amb totes les monedes recollides i el jugador a la sortida" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 *Amb 5/5, la porta ha pujat fins a Y = 5. El jugador ja ha travessat el pas fins a Exit.*
 

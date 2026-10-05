@@ -32,6 +32,8 @@ Les mides són aproximades, en MB decimals; la mida descomprimida és abans que 
 | [Demo-4-Mecanismes](<Demo-4-Mecanismes.zip>) | `DemoMecanismes.unity` | 0.88 MB | 4.24 MB | [Veure tutorial](<../Demo-4-Mecanismes.md>) |
 | [Demo-5-Palanca](<Demo-5-Palanca.zip>) | `DemoPalanca.unity` | 0.89 MB | 4.27 MB | [Veure tutorial](<../Demo-5-Palanca.md>) |
 | [Demo-6-Guardia](<Demo-6-Guardia.zip>) | `DemoGuardia.unity` | 0.87 MB | 4.28 MB | [Veure tutorial](<../Demo-6-Guardia.md>) |
+| [Demo-7-Duel](<Demo-7-Duel.zip>) | `DemoDuel.unity` | 0.87 MB | 4.25 MB | [Veure tutorial](<../Demo-7-Duel.md>) |
+| [Demo-8-Salt](<Demo-8-Salt.zip>) | `DemoSalt.unity` | 0.86 MB | 4.22 MB | [Veure tutorial](<../Demo-8-Salt.md>) |
 
 ## Què inclouen els ZIP?
 
@@ -53,8 +55,12 @@ Els projectes utilitzen **URP**, **Input System** i càmeres en **perspectiva**,
 
 ## Comprovació dels projectes
 
-Els vuit ZIP s’han descomprimit en carpetes independents i s’han provat amb Unity 6000.6.3f1 a macOS: importació, compilació, obertura de l’escena i sis segons en Play. No s’han detectat scripts perduts ni errors dels scripts durant aquesta prova d’arrencada. No és una prova completa de totes les mecàniques ni una validació en Windows o Linux.
+Els deu ZIP s’han descomprimit en carpetes independents i s’han provat amb Unity 6000.6.3f1 a macOS: importació, compilació, obertura de l’escena i sis segons en Play. No s’han detectat scripts perduts ni errors dels scripts durant aquesta prova d’arrencada. No és una prova completa de totes les mecàniques ni una validació en Windows o Linux.
 
 En la prova automàtica sense interfície gràfica, Unity ha mostrat una excepció del seu cercador intern (`UnityEditor.Search.SearchDatabase`). S’ha registrat separadament dels errors dels scripts; queda pendent comprovar si també apareix en obrir els projectes amb la interfície habitual.
 
 La demo **Guardia** també s’ha reconstruït en una escena buida a partir de les taules i els quatre scripts del tutorial. S’han comprovat distància, angle, oclusió per parets, persecució, memòria, retorn, captura, moviment i col·lisions, clau, porta, victòria i reinici. S’ha completat el repte amb entrada de teclat. El camp de visió és una malla plana semitransparent sense collider; els scripts del Markdown coincideixen amb els del ZIP.
+
+La demo **Duel** s’ha comprovat en Play amb 17 verificacions: moviment i punteria, interval entre trets, dany únic, protecció del tirador, murs, creació de bales davant de parets, caducitat, visió bloquejada, avís, direcció fixada, esquiva, victòria, derrota i reinici. Les bales es mouen a 4.5 unitats/s. Els cinc scripts del tutorial coincideixen amb els del ZIP.
+
+La demo **Salt** s’ha completat amb entrada de teclat i 17 comprovacions en Play: contacte amb el terra, salt curt i llarg, absència de doble salt i de repetició automàtica, caigudes, els tres salts del recorregut, checkpoint, reaparició, meta, bloqueig final, reinici i activació i caducitat del coyote time i del jump buffer. Els quatre scripts del tutorial coincideixen amb els del ZIP.

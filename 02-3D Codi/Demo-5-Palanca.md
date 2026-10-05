@@ -10,7 +10,7 @@ Construirem un petit diorama amb una **càpsula**, dues illes, una palanca i un 
 - El pas queda bloquejat durant l’animació. No es pot aixecar el pont amb el jugador al damunt.
 - Si caus per un lateral, tornes a la posició inicial. Per reiniciar tota la demo, atura Play i torna a prémer-lo.
 
-![Diorama amb les dues illes, la palanca i el pont](assets/demopalanca-escena.png)
+<img src="assets/demopalanca-escena.png" alt="Diorama amb les dues illes, la palanca i el pont" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 **Projecte acabat:** [Demo-5-Palanca.zip](demos/Demo-5-Palanca.zip). [Instruccions per obrir-lo](demos/README.md).
 
@@ -137,7 +137,7 @@ Raising <── isOpen = false ── Lowered
 
 Al component **Animator** de BridgePivot, assigna **Controller = Bridge**, desactiva **Apply Root Motion** i deixa **Culling Mode = Always Animate**. Els noms **Raised**, **Lowering**, **Lowered**, **Raising** i **Base Layer** han de coincidir amb els que comprova el codi.
 
-![Animator del pont amb els quatre estats](assets/demopalanca-animator.png)
+<img src="assets/demopalanca-animator.png" alt="Animator del pont amb els quatre estats" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 ## 6. Bloquejar el pas i detectar l’ocupació
 
@@ -213,7 +213,7 @@ Afegeix el component **Player Input** al **mateix GameObject Player** que té Pa
 
 PlayerInput habilita el mapa Player. El nostre codi no consulta Keyboard.current: rep la intenció de moure’s o interactuar a través de les accions. Pots canviar una tecla a l’asset sense modificar l’script.
 
-![PlayerInput amb l’asset d’accions i el mapa Player](assets/demopalanca-input.png)
+<img src="assets/demopalanca-input.png" alt="PlayerInput amb l’asset d’accions i el mapa Player" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 ## 9. Text de la interfície
 
@@ -485,9 +485,9 @@ Fes Play i clica Game. Prova tant WASD com les fletxes.
 7. **Guanyar:** torna a abaixar-lo, travessa’l i toca l’esfera. Desapareix i es mostra «Repte completat!».
 8. **Canviar un binding:** fora de Play, canvia Interact de E a una altra tecla, desa l’asset i torna a provar. No cal canviar el codi; el text de la UI continua dient E fins que també l’actualitzis.
 
-![Pont abaixat i pas habilitat](assets/demopalanca-pont-obert.png)
+<img src="assets/demopalanca-pont-obert.png" alt="Pont abaixat i pas habilitat" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
-![Esfera recollida i missatge de victòria](assets/demopalanca-victoria.png)
+<img src="assets/demopalanca-victoria.png" alt="Esfera recollida i missatge de victòria" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 ## Si alguna cosa no funciona
 

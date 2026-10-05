@@ -84,7 +84,7 @@ Min Move Distance: 0
 
 La càpsula té el pivot al centre: amb **Height = 2**, el seu centre ha de quedar aproximadament a **Y = 1.05** sobre el terra i a **Y = 1.25** sobre el replà o la plataforma. Aquest petit marge és normal. No desplacis el **Center** per compensar un **Skin Width** incorrecte. Revisa també que no hi hagi un segon collider ni un Rigidbody al Player.
 
-![Inspector del Player: posició, escala i Character Controller amb Skin Width 0.05](assets/demoplataformes-player.png)
+<img src="assets/demoplataformes-player.png" alt="Inspector del Player: posició, escala i Character Controller amb Skin Width 0.05" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 *Compara especialment Skin Width, Center i Height. En aquest pas encara no hem afegit PlayerMovement.*
 
@@ -119,7 +119,7 @@ Scale: 3, 0.2, 3
 - Deixa **Interpolate** a **None**.
 - Deixa **Static** desactivat. És la casella de la capçalera de l’Inspector, al costat del nom de l’objecte; no és un camp del Rigidbody.
 
-![Transform, Box Collider i Rigidbody de Platform](assets/demoplataformes-plataforma.png)
+<img src="assets/demoplataformes-plataforma.png" alt="Transform, Box Collider i Rigidbody de Platform" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 *La mida de la plataforma es defineix a Transform > Scale. Box Collider > Size continua a (1, 1, 1); no hi tornis a posar (3, 0.2, 3). Is Trigger està desactivat, Is Kinematic activat i Use Gravity desactivat.*
 
@@ -178,7 +178,7 @@ DemoProximitat
    └─ PointD
 ```
 
-![Jerarquia Path amb els quatre punts i Transform de PointC](assets/demoplataformes-path.png)
+<img src="assets/demoplataformes-path.png" alt="Jerarquia Path amb els quatre punts i Transform de PointC" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 *Path és al mateix nivell que Platform. PointC és fill de Path i té la posició (6, 0.1, 4). Repeteix la comprovació amb les coordenades de cada punt de la taula.*
 
@@ -467,7 +467,7 @@ Si vens de la versió anterior del script, els camps **Point A** i **Point B** d
 - Deixa **Inactive Color = gris** (`#808080`) i **Active Color = verd** (`#00FF00`), amb **Alpha = 1**. Aquests camps apareixen després de desar i compilar el script.
 - El color gris inicial s'aplica en començar Play; fora de Play pots continuar veient el color original del material.
 
-![Proximity Platform amb Player assignat i els quatre Path Points en ordre](assets/demoplataformes-referencies.png)
+<img src="assets/demoplataformes-referencies.png" alt="Proximity Platform amb Player assignat i els quatre Path Points en ordre" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 *Selecciona Platform a la Hierarchy, no el fitxer ProximityPlatform.cs a Project. Assigna Player i els quatre punts al component de l'objecte. El 4 al costat de Path Points és el nombre d'elements.*
 
@@ -502,7 +502,7 @@ Emission > Range: 5
 - Deixa **Activation Distance = 3**.
 - Mantén l'objecte actiu.
 
-![Inspector de LightA amb Point, Realtime, Intensity 3, Range 5 i referència al Player](assets/demoplataformes-llum.png)
+<img src="assets/demoplataformes-llum.png" alt="Inspector de LightA amb Point, Realtime, Intensity 3, Range 5 i referència al Player" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 *Hi ha dos valors diferents: Range = 5 al component Light i Activation Distance = 3 a Proximity Light. El camp Player ha d'estar assignat. En aquesta versió URP pot aparèixer un avís sobre la llum indirecta dels Point Lights; no impedeix la il·luminació directa que utilitza aquesta demo.*
 
@@ -536,7 +536,7 @@ Abans de provar, surt de **Play**, revisa les referències i desa l'escena. Fes 
 
 Fes **Play**, selecciona la pestanya **Game** i utilitza les fletxes. Comprova que **Pause** no estigui activat. No esperis que el llum canviï de posició ni que aparegui una bombeta: mira el color de les superfícies.
 
-![Quatre captures en Play: estat inicial, llum groc, plataforma activa i llum blau](assets/demoplataformes-prova.png)
+<img src="assets/demoplataformes-prova.png" alt="Quatre captures en Play: estat inicial, llum groc, plataforma activa i llum blau" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 *Resultats esperats en quatre moments diferents de la prova. La il·luminació ambiental és baixa expressament per distingir els Point Lights. El verd indica que la plataforma detecta el jugador; no és el color d'un llum.*
 

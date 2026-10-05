@@ -252,7 +252,7 @@ Comprova que `ItemGenerator.cs` està afegit una sola vegada a `ItemGenerator`.
 
 A l'Inspector:
 
-![ItemGenerator amb el prefab Collectable assignat i Generate Delay a 2](assets/demoprefabs-generador.png)
+<img src="assets/demoprefabs-generador.png" alt="ItemGenerator amb el prefab Collectable assignat i Generate Delay a 2" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 - Arrossega el prefab **Collectable** des de *Assets* al camp **Item Prefab** del component **Item Generator**
 - Deixa **Generate Delay** a `2`
@@ -297,6 +297,6 @@ El jugador el recull
 La cua creix
 ```
 
-![Tres objectes recollits a la cua i un altre disponible al generador](assets/demoprefabs-cua.png)
+<img src="assets/demoprefabs-cua.png" alt="Tres objectes recollits a la cua i un altre disponible al generador" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 En aturar Play, desapareixen les instàncies creades durant la partida. En tornar a fer Play, la cua comença buida i el generador crea un únic recollible.
