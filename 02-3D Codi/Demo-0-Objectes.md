@@ -286,7 +286,7 @@ Debug.Log("Escala global efectiva: " + worldScale);
 
 Aquest primer moviment modifica directament el **Transform** i no necessita Rigidbody. Deixa el Player sense Rigidbody; les col·lisions es configuraran a l’apartat del Character Controller.
 
-![Escena amb Player, Sphere i Cylinder](assets/demoobjectes-escena.png)
+<img src="assets/demoobjectes-escena.png" alt="Escena amb Player, Sphere i Cylinder" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 - Atura Play abans de modificar l’escena. Deixa el Player amb el tag **Player**; si has provat l’exemple del tag Enemy, torna’l a Player.
 - Afegeix un **Plane** a `(0, 0, 0)` amb escala `(2, 1, 2)`, una **Sphere** a `(-2, 0.5, 3)` i un **Cylinder** a `(2, 1, 3)`, tots amb rotació zero. L’esfera i el cilindre conserven escala `(1, 1, 1)`.
@@ -427,7 +427,7 @@ controller.Move(movement.normalized * speed * Time.deltaTime);
 
 Obtén el component amb `GetComponent<CharacterController>()` a `Start()`, com al codi següent.
 
-![Player amb Character Controller i SimpleMovement, sense Box Collider ni Rigidbody](assets/demoobjectes-player.png)
+<img src="assets/demoobjectes-player.png" alt="Player amb Character Controller i SimpleMovement, sense Box Collider ni Rigidbody" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 Modifica el codi de **SimpleMovement** així:
 
@@ -519,7 +519,7 @@ El jugador podrà travessar el **cilindre**, que es tornarà vermell en entrar-h
 - Afegeix un *Rigidbody* al cilindre amb **Is Kinematic** activat i **Use Gravity** desactivat.
 - Crea **CylinderColor.cs** amb aquest codi i **afegeix-lo com a component del cilindre**; tenir l'arxiu a *Assets* no és suficient.
 
-![Inspector del cilindre amb trigger, Rigidbody cinemàtic i CylinderColor](assets/demoobjectes-cilindre.png)
+<img src="assets/demoobjectes-cilindre.png" alt="Inspector del cilindre amb trigger, Rigidbody cinemàtic i CylinderColor" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 ```csharp
 using UnityEngine;
@@ -560,6 +560,6 @@ public class CylinderColor : MonoBehaviour
 
 **Important!** `other` és el jugador, que ja té el tag **Player**. El cilindre guarda el seu color a `Awake()`, el canvia a `OnTriggerEnter()` i el recupera a `OnTriggerExit()`.
 
-![Cilindre vermell mentre el jugador és dins i color original en sortir](assets/demoobjectes-entrada-sortida.png)
+<img src="assets/demoobjectes-entrada-sortida.png" alt="Cilindre vermell mentre el jugador és dins i color original en sortir" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 Fes Play, entra i surt de l’esfera i del cilindre: tots dos han de mantenir el vermell mentre hi siguis dins i recuperar el seu color quan en surtis.

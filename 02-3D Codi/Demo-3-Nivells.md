@@ -273,7 +273,7 @@ Mantén el **Box Collider** sòlid, sense **Is Trigger** ni Rigidbody. No cal **
 
 `DefaultExecutionOrder(-100)` fa que l’elevador es mogui abans que el jugador. `Delta` és la diferència entre la seva posició actual i l’anterior, que el jugador utilitza per acompanyar-lo.
 
-![L’elevador transporta la càpsula fins al pis superior](assets/demonivells-elevador.png)
+<img src="assets/demonivells-elevador.png" alt="L’elevador transporta la càpsula fins al pis superior" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 ## 6. Parets que es tornen semitransparents
 
@@ -369,7 +369,7 @@ La comprovació es fa després de moure la càmera. En perspectiva, la línia de
 
 Només les parets que tapen el centre de la càpsula baixen fins al 25% d’opacitat. Les altres recuperen gradualment l’alfa original. **No es desactiva cap collider**: encara que vegis el jugador a través de la paret, has de rodejar-la per passar. També es poden veure altres objectes que quedin darrere de la mateixa paret.
 
-![Paret semitransparent quan tapa la càpsula](assets/demonivells-transparencia.png)
+<img src="assets/demonivells-transparencia.png" alt="Paret semitransparent quan tapa la càpsula" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 ## 7. Comptador i porta
 

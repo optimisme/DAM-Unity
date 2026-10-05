@@ -10,7 +10,7 @@ Construirem un diorama amb una **càpsula**, un vigilant esfèric, dues parets p
 - **Blau:** patrulla. **Vermell:** persegueix. **Groc:** torna al recorregut.
 - Si t’atrapa, tots dos torneu a l’inici, la clau reapareix i la porta es tanca.
 
-![Diorama del vigilant, la càpsula, les parets i la clau](assets/demoguardia-escena.png)
+<img src="assets/demoguardia-escena.png" alt="Diorama del vigilant, la càpsula, les parets i la clau" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 **Projecte acabat:** [Demo-6-Guardia.zip](demos/Demo-6-Guardia.zip). [Com obrir-lo](demos/README.md).
 
@@ -134,7 +134,7 @@ Per veure els punts durant Play, crea quatre cilindres **RouteMarker0...3** a l�
 
 A **Guard > GuardiaBrain > Points**, posa **Size = 4** i assigna els transforms P0, P1, P2 i P3 en aquest ordre.
 
-![Punts de patrulla i configuració del vigilant](assets/demoguardia-vigilant.png)
+<img src="assets/demoguardia-vigilant.png" alt="Punts de patrulla i configuració del vigilant" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 **Per modificar el camí:** mou els punts i comprova que cada segment recte queda lliure, amb espai per al radi de 0.5 del vigilant. Aquest exemple no calcula rutes al voltant d’obstacles. El CharacterController impedeix travessar parets, però no decideix per quin costat s’han de vorejar.
 
@@ -154,7 +154,7 @@ La malla apareix en fer Play. És plana, sense gruix, a Y = 0.07 perquè no coin
 
 El script crea triangles com els talls d’una pizza. Per a cada extrem del ventall, llança un raig horitzontal des de l’alçada dels ulls i retalla el dibuix si troba GuardWalls. És una ajuda visual mostrejada amb 40 segments; la detecció real continua fent el Linecast cap al jugador. Aquesta representació plana està pensada per a **aquest terra horitzontal**, no per a escales o pendents.
 
-![Ventall semitransparent retallat per les parets](assets/demoguardia-visio.png)
+<img src="assets/demoguardia-visio.png" alt="Ventall semitransparent retallat per les parets" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 Pots desactivar l’objecte Vision per amagar el dibuix: la detecció del vigilant continuarà funcionant igual.
 
@@ -187,7 +187,7 @@ Ara completa **totes** les referències abans de fer Play:
 
 Deixa els valors de GuardiaBrain: Patrol Speed `1.4`, Chase Speed `2.2`, View Distance `5`, View Angle `100`, Memory Time `2` i Catch Distance `1.05`.
 
-![Referències del controlador de la partida](assets/demoguardia-referencies.png)
+<img src="assets/demoguardia-referencies.png" alt="Referències del controlador de la partida" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 ## 7. Entendre els tres estats
 
@@ -207,11 +207,11 @@ Si veu el jugador mentre torna, pot tornar a Chase. La memòria de dos segons es
 
 `Physics.Linecast` comprova el segment entre dos punts; és la variant pràctica d’un raig quan ja coneixem origen i destinació. La LayerMask evita que el terra o els mateixos personatges tapin la detecció.
 
-![Persecució: el vigilant es torna vermell](assets/demoguardia-persecucio.png)
+<img src="assets/demoguardia-persecucio.png" alt="Persecució: el vigilant es torna vermell" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 En perdre’l, el vigilant es dirigeix a **l’última posició vista**, no a la posició actual amagada. Després torna per una llista de posicions reals: si ha passat per A, B i C, desfà C → B → A. Això evita intentar tornar en línia recta travessant una paret. La llista guarda una posició aproximadament cada 0.3 unitats, no cada fotograma.
 
-![Retorn: el vigilant groc desfà el camí](assets/demoguardia-retorn.png)
+<img src="assets/demoguardia-retorn.png" alt="Retorn: el vigilant groc desfà el camí" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 El retorn serveix en aquest escenari estàtic. Si afegeixes obstacles que es mouen i tanquen el camí, necessitaràs una solució de navegació més completa.
 
@@ -577,7 +577,7 @@ Desa l’escena, prem **Play** i clica **Game**. Comprova-ho en aquest ordre:
 7. Entra al passadís de la porta i trepitja la zona verda: apareix **Has escapat!**. Jugador i vigilant s’aturen.
 8. Prem **R**: tot torna a l’estat inicial.
 
-![Clau recollida i sortida completada](assets/demoguardia-victoria.png)
+<img src="assets/demoguardia-victoria.png" alt="Clau recollida i sortida completada" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 Per superar el repte, pots vorejar WallRight pel costat dret, recollir la clau, avançar per la franja que queda davant del passadís de sortida i entrar-hi des del sud. El jugador és més ràpid que el vigilant; aprofita les parets per tallar-li la visió.
 
