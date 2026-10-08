@@ -504,10 +504,8 @@ El jugador podrà travessar el **cilindre**, que es tornarà vermell en entrar-h
 
 - Deixa el cilindre amb tag **Untagged**, perquè **SimpleMovement** no li canviï el color.
 - Activa **Is Trigger** al seu *Capsule Collider*. Només cal aquest collider.
-- Afegeix un *Rigidbody* al cilindre amb **Is Kinematic** activat i **Use Gravity** desactivat.
 - Crea **CylinderColor.cs** amb aquest codi i **afegeix-lo com a component del cilindre**; tenir l'arxiu a *Assets* no és suficient.
 
-<img src="assets/demoobjectes-cilindre.png" alt="Inspector del cilindre amb trigger, Rigidbody cinemàtic i CylinderColor" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 ```csharp
 using UnityEngine;
