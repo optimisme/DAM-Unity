@@ -11,7 +11,9 @@ En aquesta demo:
 
 Crea una escena **Basic**, amb **Main Camera** i **Directional Light** (o crea-les amb **GameObject > Camera** i **GameObject > Light > Directional Light** si l’escena és buida), i desa-la com a **DemoPrefabs**.
 
-Comprova que **Input System** està instal·lat a **Window > Package Manager > Unity Registry**. A **Edit > Project Settings > Player > Other Settings**, **Active Input Handling** ha de ser **Input System Package (New)** o **Both**; reinicia Unity si ho demana.
+Comprova que **Input System** està instal·lat a **Window > Package Manager > Unity Registry**. 
+
+A **Edit > Project Settings > Player > Other Settings**, **Active Input Handling** ha de ser **Input System Package (New)** o **Both**; reinicia Unity si ho demana.
 
 Mou la càmera a:
 
@@ -40,7 +42,7 @@ Al **Cube**:
 - Canvia el nom a `Player`
 - Afegeix el tag `Player`
 - Afegeix un component **Character Controller** amb els valors següents.
-- Esborra el `Box Collider` que té per defecte: el `Character Controller` ja és suficient. Deixa el Player sense Rigidbody.
+- Esborra el `Box Collider` que té per defecte: el `Character Controller` ja és suficient. Deixa el Player sense "Rigidbody" i sense "Box Collider".
 
 ```text
 Center: 0, 0, 0
@@ -108,26 +110,28 @@ public class PlayerQueue : MonoBehaviour
 
     private List<Transform> items = new List<Transform>();
 
-    // Add an item to the queue
+    // Afegir un item a la cua
     public void AddItem(Transform item)
     {
         items.Add(item);
     }
 
-    // Update the queue after the player has moved
+    // Actualitzar la posició de tots els items de la cua
     void LateUpdate()
     {
+        // El primer objecte segueix al player
         Transform target = transform;
 
-        // Each item follows the previous one
+        // Cada objecte segueix a l'anterior de la cua (target)
         foreach (Transform item in items)
         {
+            // Acostar-se al objecte anterior (target)
             Vector3 direction = item.position - target.position;
 
+            // Si la distància és més gran de la permesa, acostar-se
             if (direction.magnitude > distance)
             {
-                Vector3 targetPosition =
-                    target.position + direction.normalized * distance;
+                Vector3 targetPosition = target.position + direction.normalized * distance;
 
                 item.position = Vector3.Lerp(
                     item.position,
@@ -136,6 +140,7 @@ public class PlayerQueue : MonoBehaviour
                 );
             }
 
+            // Seguir a l'anterior de la cua
             target = item;
         }
     }
@@ -163,6 +168,8 @@ public class Collectable : MonoBehaviour
         collected = true;
 
         PlayerQueue queue = other.GetComponent<PlayerQueue>();
+        // Apuntador a la posició (transform) de l'objecte
+        // des de la cua del player
         queue.AddItem(transform);
         Debug.Log("Objecte recollit!");
 
@@ -192,24 +199,31 @@ public class ItemGenerator : MonoBehaviour
 
     void Generate()
     {
+        // Crear una instància d'un prefab
+        // (crear el nou objecte)
         currentItem = Instantiate(
             itemPrefab,
             transform.position,
             Quaternion.identity
         );
 
+        // Desa la referència de l'objecte creat a "collectable"
         Collectable collectable = currentItem.GetComponent<Collectable>();
         collectable.generator = this;
     }
 
     public void ItemCollected()
     {
+        // Marca l'objecte com a agafat/col·lecionat
         currentItem = null;
+
+        // Fa un thread/corutina per genera run nou objecte al cap de "generateDelay"
         StartCoroutine(GenerateDelayed());
     }
 
     IEnumerator GenerateDelayed()
     {
+        // Generarà un nou objecte tipus prefag al cap de "generateDelay"
         yield return new WaitForSeconds(generateDelay);
         Generate();
     }
@@ -223,12 +237,13 @@ Afegeix un **3D Object > Sphere**.
 Configura'l:
 
 - Nom: `Collectable`
+- Posició: `(0, 0.5, 0)`
 - Escala: aproximadament `0.5, 0.5, 0.5`
 - Crea el tag `Collectable` a **Inspector > Tag > Add Tag** i després assigna’l a l’esfera
 - Activa **Is Trigger** al seu `Sphere Collider`
-- Afegeix un **Rigidbody**
-- Activa **Is Kinematic**
-- Desactiva **Use Gravity**
+- Afegeix un **Rigidbody**. (objecte tindrà física)
+- Desactiva **Use Gravity** (desactiva la gravetat)
+- Activa **Is Kinematic** (evita que la física mogui l'objecte)
 
 Assigna l'script `Collectable.cs` a aquesta esfera. Deixa el seu camp **Generator** a **None**: ItemGenerator l’assigna per codi quan crea cada instància.
 
