@@ -90,6 +90,7 @@ Crea **MechanismPlayer.cs**:
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+// Unity afegeix un Character Controller si l'objecte encara no en té.
 [RequireComponent(typeof(CharacterController))]
 public class MechanismPlayer : MonoBehaviour
 {
@@ -102,7 +103,9 @@ public class MechanismPlayer : MonoBehaviour
 
     void Awake()
     {
+        // Obtén el controlador del mateix objecte per moure'l respectant els colliders.
         controller = GetComponent<CharacterController>();
+        // Desa la posició inicial per poder-hi tornar si el jugador cau o reinicia.
         startPosition = transform.position;
     }
 
@@ -117,25 +120,34 @@ public class MechanismPlayer : MonoBehaviour
             if (keys.dKey.isPressed || keys.rightArrowKey.isPressed) direction.x += 1;
             if (keys.aKey.isPressed || keys.leftArrowKey.isPressed) direction.x -= 1;
         }
+        // Conserva la direcció però iguala la velocitat del moviment diagonal i recte.
         direction = direction.normalized;
         if (controller.isGrounded && verticalSpeed < 0f) verticalSpeed = -2f;
+        // Acumula la caiguda: CharacterController.Move no aplica gravetat automàticament.
         verticalSpeed += gravity * Time.deltaTime;
         controller.Move((direction * speed + Vector3.up * verticalSpeed) * Time.deltaTime);
     }
 
+    // Unity crida aquest mètode quan controller.Move troba un collider sòlid.
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
+        // Busca el cos físic al qual pertany el collider amb què ha topat el jugador.
         Rigidbody body = hit.collider.attachedRigidbody;
+        // Només empeny cossos moguts per la física i marcats amb el tag Pushable.
         if (body == null || body.isKinematic || !body.CompareTag("Pushable")) return;
+        // Si el contacte és amb la part superior de la caixa, evita empènyer-la en trepitjar-la.
         if (hit.normal.y > 0.5f) return;
+        // Elimina el component vertical del moviment per empènyer només sobre el pla del terra.
         Vector3 direction = Vector3.ProjectOnPlane(hit.moveDirection, Vector3.up).normalized;
-        // Push horizontally while preserving the box's vertical velocity.
+        // Empeny la caixa horitzontalment i conserva la velocitat vertical perquè pugui continuar
+        // caient.
         body.linearVelocity = new Vector3(direction.x * pushSpeed,
             body.linearVelocity.y, direction.z * pushSpeed);
     }
 
     public void ResetPosition()
     {
+        // Desactiva temporalment el controlador per recol·locar el personatge directament.
         controller.enabled = false;
         transform.position = startPosition;
         controller.enabled = true;
@@ -192,6 +204,7 @@ Crea **MechanismGate.cs**:
 ```csharp
 using UnityEngine;
 
+// Aquest script necessita un Rigidbody al mateix objecte.
 [RequireComponent(typeof(Rigidbody))]
 public class MechanismGate : MonoBehaviour
 {
@@ -203,17 +216,21 @@ public class MechanismGate : MonoBehaviour
 
     void Awake()
     {
+        // Obtén el cos físic del mateix objecte per controlar-ne el moviment.
         body = GetComponent<Rigidbody>();
         closedPosition = body.position;
     }
 
     public void SetOpen(bool value)
     {
+        // Rep l'estat de la placa; FixedUpdate farà obrir o tancar la porta.
         open = value;
     }
 
+    // Unity executa aquest mètode a intervals fixos per actualitzar la física.
     void FixedUpdate()
     {
+        // Tria la posició oberta o tancada segons si la placa està premuda.
         Vector3 target = closedPosition + (open ? Vector3.up * openHeight : Vector3.zero);
         body.MovePosition(Vector3.MoveTowards(body.position, target, speed * Time.fixedDeltaTime));
     }
@@ -261,7 +278,9 @@ public class MechanismPlate : MonoBehaviour
 {
     public Renderer plateRenderer;
     public Color pressedColor = Color.green;
+    // Esdeveniment connectable a l'Inspector: envia true en prémer la placa i false en alliberar-la.
     public UnityEvent<bool> onPressedChanged = new UnityEvent<bool>();
+    // Desa els colliders sobre la placa sense duplicats; un de sol ja la manté premuda.
     private readonly HashSet<Collider> occupants = new HashSet<Collider>();
     private Material ownMaterial;
     private Color originalColor;
@@ -269,22 +288,26 @@ public class MechanismPlate : MonoBehaviour
 
     void Awake()
     {
+        // Crea una còpia del material per canviar només el color d'aquesta placa.
         ownMaterial = plateRenderer.material;
         originalColor = ownMaterial.GetColor("_BaseColor");
     }
 
     bool IsWeight(Collider other)
     {
+        // Accepta el jugador o una caixa amb Rigidbody i tag Pushable com a pes.
         return other.CompareTag("Player") ||
             (other.attachedRigidbody != null && other.attachedRigidbody.CompareTag("Pushable"));
     }
 
+    // Unity avisa quan un collider entra al trigger; other identifica l'objecte que hi entra.
     void OnTriggerEnter(Collider other)
     {
         if (IsWeight(other)) occupants.Add(other);
         UpdateState();
     }
 
+    // Unity avisa quan un collider surt del trigger.
     void OnTriggerExit(Collider other)
     {
         occupants.Remove(other);
@@ -293,17 +316,20 @@ public class MechanismPlate : MonoBehaviour
 
     void Update()
     {
-        // Disabled or destroyed objects may not send OnTriggerExit.
+        // Elimina els objectes desactivats o destruïts: poden no haver avisat amb OnTriggerExit.
         occupants.RemoveWhere(c => c == null || !c.enabled || !c.gameObject.activeInHierarchy);
         UpdateState();
     }
 
     void UpdateState()
     {
+        // La placa està premuda mentre quedi almenys un collider vàlid dins del trigger.
         bool next = occupants.Count > 0;
+        // Envia l'avís només quan canvia l'estat, no a cada frame.
         if (next == pressed) return;
         pressed = next;
         ownMaterial.SetColor("_BaseColor", pressed ? pressedColor : originalColor);
+        // Avisa els mètodes connectats a l'Inspector, com MechanismGate.SetOpen.
         onPressedChanged.Invoke(pressed);
     }
 
@@ -317,6 +343,7 @@ public class MechanismPlate : MonoBehaviour
 
     void OnDestroy()
     {
+        // Allibera la còpia del material creada per aquest script.
         if (ownMaterial != null) Destroy(ownMaterial);
     }
 }
@@ -364,6 +391,7 @@ public class MechanismPuzzle : MonoBehaviour
 
     void Start()
     {
+        // Desa la posició i la rotació originals de la caixa per reiniciar el trencaclosques.
         boxStart = box.position;
         boxRotation = box.rotation;
         ShowInstructions();
@@ -387,12 +415,15 @@ public class MechanismPuzzle : MonoBehaviour
     public void ResetPuzzle()
     {
         player.ResetPosition();
+        // Atura el desplaçament i el gir de la caixa perquè no conservi l'impuls en reiniciar.
         box.linearVelocity = Vector3.zero;
         box.angularVelocity = Vector3.zero;
         box.position = boxStart;
         box.rotation = boxRotation;
+        // Reinicia també els mecanismes perquè coincideixin amb la posició inicial dels objectes.
         plate.ResetPlate();
         gate.ResetGate();
+        // Actualitza la informació física dels colliders amb els canvis de posició.
         Physics.SyncTransforms();
         won = false;
         ShowInstructions();
@@ -448,8 +479,10 @@ public class MechanismGoal : MonoBehaviour
 {
     public MechanismPuzzle puzzle;
 
+    // Unity avisa quan un collider entra al trigger; other identifica l'objecte que hi entra.
     void OnTriggerEnter(Collider other)
     {
+        // Només el jugador pot completar el repte entrant a la zona del tresor.
         if (other.CompareTag("Player")) puzzle.Win();
     }
 }

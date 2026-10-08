@@ -194,51 +194,72 @@ using System.IO;
 // Utilitat opcional per reconstruir les malles dels exemples des de zero.
 public static class GenerarMalles
 {
+    // Afegeix una opció al menú de l'Editor; aquesta utilitat es desa dins d'una carpeta Editor.
     [MenuItem("Demos/Crear malla d'aigua")]
     public static void Aigua()
     {
+        // Divideix cada costat en 80 trams per tenir prou vèrtexs per dibuixar les onades.
         const int n = 80;
         var mesh = new Mesh { name = "WaterGrid" };
+        // Una graella de n trams necessita n + 1 punts a cada costat.
         var vertices = new Vector3[(n + 1) * (n + 1)];
+        // Les UV indiquen on correspon cada vèrtex dins del patró o textura, normalment entre 0 i 1.
         var uv = new Vector2[vertices.Length];
+        // Cada casella es dibuixa amb dos triangles de tres índexs cadascun.
         var triangles = new int[n * n * 6];
         for (int z = 0; z <= n; z++)
             for (int x = 0; x <= n; x++)
             {
+                // Converteix la fila i la columna de la graella en un índex de la llista de vèrtexs.
                 int i = z * (n + 1) + x;
+                // Reparteix els punts sobre un rectangle de 8 per 5 unitats centrat a l'origen.
                 vertices[i] = new Vector3((float)x / n * 8 - 4, 0, (float)z / n * 5 - 2.5f);
+                // Associa cada punt de la graella amb la seva coordenada UV proporcional.
                 uv[i] = new Vector2((float)x / n, (float)z / n);
             }
+        // Recorre la llista d'índexs per construir les dues cares triangulars de cada casella.
         int k = 0;
         for (int z = 0; z < n; z++)
             for (int x = 0; x < n; x++)
             {
+                // Converteix la fila i la columna de la graella en un índex de la llista de vèrtexs.
                 int i = z * (n + 1) + x;
                 triangles[k++] = i; triangles[k++] = i + n + 1; triangles[k++] = i + 1;
                 triangles[k++] = i + 1; triangles[k++] = i + n + 1; triangles[k++] = i + n + 2;
             }
         mesh.vertices = vertices; mesh.uv = uv; mesh.triangles = triangles;
+        // Calcula les normals i les tangents que els shaders fan servir per orientar la il·luminació i
+        // el relleu.
         mesh.RecalculateNormals(); mesh.RecalculateTangents();
+        // Reserva altura al volum visible perquè les onades del shader no quedin fora dels límits de la
+        // malla.
         mesh.bounds = new Bounds(Vector3.zero, new Vector3(8, 2, 5));
         Save(mesh, "WaterGrid");
     }
 
+    // Afegeix al menú de l'Editor la generació de cinc variants de roca.
     [MenuItem("Demos/Crear cinc malles de roca")]
     public static void Roques()
     {
         for (int seed = 1; seed <= 5; seed++)
         {
             var temporary = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            // Copia la malla de l'esfera per deformar-la sense modificar la malla original de Unity.
             var mesh = Object.Instantiate(temporary.GetComponent<MeshFilter>().sharedMesh);
+            // Elimina l'objecte auxiliar de l'Editor; ja conservem la còpia de la seva malla.
             Object.DestroyImmediate(temporary);
             var vertices = mesh.vertices;
             for (int i = 0; i < vertices.Length; i++)
             {
+                // Obtén la direcció del vèrtex des del centre per calcular-ne la deformació.
                 Vector3 d = vertices[i].normalized;
+                // Combina ones per crear irregularitats; seed produeix una forma diferent a cada roca.
                 float factor = 1 + .045f * Mathf.Sin(d.x * 13 + seed) * Mathf.Cos(d.y * 11 + seed)
                     + .035f * Mathf.Sin(d.z * 17 + seed);
+                // Acosta o allunya el vèrtex del centre segons la deformació calculada.
                 vertices[i] *= factor;
             }
+            // Aplica la forma nova i actualitza les normals i el volum que l'envolta.
             mesh.vertices = vertices; mesh.RecalculateNormals(); mesh.RecalculateBounds();
             Save(mesh, "Rock" + seed);
         }
@@ -247,9 +268,12 @@ public static class GenerarMalles
     static void Save(Mesh mesh, string name)
     {
         Directory.CreateDirectory("Assets/Meshes");
+        // Genera un nom de fitxer lliure per no sobreescriure una malla creada abans.
         string path = AssetDatabase.GenerateUniqueAssetPath("Assets/Meshes/" + name + ".asset");
+        // Desa la malla com a recurs del projecte per poder-la assignar a un Mesh Filter.
         AssetDatabase.CreateAsset(mesh, path);
         AssetDatabase.SaveAssets();
+        // Selecciona la malla creada perquè es pugui veure a l'Inspector.
         Selection.activeObject = mesh;
     }
 }
@@ -284,64 +308,85 @@ Crea **Assets/Common/DemoControls.cs** amb aquest codi complet:
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-// Controls comuns a les demos. Els materials s'instancien per no modificar els assets.
+// Controls comuns a les demos. Crea còpies dels materials per conservar els originals del projecte.
 public class DemoControls : MonoBehaviour
 {
     public string title;
     public string description;
+    // Arrossega els objectes visibles als quals aquest panell modificarà el material.
     public Renderer[] surfaces;
+    // Nom intern (Reference) de la propietat del Shader Graph que controlarà el lliscador.
     public string parameter = "_Gruix";
     public float minimum = 0.02f;
     public float maximum = 0.3f;
     public float initialValue = 0.12f;
     public float timeScale = 1f;
     public bool paused;
+    // Temps propi de la demo: es pot pausar sense aturar la càmera ni tota la partida.
     public float elapsed;
     public bool showPanel = true;
     Material[] materials;
     float value;
 
+    // Prepara els materials i la connexió amb la càmera quan es carrega el component.
     void Awake()
     {
+        // Reserva una entrada per al material de cada superfície assignada a l'Inspector.
         materials = new Material[surfaces.Length];
+        // Accedir a .material crea una còpia per a cada Renderer; així es conserven els materials del
+        // projecte.
         for (int i = 0; i < surfaces.Length; i++) materials[i] = surfaces[i].material;
         value = initialValue;
+        // Busca el controlador orbital a la càmera amb el tag MainCamera, si n'hi ha.
         var orbit = Camera.main ? Camera.main.GetComponent<DemoOrbitCamera>() : null;
+        // Passa una funció a la càmera perquè detecti el punter sobre el panell i no mogui la vista en
+        // usar-lo.
         if (orbit) orbit.IsPointerOverControls = point => showPanel && new Rect(16, 16, 380, 180).Contains(point);
     }
     void Update()
     {
+        // Comprova que hi hagi teclat abans de llegir les tecles de control.
         if (Keyboard.current != null)
         {
+            // Alterna la pausa amb una sola pulsació, sense repetir-la mentre la tecla es manté premuda.
             if (Keyboard.current.spaceKey.wasPressedThisFrame) paused = !paused;
             if (Keyboard.current.hKey.wasPressedThisFrame) showPanel = !showPanel;
             if (Keyboard.current.rKey.wasPressedThisFrame) { elapsed = 0; SetParameter(initialValue); }
         }
+        // Avança el rellotge de l'efecte només si no està en pausa; timeScale en regula la velocitat.
         if (!paused) elapsed += Time.deltaTime * timeScale;
+        // Envia aquest temps als shaders que tenen la propietat _Temps.
         ApplyTime(elapsed);
     }
     public void ApplyTime(float seconds)
     {
         if (materials == null) return;
         foreach (Material material in materials)
+            // Comprova que la propietat existeixi abans d'actualitzar l'animació del material.
             if (material.HasProperty("_Temps")) material.SetFloat("_Temps", seconds);
     }
     public void SetParameter(float next)
     {
+        // Limita el valor triat al rang permès per a aquesta demo.
         value = Mathf.Clamp(next, minimum, maximum);
         if (materials == null) return;
         foreach (Material material in materials)
+            // Actualitza la propietat indicada pel seu nom intern a cada material compatible.
             if (material.HasProperty(parameter)) material.SetFloat(parameter, value);
     }
+    // Unity crida OnGUI per dibuixar i gestionar aquest panell senzill de controls.
     void OnGUI()
     {
         if (!showPanel) return;
         GUI.Box(new Rect(16, 16, 380, 180), "");
+        // Delimita en píxels l'àrea on GUILayout col·locarà els textos i el lliscador.
         GUILayout.BeginArea(new Rect(30, 25, 350, 162));
         GUILayout.Label(title);
         GUILayout.Label(description);
         GUILayout.Label(parameter + ": " + value.ToString("0.00"));
+        // Dibuixa el lliscador i llegeix el valor que l'usuari hi selecciona.
         float next = GUILayout.HorizontalSlider(value, minimum, maximum);
+        // Aplica el paràmetre als materials només quan l'usuari en canvia el valor.
         if (next != value) SetParameter(next);
         GUILayout.Label("Espai: pausa | R: reinicia | H: amaga el panell");
         GUILayout.Label("Boto dret: orbita | Roda: zoom | Home: vista inicial");
@@ -350,6 +395,7 @@ public class DemoControls : MonoBehaviour
     void OnDestroy()
     {
         if (materials == null) return;
+        // Allibera les còpies de materials creades a Awake quan es destrueix el component.
         foreach (Material material in materials) Destroy(material);
     }
 }

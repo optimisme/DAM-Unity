@@ -157,6 +157,7 @@ A `Assets/Scripts`, crea un script **MonoBehaviour Script** (o **C# Script**, se
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+// Unity afegeix un Character Controller si l'objecte encara no en té.
 [RequireComponent(typeof(CharacterController))]
 public class PlayerMovement : MonoBehaviour
 {
@@ -168,6 +169,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Awake()
     {
+        // Obtén el controlador del mateix objecte per moure'l respectant els colliders.
         controller = GetComponent<CharacterController>();
     }
 
@@ -195,11 +197,13 @@ public class PlayerMovement : MonoBehaviour
         if (controller.isGrounded && verticalSpeed < 0f)
             verticalSpeed = -2f;
 
+        // Acumula la caiguda: CharacterController.Move no aplica gravetat automàticament.
         verticalSpeed += gravity * Time.deltaTime;
 
         Vector3 displacement = movement.normalized * speed * Time.deltaTime;
         displacement.y = verticalSpeed * Time.deltaTime;
 
+        // Aplica el desplaçament d'aquest frame respectant les col·lisions.
         controller.Move(displacement);
     }
 
@@ -283,7 +287,9 @@ using UnityEngine;
 
 public class CoinCollector : MonoBehaviour
 {
+    // Arrossega aquí el pare de les monedes; el farem servir per comptar-les.
     public Transform coinsRoot;
+    // Referència al text de TextMeshPro que mostra el recompte a la pantalla.
     public TMP_Text counterText;
     public CoinDoor door;
 
@@ -292,6 +298,7 @@ public class CoinCollector : MonoBehaviour
 
     void Start()
     {
+        // Atura el component si falten les referències necessàries de l'Inspector.
         if (coinsRoot == null || counterText == null || door == null)
         {
             Debug.LogError("Assigna Coins Root, Counter Text i Door al Player.", this);
@@ -299,7 +306,7 @@ public class CoinCollector : MonoBehaviour
             return;
         }
 
-        // Count the active coins in this level once, before collecting any.
+        // Compta les monedes actives del nivell abans que el jugador en reculli cap.
         totalCoins = coinsRoot.GetComponentsInChildren<CoinPickup>().Length;
 
         if (totalCoins == 0)
@@ -314,17 +321,21 @@ public class CoinCollector : MonoBehaviour
 
     public void CollectCoin()
     {
+        // CoinPickup crida aquest mètode: suma una moneda i actualitza el text.
         collectedCoins++;
         RefreshCounter();
 
+        // Quan s'han recollit totes les monedes, demana a CoinDoor que comenci a obrir-se.
         if (collectedCoins == totalCoins)
             door.Open();
     }
 
     void RefreshCounter()
     {
+        // Insereix els valors de les variables dins del text que veurà el jugador.
         counterText.text = $"Monedes: {collectedCoins}/{totalCoins}";
 
+        // Afegeix un avís al text quan el jugador ha completat la recollida.
         if (collectedCoins == totalCoins)
             counterText.text += "\nPorta oberta!";
     }
@@ -355,20 +366,26 @@ public class CoinPickup : MonoBehaviour
 
     void Update()
     {
+        // Gira només la part visible de la moneda; el trigger es manté al seu lloc.
         if (visual != null)
             visual.Rotate(Vector3.up, rotationSpeed * Time.deltaTime, Space.World);
     }
 
+    // Unity avisa quan un collider entra al trigger; other identifica l'objecte que hi entra.
     void OnTriggerEnter(Collider other)
     {
+        // Busca el script que porta el recompte al mateix objecte que ha entrat al trigger.
         CoinCollector collector = other.GetComponent<CoinCollector>();
 
-        // Only the player with an active collector can pick up a coin.
+        // Només pot recollir la moneda un objecte amb CoinCollector actiu; evita comptar-la dues
+        // vegades.
         if (collected || collector == null || !collector.isActiveAndEnabled)
             return;
 
         collected = true;
+        // Avisa el comptador del jugador abans d'amagar aquesta moneda.
         collector.CollectCoin();
+        // Amaga l'objecte i desactiva els seus components després de recollir-lo.
         gameObject.SetActive(false);
     }
 }
@@ -389,6 +406,7 @@ Aquest component anirà a **Door**. Comença tancada i només es mou després de
 ```csharp
 using UnityEngine;
 
+// Aquest script necessita un Rigidbody al mateix objecte.
 [RequireComponent(typeof(Rigidbody))]
 public class CoinDoor : MonoBehaviour
 {
@@ -401,24 +419,30 @@ public class CoinDoor : MonoBehaviour
 
     void Awake()
     {
+        // Obtén el cos físic del mateix objecte per controlar-ne el moviment.
         body = GetComponent<Rigidbody>();
+        // Calcula la posició final de la porta sumant l'altura d'obertura a la posició inicial.
         openPosition = body.position + Vector3.up * openHeight;
     }
 
     public void Open()
     {
+        // Activa l'obertura; FixedUpdate farà avançar la porta gradualment.
         opening = true;
     }
 
+    // Unity executa aquest mètode a intervals fixos per actualitzar la física.
     void FixedUpdate()
     {
         if (!opening)
             return;
 
+        // Calcula el pas següent sense sobrepassar el destí; fixedDeltaTime és el temps del pas físic.
         Vector3 nextPosition = Vector3.MoveTowards(
             body.position, openPosition, speed * Time.fixedDeltaTime
         );
 
+        // Mou el Rigidbody cinemàtic cap a la posició calculada durant l'actualització física.
         body.MovePosition(nextPosition);
     }
 }

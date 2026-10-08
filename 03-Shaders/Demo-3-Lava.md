@@ -217,64 +217,85 @@ Crea **Assets/Common/DemoControls.cs** amb aquest codi complet:
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-// Controls comuns a les demos. Els materials s'instancien per no modificar els assets.
+// Controls comuns a les demos. Crea còpies dels materials per conservar els originals del projecte.
 public class DemoControls : MonoBehaviour
 {
     public string title;
     public string description;
+    // Arrossega els objectes visibles als quals aquest panell modificarà el material.
     public Renderer[] surfaces;
+    // Nom intern (Reference) de la propietat del Shader Graph que controlarà el lliscador.
     public string parameter = "_Gruix";
     public float minimum = 0.02f;
     public float maximum = 0.3f;
     public float initialValue = 0.12f;
     public float timeScale = 1f;
     public bool paused;
+    // Temps propi de la demo: es pot pausar sense aturar la càmera ni tota la partida.
     public float elapsed;
     public bool showPanel = true;
     Material[] materials;
     float value;
 
+    // Prepara els materials i la connexió amb la càmera quan es carrega el component.
     void Awake()
     {
+        // Reserva una entrada per al material de cada superfície assignada a l'Inspector.
         materials = new Material[surfaces.Length];
+        // Accedir a .material crea una còpia per a cada Renderer; així es conserven els materials del
+        // projecte.
         for (int i = 0; i < surfaces.Length; i++) materials[i] = surfaces[i].material;
         value = initialValue;
+        // Busca el controlador orbital a la càmera amb el tag MainCamera, si n'hi ha.
         var orbit = Camera.main ? Camera.main.GetComponent<DemoOrbitCamera>() : null;
+        // Passa una funció a la càmera perquè detecti el punter sobre el panell i no mogui la vista en
+        // usar-lo.
         if (orbit) orbit.IsPointerOverControls = point => showPanel && new Rect(16, 16, 380, 180).Contains(point);
     }
     void Update()
     {
+        // Comprova que hi hagi teclat abans de llegir les tecles de control.
         if (Keyboard.current != null)
         {
+            // Alterna la pausa amb una sola pulsació, sense repetir-la mentre la tecla es manté premuda.
             if (Keyboard.current.spaceKey.wasPressedThisFrame) paused = !paused;
             if (Keyboard.current.hKey.wasPressedThisFrame) showPanel = !showPanel;
             if (Keyboard.current.rKey.wasPressedThisFrame) { elapsed = 0; SetParameter(initialValue); }
         }
+        // Avança el rellotge de l'efecte només si no està en pausa; timeScale en regula la velocitat.
         if (!paused) elapsed += Time.deltaTime * timeScale;
+        // Envia aquest temps als shaders que tenen la propietat _Temps.
         ApplyTime(elapsed);
     }
     public void ApplyTime(float seconds)
     {
         if (materials == null) return;
         foreach (Material material in materials)
+            // Comprova que la propietat existeixi abans d'actualitzar l'animació del material.
             if (material.HasProperty("_Temps")) material.SetFloat("_Temps", seconds);
     }
     public void SetParameter(float next)
     {
+        // Limita el valor triat al rang permès per a aquesta demo.
         value = Mathf.Clamp(next, minimum, maximum);
         if (materials == null) return;
         foreach (Material material in materials)
+            // Actualitza la propietat indicada pel seu nom intern a cada material compatible.
             if (material.HasProperty(parameter)) material.SetFloat(parameter, value);
     }
+    // Unity crida OnGUI per dibuixar i gestionar aquest panell senzill de controls.
     void OnGUI()
     {
         if (!showPanel) return;
         GUI.Box(new Rect(16, 16, 380, 180), "");
+        // Delimita en píxels l'àrea on GUILayout col·locarà els textos i el lliscador.
         GUILayout.BeginArea(new Rect(30, 25, 350, 162));
         GUILayout.Label(title);
         GUILayout.Label(description);
         GUILayout.Label(parameter + ": " + value.ToString("0.00"));
+        // Dibuixa el lliscador i llegeix el valor que l'usuari hi selecciona.
         float next = GUILayout.HorizontalSlider(value, minimum, maximum);
+        // Aplica el paràmetre als materials només quan l'usuari en canvia el valor.
         if (next != value) SetParameter(next);
         GUILayout.Label("Espai: pausa | R: reinicia | H: amaga el panell");
         GUILayout.Label("Boto dret: orbita | Roda: zoom | Home: vista inicial");
@@ -283,6 +304,7 @@ public class DemoControls : MonoBehaviour
     void OnDestroy()
     {
         if (materials == null) return;
+        // Allibera les còpies de materials creades a Awake quan es destrueix el component.
         foreach (Material material in materials) Destroy(material);
     }
 }

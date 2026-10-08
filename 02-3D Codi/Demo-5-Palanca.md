@@ -245,6 +245,7 @@ Rep les accions de PlayerInput. El valor de Move es guarda i s’aplica cada Upd
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+// Unity afegeix un Character Controller si l'objecte encara no en té.
 [RequireComponent(typeof(CharacterController))]
 public class PalancaPlayer : MonoBehaviour
 {
@@ -258,29 +259,38 @@ public class PalancaPlayer : MonoBehaviour
 
     void Awake()
     {
+        // Obtén el controlador del mateix objecte per moure'l respectant els colliders.
         controller = GetComponent<CharacterController>();
+        // Desa la posició inicial per poder-hi tornar si el jugador cau o reinicia.
         startPosition = transform.position;
     }
 
+    // Player Input crida aquest mètode quan canvia l'acció Move configurada amb Send Messages.
     public void OnMove(InputValue value)
     {
+        // Desa els dos eixos d'entrada; Update els convertirà en moviment sobre X i Z.
         moveInput = value.Get<Vector2>();
     }
 
+    // Player Input envia aquí l'acció Interact; la palanca comprovarà si és prou a prop.
     public void OnInteract(InputValue value)
     {
+        // Intenta activar la palanca en prémer el botó, no quan es deixa anar.
         if (value.isPressed) lever.TryUse();
     }
 
     void Update()
     {
+        // Limita l'entrada per mantenir la mateixa velocitat en diagonal.
         Vector2 input = Vector2.ClampMagnitude(moveInput, 1f);
         Vector3 direction = new Vector3(input.x, 0f, input.y);
         if (controller.isGrounded && verticalSpeed < 0f) verticalSpeed = -2f;
+        // Acumula la caiguda: CharacterController.Move no aplica gravetat automàticament.
         verticalSpeed += gravity * Time.deltaTime;
         controller.Move((direction * speed + Vector3.up * verticalSpeed) * Time.deltaTime);
         if (transform.position.y < -6f)
         {
+            // Desactiva temporalment el controlador per recol·locar el personatge directament.
             controller.enabled = false;
             transform.position = startPosition;
             controller.enabled = true;
@@ -303,12 +313,14 @@ public class PalancaBridge : MonoBehaviour
     public Animator animator;
     public Collider deckCollider;
     public Collider[] barriers;
+    // Guarda els colliders del jugador que ocupen el pont, sense duplicats.
     private readonly HashSet<Collider> occupants = new HashSet<Collider>();
     private bool requestedOpen;
     private Collider zone;
 
     public bool IsOpen { get; private set; }
     public bool IsMoving { get; private set; }
+    // TryToggle consulta si hi ha algú al pont; la palanca també ho mostra al panell.
     public bool IsOccupied => occupants.Count > 0;
 
     void Awake()
@@ -318,33 +330,43 @@ public class PalancaBridge : MonoBehaviour
 
     void Update()
     {
+        // Neteja contactes antics, inclosos objectes desactivats o que ja no són dins de la zona.
         occupants.RemoveWhere(c => c == null || !c.enabled || !c.gameObject.activeInHierarchy
             || !zone.bounds.Intersects(c.bounds));
+        // Llegeix l'estat de la primera capa de l'Animator per saber en quin punt és l'animació.
         AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
         bool transitioning = animator.IsInTransition(0);
+        // Considera el pont obert al pas quan és abaixat i no està en una transició.
         IsOpen = state.IsName("Base Layer.Lowered") && !transitioning;
         bool settled = state.IsName(requestedOpen ? "Base Layer.Lowered" : "Base Layer.Raised");
         IsMoving = transitioning || !settled;
+        // Permet trepitjar el tauler només quan està abaixat i aturat.
         deckCollider.enabled = IsOpen && !IsMoving;
+        // Bloqueja els accessos mentre no es pot passar pel tauler.
         foreach (Collider barrier in barriers) barrier.enabled = !deckCollider.enabled;
     }
 
     public bool TryToggle()
     {
+        // Rebutja l'acció si el pont encara es mou o hi ha un jugador a sobre.
         if (IsMoving || IsOccupied) return false;
+        // Alterna entre demanar que el pont baixi i que pugi.
         requestedOpen = !requestedOpen;
         IsMoving = true;
         deckCollider.enabled = false;
         foreach (Collider barrier in barriers) barrier.enabled = true;
+        // Canvia el paràmetre de l'Animator que activa les transicions del pont.
         animator.SetBool("isOpen", requestedOpen);
         return true;
     }
 
+    // Unity avisa quan un collider entra al trigger; other identifica l'objecte que hi entra.
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player")) occupants.Add(other);
     }
 
+    // Unity avisa quan un collider surt del trigger.
     void OnTriggerExit(Collider other)
     {
         occupants.Remove(other);
@@ -377,6 +399,7 @@ public class PalancaSwitch : MonoBehaviour
 
     public void TryUse()
     {
+        // La palanca només respon si el jugador és dins de la distància d'interacció.
         if (Vector3.Distance(player.position, transform.position) > interactionDistance) return;
         bridge.TryToggle();
     }
@@ -388,6 +411,7 @@ public class PalancaSwitch : MonoBehaviour
 
     void Update()
     {
+        // Mostra l'estat del pont amb el color de la palanca i el missatge del panell.
         ownMaterial.SetColor("_BaseColor", bridge.IsOpen ? Color.green : new Color(1f, 0.55f, 0.15f));
         if (won) statusText.text = "Repte completat!";
         else if (bridge.IsMoving) statusText.text = "Espera que el pont acabi de moure's.";
@@ -399,6 +423,7 @@ public class PalancaSwitch : MonoBehaviour
 
     void OnDestroy()
     {
+        // Allibera la còpia del material creada per aquest script.
         if (ownMaterial != null) Destroy(ownMaterial);
     }
 }
@@ -416,11 +441,14 @@ public class PalancaTreasure : MonoBehaviour
     public PalancaSwitch lever;
     private bool collected;
 
+    // Unity avisa quan un collider entra al trigger; other identifica l'objecte que hi entra.
     void OnTriggerEnter(Collider other)
     {
         if (collected || !other.CompareTag("Player")) return;
         collected = true;
+        // El tresor avisa la palanca perquè mostri el missatge de repte completat.
         lever.Win();
+        // Amaga l'objecte i desactiva els seus components després de recollir-lo.
         gameObject.SetActive(false);
     }
 }

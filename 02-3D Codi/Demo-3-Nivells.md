@@ -88,6 +88,7 @@ Crea **DioramaPlayer.cs**:
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+// Unity afegeix un Character Controller si l'objecte encara no en té.
 [RequireComponent(typeof(CharacterController))]
 public class DioramaPlayer : MonoBehaviour
 {
@@ -101,14 +102,17 @@ public class DioramaPlayer : MonoBehaviour
 
     void Awake()
     {
+        // Obtén el controlador del mateix objecte per moure'l respectant els colliders.
         controller = GetComponent<CharacterController>();
+        // Desa la posició inicial per poder-hi tornar si el jugador cau o reinicia.
         startPosition = transform.position;
     }
 
     void Update()
     {
-        // Apply the displacement of the platform from the previous contact.
+        // Aplica el desplaçament de l'ascensor amb què el jugador estava en contacte.
         if (support != null) controller.Move(support.Delta);
+        // Esborra el suport anterior; els nous contactes del controlador el tornaran a detectar.
         support = null;
 
         Vector2 input = Vector2.zero;
@@ -120,29 +124,38 @@ public class DioramaPlayer : MonoBehaviour
             if (keys.dKey.isPressed || keys.rightArrowKey.isPressed) input.x += 1;
             if (keys.aKey.isPressed || keys.leftArrowKey.isPressed) input.x -= 1;
         }
+        // Limita la intensitat del moviment per evitar anar més ràpid en diagonal.
         input = Vector2.ClampMagnitude(input, 1f);
+        // Projecta la direcció de la càmera sobre el terra perquè mirar cap avall no faci baixar el
+        // jugador.
         Vector3 forward = Vector3.ProjectOnPlane(viewCamera.forward, Vector3.up).normalized;
         Vector3 right = Vector3.ProjectOnPlane(viewCamera.right, Vector3.up).normalized;
+        // Converteix les tecles en moviment relatiu a la vista de la càmera.
         Vector3 direction = forward * input.y + right * input.x;
 
         if (controller.isGrounded && verticalSpeed < 0f) verticalSpeed = -2f;
+        // Acumula la caiguda: CharacterController.Move no aplica gravetat automàticament.
         verticalSpeed += gravity * Time.deltaTime;
         controller.Move((direction * speed + Vector3.up * verticalSpeed) * Time.deltaTime);
         if (direction.sqrMagnitude > 0.01f) transform.rotation = Quaternion.LookRotation(direction);
 
-        // A fall restarts the position, but keeps the collected spheres.
+        // Si cau fora del nivell, torna a l'inici i conserva les esferes recollides.
         if (transform.position.y < -8f)
         {
+            // Desactiva temporalment el controlador per recol·locar el personatge directament.
             controller.enabled = false;
             transform.position = startPosition;
             controller.enabled = true;
             verticalSpeed = 0f;
+            // Esborra el suport anterior; els nous contactes del controlador el tornaran a detectar.
             support = null;
         }
     }
 
+    // Unity crida aquest mètode quan controller.Move troba un collider sòlid.
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
+        // Una normal que apunta prou cap amunt indica un suport sota els peus, no una paret lateral.
         if (hit.normal.y > 0.5f)
             support = hit.collider.GetComponent<DioramaLift>();
     }
@@ -179,6 +192,7 @@ Crea **DioramaCamera.cs**:
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+// Actualitza aquest script després dels scripts amb ordre per defecte (0).
 [DefaultExecutionOrder(100)]
 public class DioramaCamera : MonoBehaviour
 {
@@ -197,8 +211,10 @@ public class DioramaCamera : MonoBehaviour
             if (keys.qKey.wasPressedThisFrame) targetYaw -= 90f;
             if (keys.eKey.wasPressedThisFrame) targetYaw += 90f;
         }
+        // Gira suaument fins a l'angle escollit amb Q o E, tenint en compte la volta de 360 graus.
         yaw = Mathf.MoveTowardsAngle(yaw, targetYaw, turnSpeed * Time.deltaTime);
         transform.rotation = Quaternion.Euler(pitch, yaw, 0f);
+        // Col·loca la càmera darrere de la seva direcció de mirada, a la distància del centre indicada.
         transform.position = pivot.position - transform.forward * distance;
     }
 }
@@ -224,6 +240,7 @@ Crea **DioramaLift.cs**:
 ```csharp
 using UnityEngine;
 
+// Mou primer l'ascensor perquè el jugador pugui llegir-ne el desplaçament d'aquest frame.
 [DefaultExecutionOrder(-100)]
 public class DioramaLift : MonoBehaviour
 {
@@ -231,6 +248,8 @@ public class DioramaLift : MonoBehaviour
     public Transform top;
     public float speed = 1.2f;
     public float waitTime = 2f;
+    // DioramaPlayer pot llegir aquest desplaçament per viatjar amb l'ascensor; només aquest script el
+    // modifica.
     public Vector3 Delta { get; private set; }
     private bool goingUp = true;
     private float remainingWait;
@@ -244,17 +263,21 @@ public class DioramaLift : MonoBehaviour
     void Update()
     {
         Vector3 previous = transform.position;
+        // Descompta l'espera de cada parada abans de reprendre el recorregut.
         if (remainingWait > 0f) remainingWait -= Time.deltaTime;
         else
         {
+            // Tria el punt superior o inferior segons el sentit actual del trajecte.
             Vector3 target = goingUp ? top.position : bottom.position;
             transform.position = Vector3.MoveTowards(previous, target, speed * Time.deltaTime);
             if (Vector3.Distance(transform.position, target) < 0.001f)
             {
+                // En arribar, inverteix el sentit i prepara una nova espera.
                 goingUp = !goingUp;
                 remainingWait = waitTime;
             }
         }
+        // Desa quant s'ha mogut aquest frame; durant l'espera el desplaçament és zero.
         Delta = transform.position - previous;
     }
 }
@@ -296,7 +319,7 @@ public class DioramaWall : MonoBehaviour
 
     void Awake()
     {
-        // Each wall has its own instance: fading one does not fade the others.
+        // Crea un material propi per a aquesta paret: canviar-ne la transparència no afecta les altres.
         ownMaterial = GetComponent<Renderer>().material;
         originalColor = ownMaterial.GetColor("_BaseColor");
     }
@@ -304,13 +327,16 @@ public class DioramaWall : MonoBehaviour
     public void SetObstructing(bool obstructing)
     {
         Color color = ownMaterial.GetColor("_BaseColor");
+        // Si la paret tapa el jugador, redueix-ne l'opacitat; si no, recupera l'original.
         float target = obstructing ? hiddenAlpha : originalColor.a;
+        // Canvia l'alpha gradualment perquè la transparència no aparegui de cop.
         color.a = Mathf.MoveTowards(color.a, target, fadeSpeed * Time.deltaTime);
         ownMaterial.SetColor("_BaseColor", color);
     }
 
     void OnDestroy()
     {
+        // Allibera la còpia del material creada per aquest script.
         if (ownMaterial != null) Destroy(ownMaterial);
     }
 }
@@ -326,27 +352,33 @@ Crea **DioramaOcclusion.cs**:
 using UnityEngine;
 using System.Collections.Generic;
 
+// Comprova què tapa el jugador després que DioramaCamera hagi actualitzat la vista.
 [DefaultExecutionOrder(200)]
 public class DioramaOcclusion : MonoBehaviour
 {
     public Transform player;
     public LayerMask wallsMask;
     private DioramaWall[] walls;
+    // Conjunt de parets que tapen el jugador; HashSet evita desar la mateixa paret dues vegades.
     private readonly HashSet<DioramaWall> obstructing = new HashSet<DioramaWall>();
 
     void Start()
     {
+        // Busca les parets actives amb DioramaWall per poder actualitzar-ne la transparència.
         walls = FindObjectsByType<DioramaWall>();
     }
 
     void LateUpdate()
     {
+        // Refà la llista d'obstacles a cada frame, perquè la càmera i el jugador es poden moure.
         obstructing.Clear();
-        // In perspective, trace the line from the camera to the player.
+        // Busca les parets entre la càmera i el jugador per fer-les transparents.
         Vector3 origin = transform.position;
         Vector3 toPlayer = player.position - origin;
         float distance = toPlayer.magnitude;
         Vector3 direction = distance > 0.001f ? toPlayer / distance : transform.forward;
+        // Comprova un recorregut amb gruix fins al jugador; wallsMask limita les capes i s'ignoren els
+        // triggers.
         RaycastHit[] hits = Physics.SphereCastAll(origin, 0.25f, direction,
             distance, wallsMask, QueryTriggerInteraction.Ignore);
         foreach (RaycastHit hit in hits)
@@ -354,6 +386,7 @@ public class DioramaOcclusion : MonoBehaviour
             DioramaWall wall = hit.collider.GetComponent<DioramaWall>();
             if (wall != null) obstructing.Add(wall);
         }
+        // Actualitza totes les parets, incloses les que han deixat de tapar el jugador.
         foreach (DioramaWall wall in walls)
             if (wall != null) wall.SetObstructing(obstructing.Contains(wall));
     }
@@ -388,10 +421,12 @@ public class DioramaProgress : MonoBehaviour
     private int collected;
     private Vector3 closedPosition;
     private bool won;
+    // Propietat calculada: la porta es pot obrir quan el recompte arriba al total.
     public bool IsOpen => collected >= total;
 
     void Start()
     {
+        // Desa la posició tancada per calcular l'altura final de la porta.
         closedPosition = door.position;
         UpdateText();
     }
@@ -405,12 +440,14 @@ public class DioramaProgress : MonoBehaviour
 
     public void Collect()
     {
+        // DioramaPickup avisa d'una nova esfera; actualitza el recompte i el text.
         collected++;
         UpdateText();
     }
 
     public void ReachTreasure()
     {
+        // Només completa el repte si la porta està desbloquejada i encara no s'ha guanyat.
         if (!IsOpen || won) return;
         won = true;
         UpdateText();
@@ -452,16 +489,20 @@ public class DioramaPickup : MonoBehaviour
     public bool isTreasure;
     private bool collected;
 
+    // Unity avisa quan un collider entra al trigger; other identifica l'objecte que hi entra.
     void OnTriggerEnter(Collider other)
     {
         if (!other.CompareTag("Player") || collected) return;
+        // El tresor comprova la victòria; les altres esferes incrementen el recompte.
         if (isTreasure)
         {
             progress.ReachTreasure();
             return;
         }
         collected = true;
+        // Avisa el gestor del nivell que s'ha recollit una esfera.
         progress.Collect();
+        // Amaga l'objecte i desactiva els seus components després de recollir-lo.
         gameObject.SetActive(false);
     }
 }

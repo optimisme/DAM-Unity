@@ -192,6 +192,7 @@ Copia cada bloc al fitxer indicat dins d’Assets/DemoSalt/Scripts. Són tots el
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+// Unity afegeix un Character Controller si l'objecte encara no en té.
 [RequireComponent(typeof(CharacterController))]
 public class SaltPlayer : MonoBehaviour
 {
@@ -200,10 +201,13 @@ public class SaltPlayer : MonoBehaviour
     public float jumpSpeed = 8;
     public float gravity = 20;
     public float releaseGravity = 35;
+    // Marge per poder saltar just després de sortir d'una vora.
     public float coyoteTime = 0.12f;
+    // Temps que recordem una pulsació de salt feta una mica abans de tocar terra.
     public float jumpBuffer = 0.12f;
     CharacterController controller;
     float verticalSpeed;
+    // Un instant molt antic indica que encara no hi ha un contacte o una pulsació aprofitables.
     float lastGrounded = float.NegativeInfinity;
     float lastJumpPressed = float.NegativeInfinity;
 
@@ -222,37 +226,52 @@ public class SaltPlayer : MonoBehaviour
             if (keyboard.aKey.isPressed || keyboard.leftArrowKey.isPressed) input.x--;
             if (keyboard.dKey.isPressed || keyboard.rightArrowKey.isPressed) input.x++;
             jumpHeld = keyboard.spaceKey.isPressed;
+            // Desa quan s'ha premut espai per poder aprofitar la pulsació en aterrar.
             if (keyboard.spaceKey.wasPressedThisFrame) lastJumpPressed = Time.time;
         }
+        // Limita la intensitat del moviment per evitar anar més ràpid en diagonal.
         input = Vector2.ClampMagnitude(input, 1);
+        // Accepta el contacte amb el terra només si no està pujant, per no renovar el marge durant el
+        // salt.
         bool grounded = controller.isGrounded && verticalSpeed <= 0;
         if (grounded)
         {
             lastGrounded = Time.time;
             verticalSpeed = -2;
         }
+        // Salta si la pulsació és recent i encara és dins del marge des de l'últim contacte amb el
+        // terra.
         if (Time.time - lastJumpPressed <= jumpBuffer && Time.time - lastGrounded <= coyoteTime)
         {
+            // Inicia el salt donant velocitat cap amunt.
             verticalSpeed = jumpSpeed;
+            // Consumeix la pulsació i el contacte per evitar un segon salt amb les mateixes dades.
             lastJumpPressed = lastGrounded = float.NegativeInfinity;
         }
+        // Si deixa anar espai mentre puja, augmenta la gravetat per fer un salt més curt.
         float acceleration = verticalSpeed > 0 && !jumpHeld ? releaseGravity : gravity;
         verticalSpeed -= acceleration * Time.deltaTime;
         Vector3 movement = new Vector3(input.x * speed, verticalSpeed, input.y * speed);
+        // Mou el jugador i desa si el controlador ha tocat terra, sostre o laterals.
         CollisionFlags flags = controller.Move(movement * Time.deltaTime);
+        // Comprova el senyal de contacte amb el sostre i atura la pujada si hi ha topat.
         if ((flags & CollisionFlags.Above) != 0 && verticalSpeed > 0) verticalSpeed = 0;
         if (input.sqrMagnitude > 0.01f)
             transform.rotation = Quaternion.LookRotation(new Vector3(input.x, 0, input.y));
+        // Avisa el gestor quan el jugador cau per sota del nivell.
         if (transform.position.y < -5) game.Fall();
     }
 
     public void Teleport(Vector3 position)
     {
+        // Desactiva temporalment el controlador per recol·locar el personatge directament.
         controller.enabled = false;
         transform.SetPositionAndRotation(position, Quaternion.identity);
         controller.enabled = true;
         verticalSpeed = 0;
+        // Descarta els marges de salt anteriors perquè no s'apliquin després de reaparèixer.
         lastGrounded = lastJumpPressed = float.NegativeInfinity;
+        // Actualitza la informació física dels colliders amb els canvis de posició.
         Physics.SyncTransforms();
     }
 }
@@ -272,8 +291,10 @@ public class SaltCheckpoint : MonoBehaviour
 
     void Awake() => material = visual.material;
 
+    // Unity avisa quan un collider entra al trigger; other identifica l'objecte que hi entra.
     void OnTriggerEnter(Collider other)
     {
+        // Activa el punt de control només per al jugador d'aquesta partida i abans de guanyar.
         if (other.GetComponent<SaltPlayer>() == game.player && !game.Won)
             game.ActivateCheckpoint(this);
     }
@@ -285,6 +306,7 @@ public class SaltCheckpoint : MonoBehaviour
 
     void OnDestroy()
     {
+        // Allibera la còpia del material perquè no quedi ocupant memòria.
         if (material != null) Destroy(material);
     }
 }
@@ -299,8 +321,10 @@ public class SaltGoal : MonoBehaviour
 {
     public SaltGame game;
 
+    // Unity avisa quan un collider entra al trigger; other identifica l'objecte que hi entra.
     void OnTriggerEnter(Collider other)
     {
+        // Només el jugador de la partida pot activar l'arribada a la meta.
         if (other.GetComponent<SaltPlayer>() == game.player) game.Finish();
     }
 }
@@ -337,6 +361,7 @@ public class SaltGame : MonoBehaviour
     {
         if (Won || HasCheckpoint) return;
         HasCheckpoint = true;
+        // Desa on reapareixerà el jugador a partir d'ara si cau.
         respawnPosition = point.spawnPoint.position;
         point.SetActiveColor(true);
     }
@@ -344,7 +369,9 @@ public class SaltGame : MonoBehaviour
     public void Fall()
     {
         if (Won) return;
+        // Compta aquesta caiguda abans de fer reaparèixer el jugador.
         Falls++;
+        // Recol·loca el jugador al punt guardat i reinicia el seu moviment vertical.
         player.Teleport(respawnPosition);
     }
 
@@ -355,8 +382,10 @@ public class SaltGame : MonoBehaviour
         Won = false;
         HasCheckpoint = false;
         Falls = 0;
+        // En reiniciar, torna a utilitzar l'inici del nivell en lloc del punt de control.
         respawnPosition = startPoint.position;
         checkpoint.SetActiveColor(false);
+        // Recol·loca el jugador al punt guardat i reinicia el seu moviment vertical.
         player.Teleport(respawnPosition);
     }
 }
