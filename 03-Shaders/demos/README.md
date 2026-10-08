@@ -34,6 +34,12 @@ Les mides són MB decimals aproximats. La mida descomprimida no inclou la memòr
 
 La variant **DemoAiguaGalaxy** mostra reflexos retallats, un fons de pedra amb distorsió i càustiques, tint segons profunditat i escuma en contacte amb les roques. El controlador té **Time Scale = 2**; posa’l a 1 per reduir la velocitat. Les dues escenes comparteixen el mateix ZIP.
 
+## Biblioteca de materials reutilitzables
+
+[Projecte de catàleg](Biblioteca-Materials.zip) · [Paquet importable](DAM-Shaders.unitypackage) · [Guia d’ús](../Biblioteca-Materials.md)
+
+14 famílies amb colors vius per a jocs infantils, incloses **fusta i plàstic**: 16 Shader Graphs, 36 materials i 84 textures i un prefab d’aigua Galaxy. El `.unitypackage` conté només la biblioteca i es pot importar en altres projectes URP; no inclou els controls del catàleg ni substitueix la configuració del projecte.
+
 ## Controls
 
 | Demos | Controls |
