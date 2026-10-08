@@ -5,7 +5,9 @@ Els GameObjects de *Unity* permeten afegir un o més arxius de codi per afectar-
 
 Crea una escena **Basic** amb **Main Camera** i **Directional Light** (si parteixes d’una escena buida, crea-les amb **GameObject > Camera** i **GameObject > Light > Directional Light**), i desa-la com a **DemoObjectes**. Utilitza un projecte **Universal 3D (URP)**: els exemples de color fan servir la propietat `_BaseColor` dels seus materials.
 
-Per als apartats de teclat, comprova a **Window > Package Manager > Unity Registry** que **Input System** està instal·lat. A **Edit > Project Settings > Player > Other Settings**, posa **Active Input Handling = Input System Package (New)** o **Both** i reinicia Unity si ho demana.
+Per als apartats de teclat, comprova a **Window > Package Manager > Unity Registry** que **Input System** està instal·lat. 
+
+A **Edit > Project Settings > Player > Other Settings > Configuration**, posa **Active Input Handling = Input System Package (New)** o **Both** i reinicia Unity si ho demana.
 
 ## MonoBehaviour
 
@@ -27,6 +29,13 @@ using UnityEngine;
 /// Mostra les funcions més importants i la seva execució en ordre.
 public class SimpleRotation : MonoBehaviour
 {
+
+    // Etiqueta a la interfície de l'Inspector
+    [Header("Velocitat de rotació")]
+
+    // Variable pública que es pot modificar des de l'Inspector
+    public float speed = 60f; 
+
     /// Es crida automàticament quan el component es carrega.
     /// Ideal per inicialitzar referències i valors que no depenen d'altres scripts.
     void Awake()
@@ -63,7 +72,7 @@ public class SimpleRotation : MonoBehaviour
         // permet mantenir la velocitat de rotació, 
         // encara que hi hagi variacions de FPS
         float deltaTime = Time.deltaTime;
-        transform.Rotate(0, 60f * deltaTime, 0);
+        transform.Rotate(0, speed * deltaTime, 0);
     }
 
 
@@ -98,30 +107,6 @@ public class SimpleRotation : MonoBehaviour
     {
         Debug.Log("OnDestroy(): objecte eliminat.");
     }
-}
-```
-
-### Variables públiques del codi
-
-Modifica el codi anterior, per afegir una variable de velocitat, i fes-la servir per definir la velocitat de rotació de l'objecte:
-
-```csharp
-using UnityEngine;
-
-public class SimpleRotation : MonoBehaviour
-{
-    [Header("Velocitat de rotació")]
-    public float speed = 60f; 
-    // ...
-    void Update()
-    {
-        // multiplicar per Time.deltaTime 
-        // permet mantenir la velocitat de rotació, 
-        // encara que hi hagi variacions de FPS
-        float deltaTime = Time.deltaTime;
-        transform.Rotate(0, speed * deltaTime, 0);
-    }
-    // ...
 }
 ```
 
@@ -290,7 +275,7 @@ Aquest primer moviment modifica directament el **Transform** i no necessita Rigi
 
 - Atura Play abans de modificar l’escena. Deixa el Player amb el tag **Player**; si has provat l’exemple del tag Enemy, torna’l a Player.
 - Afegeix un **Plane** a `(0, 0, 0)` amb escala `(2, 1, 2)`, una **Sphere** a `(-2, 0.5, 3)` i un **Cylinder** a `(2, 1, 3)`, tots amb rotació zero. L’esfera i el cilindre conserven escala `(1, 1, 1)`.
-- Crea dos materials **Universal Render Pipeline/Lit**, un per a l’esfera i un per al cilindre, i assigna’ls als seus Mesh Renderers. Tria colors inicials diferents del vermell.
+- Crea dos materials amb **Create > Render > Material** per defecte deixa'l a **Shader = Universal Render Pipeline/Lit**, un per a l’esfera i un per al cilindre, i assigna’ls als seus Mesh Renderers. Tria colors inicials diferents del vermell.
 - Crea un nou script amb nom **"SimpleMovement"**, amb el següent codi, i **afegeix-lo al Player**. Fes Play i clica la vista Game abans de prémer les fletxes.
 
 ```csharp
@@ -320,6 +305,7 @@ public class SimpleMovement : MonoBehaviour
         if (Keyboard.current.rightArrowKey.isPressed)
             movement += Vector3.right;              // right = (1,0,0)
 
+        // Canviar la posició d'un objecte
         transform.position += movement.normalized * speed * Time.deltaTime;
     }
 }
@@ -403,23 +389,26 @@ Per tal que funcioni:
 
 ## Col·lisions amb *Character Controller*
 
-- Atura Play. Afegeix un component *Character Controller* al **Player**, amb **Center = (0, 0, 0)**, **Height = 1**, **Radius = 0.5** i **Min Move Distance = 0**.
+- Atura Play. 
+- Afegeix un component *Character Controller* al **Player**, amb **Center = (0, 0, 0)**, **Height = 1**, **Radius = 0.5** i **Min Move Distance = 0**.
 - Elimina el **Box Collider** original del Player i qualsevol **Rigidbody** que hi hagis afegit. Mantén el tag **Player**.
 - Afegeix un component **Sphere Collider** a l'esfera (si no el té)
-- Defineix l'sphere collider com a *Trigger* (Is Trigger = true)
+- Defineix l'sphere collider com a *Trigger* (Is Trigger = true > no li aplica forces, objectes poden travessar-lo)
 - Afegeix el *tag* **"ColorHit"** a l'esfera (crea el tag si no existeix)
 
 El cub podrà travessar l'esfera: es tornarà vermella en entrar-hi i recuperarà el color original en sortir-ne.
 
-**Important!** Substitueix el moviment amb `transform.position`:
+El següent codi de **SimpleMovement** substitueix el moviment del *Transform* pel moviment del *Character Controller*, fent servir `controller.Move(...)` en lloc de canviar directament la posició del *Transform*.
 
 ```csharp
+// Canviar la posició d'un objecte
 transform.position += movement.normalized * speed * Time.deltaTime;
 ```
 
 pel moviment del *Character Controller*:
 
 ```csharp
+// Canviar la posició d'un "character controller"
 controller.Move(movement.normalized * speed * Time.deltaTime);
 ```
 
@@ -466,9 +455,8 @@ public class SimpleMovement : MonoBehaviour
         if (Keyboard.current.rightArrowKey.isPressed)
             movement += Vector3.right;
 
-        controller.Move(
-            movement.normalized * speed * Time.deltaTime
-        );
+        // Canviar la posició d'un "character controller"
+        controller.Move(movement.normalized * speed * Time.deltaTime);
     }
 
     void OnTriggerEnter(Collider other)
