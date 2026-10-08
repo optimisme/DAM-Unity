@@ -235,6 +235,7 @@ public class ForatController : MonoBehaviour
     public Camera viewCamera;
     public Transform player;
     public Renderer[] walls;
+    // Filtra les deteccions a la capa 8; 1 << 8 activa el bit d'aquesta capa.
     public LayerMask wallMask = 1 << 8;
     public float radius = 0.18f;
     public bool effectEnabled = true;
@@ -246,8 +247,10 @@ public class ForatController : MonoBehaviour
 
     void Awake()
     {
+        // Prepara propietats particulars per a cada paret sense crear còpies del material compartit.
         block = new MaterialPropertyBlock();
         var orbit = viewCamera ? viewCamera.GetComponent<DemoOrbitCamera>() : null;
+        // Indica a la càmera si el punter és sobre el panell per evitar moure-la en usar els controls.
         if (orbit) orbit.IsPointerOverControls = point => showPanel && new Rect(16, 16, 450, 140).Contains(point);
     }
     void Update()
@@ -259,44 +262,63 @@ public class ForatController : MonoBehaviour
             if (keyboard.fKey.wasPressedThisFrame) effectEnabled = !effectEnabled;
             if (keyboard.spaceKey.wasPressedThisFrame) autoMove = !autoMove;
             if (keyboard.hKey.wasPressedThisFrame) showPanel = !showPanel;
+            // Converteix A i D en un valor de moviment: -1 a l'esquerra, 1 a la dreta i 0 si es
+            // compensen.
             float input = (keyboard.dKey.isPressed ? 1 : 0) - (keyboard.aKey.isPressed ? 1 : 0);
             if (input != 0)
             {
+                // Quan el jugador prem A o D, passa a controlar manualment el moviment.
                 autoMove = false;
                 Vector3 p = player.position;
+                // Mou el personatge horitzontalment sense sortir dels límits de la demo.
                 p.x = Mathf.Clamp(p.x + input * Time.deltaTime * 2, -3.4f, 3.4f);
                 player.position = p;
             }
             if (keyboard.rKey.wasPressedThisFrame) { elapsed = 0; autoMove = true; effectEnabled = true; }
         }
+        // El sinus crea un moviment automàtic d'anada i tornada entre els dos extrems.
         if (autoMove) player.position = new Vector3(Mathf.Sin(elapsed * 0.6f) * 3.4f, player.position.y, player.position.z);
     }
+    // Recalcula les parets afectades després dels moviments fets a Update.
     void LateUpdate() { RefreshMask(); }
     public void RefreshMask()
     {
         if (block == null) block = new MaterialPropertyBlock();
+        // Situa el centre del forat una mica per sobre del pivot del personatge.
         Vector3 target = player.position + Vector3.up * 0.35f;
+        // Converteix la posició 3D a coordenades de la vista: X i Y van de 0 a 1 dins de la imatge.
         Vector3 viewport = viewCamera.WorldToViewportPoint(target);
         Vector3 segment = target - viewCamera.transform.position;
+        // Actualitza la informació física dels colliders amb els canvis de posició.
         Physics.SyncTransforms();
+        // Busca tots els colliders de les capes indicades entre la càmera i el personatge.
         RaycastHit[] hits = Physics.RaycastAll(viewCamera.transform.position, segment.normalized,
             segment.magnitude, wallMask, QueryTriggerInteraction.Ignore);
         activeWalls = 0;
         foreach (Renderer wall in walls)
         {
             bool blocked = false;
+            // Només obre forats si l'efecte està activat i el personatge queda davant de la càmera.
             if (effectEnabled && viewport.z > 0)
                 foreach (RaycastHit hit in hits)
+                    // Relaciona cada impacte amb una paret de la llista; el Renderer i el collider són
+                    // al mateix objecte.
                     if (hit.collider.GetComponent<Renderer>() == wall) { blocked = true; break; }
             if (blocked) activeWalls++;
+            // Recupera les propietats de la paret abans de modificar les del forat.
             wall.GetPropertyBlock(block);
+            // Envia al shader el centre del cercle en coordenades de pantalla normalitzades.
             block.SetVector("_Centre", new Vector4(viewport.x, viewport.y, 0, 0));
+            // Envia la proporció amplada/altura perquè el shader pugui mantenir el cercle rodó.
             block.SetFloat("_Aspecte", viewCamera.aspect);
             block.SetFloat("_Radi", radius);
+            // Activa el retall només a les parets que tapen el personatge.
             block.SetFloat("_Actiu", blocked ? 1 : 0);
+            // Aplica els valors a aquesta paret perquè el shader dibuixi el forat.
             wall.SetPropertyBlock(block);
         }
     }
+    // En desactivar el component, tanca els forats que haguessin quedat oberts.
     void OnDisable()
     {
         if (walls == null) return;
@@ -307,6 +329,7 @@ public class ForatController : MonoBehaviour
             wall.GetPropertyBlock(block); block.SetFloat("_Actiu", 0); wall.SetPropertyBlock(block);
         }
     }
+    // Unity crida OnGUI per dibuixar i gestionar aquest panell senzill de controls.
     void OnGUI()
     {
         if (!showPanel) return;
@@ -315,6 +338,7 @@ public class ForatController : MonoBehaviour
         GUILayout.Label("06 / FORAT — Parets actives: " + activeWalls);
         GUILayout.Label("A / D: moure | F: efecte | Espai: automatic | R: reinicia");
         GUILayout.Label("Radi: " + radius.ToString("0.00") + " | H: amaga panell");
+        // Permet canviar la mida del forat; RefreshMask enviarà el nou radi al shader.
         radius = GUILayout.HorizontalSlider(radius, 0.06f, 0.3f);
         GUILayout.Label("Boto dret: orbita | Roda: zoom | Home: vista inicial");
         GUILayout.EndArea();

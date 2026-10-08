@@ -256,16 +256,20 @@ public class DuelFighter : MonoBehaviour
 
     public bool Fire(Vector3 direction)
     {
+        // No permet disparar si la ronda ha acabat, no queda vida o encara dura l'espera entre trets.
         if (game.IsOver || Life <= 0 || Time.time < nextShot) return false;
         direction.y = 0;
         if (direction.sqrMagnitude < 0.001f) return false;
         direction.Normalize();
+        // Desa l'instant a partir del qual es podrà tornar a disparar.
         nextShot = Time.time + shotInterval;
         // Evita crear la bala a l'altra banda d'un mur molt proper.
         if (Physics.SphereCast(transform.position, bulletRadius, direction,
             out _, muzzleOffset, wallsMask, QueryTriggerInteraction.Ignore)) return false;
+        // Crea una bala davant del personatge i l'orienta cap a la direcció del tret.
         DuelBullet bullet = Instantiate(bulletPrefab,
             transform.position + direction * muzzleOffset, Quaternion.LookRotation(direction));
+        // Passa a la bala la referència de qui dispara, la direcció, la velocitat i el color.
         bullet.Launch(this, direction, bulletSpeed, bulletColor);
         return true;
     }
@@ -274,6 +278,7 @@ public class DuelFighter : MonoBehaviour
     {
         if (game.IsOver || Life <= 0) return;
         Life--;
+        // Avisa el gestor de la ronda indicant quin lluitador s'ha quedat sense vida.
         if (Life == 0) game.Finish(this);
     }
 }
@@ -296,35 +301,46 @@ public class DuelBullet : MonoBehaviour
 
     public void Launch(DuelFighter shooter, Vector3 direction, float speed, Color color)
     {
+        // Recorda qui ha disparat per evitar que la bala li faci mal.
         owner = shooter;
         var bulletCollider = GetComponent<Collider>();
+        // Ignora els xocs amb tots els colliders del personatge que dispara.
         foreach (var ownCollider in shooter.GetComponentsInChildren<Collider>())
             Physics.IgnoreCollision(bulletCollider, ownCollider);
         material = GetComponent<Renderer>().material;
         material.SetColor("_BaseColor", color);
+        // Dona velocitat al cos físic de la bala; a partir d'aquí la física la mou.
         GetComponent<Rigidbody>().linearVelocity = direction * speed;
+        // Programa l'eliminació de la bala si no impacta abans, per no acumular-ne indefinidament.
         Destroy(gameObject, lifetime);
     }
 
+    // Unity avisa d'un xoc físic de la bala; collision conté la informació del contacte.
     void OnCollisionEnter(Collision collision)
     {
         if (spent) return;
+        // Busca el lluitador també als pares, perquè el collider pot ser en un objecte fill.
         var fighter = collision.collider.GetComponentInParent<DuelFighter>();
         if (fighter == owner) return;
+        // Marca la bala com a gastada per evitar que un altre contacte apliqui més d'un impacte.
         spent = true;
+        // Resta vida si ha tocat un lluitador; si ha tocat un mur, només elimina la bala.
         if (fighter != null) fighter.TakeHit();
         Remove();
     }
 
     public void Remove()
     {
+        // Marca la bala com a gastada per evitar que un altre contacte apliqui més d'un impacte.
         spent = true;
+        // Desactiva la bala immediatament mentre espera que Destroy l'elimini.
         gameObject.SetActive(false);
         Destroy(gameObject);
     }
 
     void OnDestroy()
     {
+        // Allibera la còpia del material perquè no quedi ocupant memòria.
         if (material != null) Destroy(material);
     }
 }
@@ -349,6 +365,7 @@ public class DuelPlayer : MonoBehaviour
 
     void Awake()
     {
+        // Obtén el controlador del mateix objecte per moure'l respectant els colliders.
         controller = GetComponent<CharacterController>();
         fighter = GetComponent<DuelFighter>();
     }
@@ -365,8 +382,10 @@ public class DuelPlayer : MonoBehaviour
             if (keyboard.aKey.isPressed || keyboard.leftArrowKey.isPressed) input.x--;
             if (keyboard.dKey.isPressed || keyboard.rightArrowKey.isPressed) input.x++;
         }
+        // Limita la intensitat del moviment per evitar anar més ràpid en diagonal.
         input = Vector2.ClampMagnitude(input, 1);
         if (controller.isGrounded && verticalSpeed < 0) verticalSpeed = -2;
+        // Aplica la gravetat a la velocitat vertical; el Character Controller no ho fa sol.
         verticalSpeed -= 20 * Time.deltaTime;
         controller.Move(new Vector3(input.x * speed, verticalSpeed, input.y * speed) * Time.deltaTime);
 
@@ -375,8 +394,11 @@ public class DuelPlayer : MonoBehaviour
         Vector2 screen = mouse.position.ReadValue();
         // Només apunta i dispara quan el punter és dins la vista de joc.
         if (!aimCamera.pixelRect.Contains(screen)) return;
+        // Converteix la posició del ratolí a la pantalla en un raig que surt de la càmera.
         Ray ray = aimCamera.ScreenPointToRay(screen);
+        // Crea un pla matemàtic horitzontal a l'altura del jugador per calcular on apunta.
         Plane aimPlane = new Plane(Vector3.up, new Vector3(0, transform.position.y, 0));
+        // Calcula on el raig talla aquest pla; no és una comprovació contra colliders.
         if (!aimPlane.Raycast(ray, out float distance)) return;
         Vector3 direction = ray.GetPoint(distance) - transform.position;
         direction.y = 0;
@@ -399,6 +421,7 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterController), typeof(DuelFighter))]
 public class DuelEnemy : MonoBehaviour
 {
+    // L'enemic alterna patrulla, avís abans del tret i espera després de disparar.
     public enum EnemyState { Patrol, Warning, Recovery }
     public Transform player;
     public Transform[] points;
@@ -417,6 +440,7 @@ public class DuelEnemy : MonoBehaviour
 
     void Awake()
     {
+        // Obtén el controlador del mateix objecte per moure'l respectant els colliders.
         controller = GetComponent<CharacterController>();
         fighter = GetComponent<DuelFighter>();
         material = body.material;
@@ -431,6 +455,7 @@ public class DuelEnemy : MonoBehaviour
 
     public bool CanSeePlayer()
     {
+        // Per veure el jugador cal que sigui dins de l'abast i que cap mur bloquegi la línia de visió.
         return Vector3.Distance(transform.position, player.position) <= sightDistance &&
             !Physics.Linecast(transform.position, player.position, fighter.wallsMask, QueryTriggerInteraction.Ignore);
     }
@@ -442,6 +467,7 @@ public class DuelEnemy : MonoBehaviour
         {
             if (CanSeePlayer())
             {
+                // Fixa la direcció del proper tret ara; durant l'avís el jugador té temps d'apartar-se.
                 shotDirection = player.position - transform.position;
                 shotDirection.y = 0;
                 if (shotDirection.sqrMagnitude < 0.001f) return;
@@ -453,6 +479,7 @@ public class DuelEnemy : MonoBehaviour
             {
                 Vector3 delta = points[nextPoint].position - transform.position;
                 delta.y = 0;
+                // En arribar al punt, tria el següent; després de l'últim torna al primer.
                 if (delta.magnitude < 0.06f) nextPoint = (nextPoint + 1) % points.Length;
                 else
                 {
@@ -465,6 +492,7 @@ public class DuelEnemy : MonoBehaviour
         }
         else
         {
+            // Descompta el temps d'avís o de recuperació abans de canviar d'estat.
             timer -= Time.deltaTime;
             if (timer > 0) return;
             if (State == EnemyState.Warning)
@@ -487,6 +515,7 @@ public class DuelEnemy : MonoBehaviour
 
     void OnDestroy()
     {
+        // Allibera la còpia del material perquè no quedi ocupant memòria.
         if (material != null) Destroy(material);
     }
 }
@@ -535,31 +564,37 @@ public class DuelGame : MonoBehaviour
         if (IsOver) return;
         IsOver = true;
         result = defeated == enemy ? "Has guanyat!" : "Has perdut!";
+        // Elimina els trets que quedin a l'escena perquè no afectin el final o l'inici de la ronda.
         ClearBullets();
     }
 
     public void ResetRound()
     {
+        // Elimina els trets que quedin a l'escena perquè no afectin el final o l'inici de la ronda.
         ClearBullets();
         IsOver = false;
         ResetActor(player, playerStart, playerRotation);
         ResetActor(enemy, enemyStart, enemyRotation);
         player.GetComponent<DuelPlayer>().ResetMotion();
         enemy.GetComponent<DuelEnemy>().ResetBrain();
+        // Actualitza la informació física dels colliders amb els canvis de posició.
         Physics.SyncTransforms();
     }
 
     void ResetActor(DuelFighter actor, Vector3 position, Quaternion rotation)
     {
         var controller = actor.GetComponent<CharacterController>();
+        // Desactiva temporalment el controlador per recol·locar el personatge directament.
         controller.enabled = false;
         actor.transform.SetPositionAndRotation(position, rotation);
         controller.enabled = true;
+        // Recupera la vida i reinicia l'espera entre trets del personatge recol·locat.
         actor.ResetFighter();
     }
 
     void ClearBullets()
     {
+        // Busca totes les bales actives; no cal ordenar-les per eliminar-les.
         foreach (var bullet in FindObjectsByType<DuelBullet>(FindObjectsSortMode.None)) bullet.Remove();
     }
 }

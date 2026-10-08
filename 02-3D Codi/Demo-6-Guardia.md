@@ -225,6 +225,7 @@ El CharacterController resol les col·lisions. El codi aplica gravetat, limita e
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+// Unity afegeix un Character Controller si l'objecte encara no en té.
 [RequireComponent(typeof(CharacterController))]
 public class GuardiaPlayer : MonoBehaviour
 {
@@ -236,6 +237,7 @@ public class GuardiaPlayer : MonoBehaviour
 
     void Awake()
     {
+        // Obtén el controlador del mateix objecte per moure'l respectant els colliders.
         controller = GetComponent<CharacterController>();
         start = transform.position;
     }
@@ -252,8 +254,10 @@ public class GuardiaPlayer : MonoBehaviour
             if (keyboard.dKey.isPressed || keyboard.rightArrowKey.isPressed) input.x++;
             if (keyboard.aKey.isPressed || keyboard.leftArrowKey.isPressed) input.x--;
         }
+        // Limita la intensitat del moviment per evitar anar més ràpid en diagonal.
         input = Vector2.ClampMagnitude(input, 1);
         if (controller.isGrounded && verticalSpeed < 0) verticalSpeed = -2;
+        // Aplica la gravetat a la velocitat vertical; el Character Controller no ho fa sol.
         verticalSpeed += -20 * Time.deltaTime;
         controller.Move(new Vector3(input.x * speed, verticalSpeed, input.y * speed) * Time.deltaTime);
         if (transform.position.y < -5) game.ResetRound(true);
@@ -261,6 +265,7 @@ public class GuardiaPlayer : MonoBehaviour
 
     public void Respawn()
     {
+        // Desactiva temporalment el controlador per recol·locar el personatge directament.
         controller.enabled = false;
         transform.position = start;
         controller.enabled = true;
@@ -277,14 +282,17 @@ public class GuardiaPlayer : MonoBehaviour
 using System.Collections.Generic;
 using UnityEngine;
 
+// Unity afegeix un Character Controller si l'objecte encara no en té.
 [RequireComponent(typeof(CharacterController))]
 public class GuardiaBrain : MonoBehaviour
 {
+    // Tres comportaments possibles: patrullar, perseguir i tornar al recorregut.
     public enum GuardState { Patrol, Chase, Return }
     public GuardiaPlayer player;
     public GuardiaGame game;
     public Transform[] points;
     public Renderer body;
+    // Selecciona a l'Inspector les capes dels murs que poden bloquejar la visió.
     public LayerMask wallsMask;
     public float patrolSpeed = 1.4f;
     public float chaseSpeed = 2.2f;
@@ -300,24 +308,29 @@ public class GuardiaBrain : MonoBehaviour
     int nextPoint;
     float lostTime;
     Vector3 lastSeen;
+    // Guarda el camí de la persecució per poder tornar pels mateixos llocs.
     readonly List<Vector3> trail = new List<Vector3>();
 
     void Awake()
     {
+        // Obtén el controlador del mateix objecte per moure'l respectant els colliders.
         controller = GetComponent<CharacterController>();
         material = body.material;
     }
 
     void OnDestroy()
     {
+        // Allibera la còpia del material perquè no quedi ocupant memòria.
         if (material != null) Destroy(material);
     }
 
     public void ResetGuard()
     {
+        // Desactiva temporalment el controlador per recol·locar el personatge directament.
         controller.enabled = false;
         transform.position = points[0].position;
         controller.enabled = true;
+        // Tria el següent punt; el mòdul (%) manté l'índex dins de la llista.
         nextPoint = 1 % points.Length;
         Face(points[nextPoint].position - transform.position, true);
         lostTime = 0;
@@ -330,17 +343,21 @@ public class GuardiaBrain : MonoBehaviour
     {
         Vector3 delta = player.transform.position - transform.position;
         delta.y = 0;
+        // Descarta el jugador si queda més lluny de l'abast de visió.
         if (delta.magnitude > viewDistance) return false;
+        // Comprova si és dins del con: la meitat de l'angle queda a cada costat de la mirada.
         if (delta.sqrMagnitude > 0.001f && Vector3.Angle(transform.forward, delta) > viewAngle * 0.5f)
             return false;
         Vector3 eye = transform.position + Vector3.up * 0.3f;
         Vector3 target = player.transform.position + Vector3.up * 0.3f;
+        // El veu si no hi ha cap mur entre els ulls i el jugador; els triggers no tapen la vista.
         return !Physics.Linecast(eye, target, wallsMask, QueryTriggerInteraction.Ignore);
     }
 
     void Update()
     {
         if (game.Won) return;
+        // Actualitza la detecció abans de decidir si patrulla, persegueix o torna.
         SeesPlayer = CanSeePlayer();
         if (SeesPlayer)
         {
@@ -352,11 +369,13 @@ public class GuardiaBrain : MonoBehaviour
             // Si el veu mentre torna, conserva el camí per poder desfer-lo després.
             SetState(GuardState.Chase);
             lostTime = 0;
+            // Recorda on ha vist el jugador per últim cop per continuar-hi anant si el perd de vista.
             lastSeen = player.transform.position;
             lastSeen.y = transform.position.y;
         }
         else if (State == GuardState.Chase)
         {
+            // Compta quant temps fa que no el veu; en esgotar la memòria, comença el retorn.
             lostTime += Time.deltaTime;
             if (lostTime >= memoryTime) SetState(GuardState.Return);
         }
@@ -364,15 +383,19 @@ public class GuardiaBrain : MonoBehaviour
         if (State == GuardState.Patrol)
         {
             if (WalkTo(points[nextPoint].position, patrolSpeed))
+                // Avança al punt següent i torna al primer després de l'últim.
                 nextPoint = (nextPoint + 1) % points.Length;
         }
         else if (State == GuardState.Chase)
         {
             WalkTo(lastSeen, chaseSpeed);
+            // Desa posicions separades almenys 0.3 unitats per no omplir la llista a cada petit
+            // moviment.
             if (trail.Count == 0 || FlatDistance(transform.position, trail[trail.Count - 1]) >= 0.3f)
                 trail.Add(transform.position);
             Vector3 eye = transform.position + Vector3.up * 0.3f;
             Vector3 target = player.transform.position + Vector3.up * 0.3f;
+            // Només atrapa el jugador si és prou a prop i cap mur els separa.
             if (FlatDistance(transform.position, player.transform.position) < catchDistance &&
                 !Physics.Linecast(eye, target, wallsMask, QueryTriggerInteraction.Ignore))
                 game.ResetRound(true);
@@ -391,7 +414,9 @@ public class GuardiaBrain : MonoBehaviour
         delta.y = 0;
         if (delta.magnitude < 0.06f) return true;
         Face(delta, false);
+        // Limita el pas a la velocitat indicada i evita sobrepassar el punt de destí.
         Vector3 movement = Vector3.ClampMagnitude(delta, speed * Time.deltaTime);
+        // Afegeix un petit desplaçament cap avall per mantenir el contacte amb el terra.
         movement.y = -2 * Time.deltaTime;
         controller.Move(movement);
         return false;
@@ -401,6 +426,7 @@ public class GuardiaBrain : MonoBehaviour
     {
         direction.y = 0;
         if (direction.sqrMagnitude < 0.001f) return;
+        // Calcula la rotació necessària per mirar cap a la direcció del moviment.
         Quaternion target = Quaternion.LookRotation(direction);
         transform.rotation = instant ? target : Quaternion.RotateTowards(transform.rotation, target, 540 * Time.deltaTime);
     }
@@ -415,6 +441,7 @@ public class GuardiaBrain : MonoBehaviour
 
     static float FlatDistance(Vector3 a, Vector3 b)
     {
+        // Ignora l'altura: calcula la distància horitzontal sobre el pla XZ.
         a.y = b.y = 0;
         return Vector3.Distance(a, b);
     }
@@ -456,6 +483,7 @@ public class GuardiaGame : MonoBehaviour
             ResetRound(false);
         if (!Won)
         {
+            // Recull la clau per proximitat; aquest cas no depèn d'un trigger.
             if (!HasKey && FlatDistance(player.transform.position, key.transform.position) < 1)
             {
                 HasKey = true;
@@ -464,6 +492,7 @@ public class GuardiaGame : MonoBehaviour
             Vector3 target = closedPosition + (HasKey ? Vector3.up * 2.5f : Vector3.zero);
             door.position = Vector3.MoveTowards(door.position, target, 3 * Time.deltaTime);
             bool open = HasKey && Vector3.Distance(door.position, target) < 0.01f;
+            // Retira el bloqueig físic quan la porta ja ha arribat a la posició oberta.
             doorCollider.enabled = !open;
             if (open && FlatDistance(player.transform.position, exit.position) < 0.65f) Won = true;
         }
@@ -483,12 +512,15 @@ public class GuardiaGame : MonoBehaviour
         doorCollider.enabled = true;
         player.Respawn();
         guard.ResetGuard();
+        // Actualitza la informació física dels colliders amb els canvis de posició.
         Physics.SyncTransforms();
+        // Si el vigilant l'ha atrapat, manté el missatge visible durant dos segons.
         messageUntil = caught ? Time.time + 2 : 0;
     }
 
     static float FlatDistance(Vector3 a, Vector3 b)
     {
+        // Ignora l'altura: calcula la distància horitzontal sobre el pla XZ.
         a.y = b.y = 0;
         return Vector3.Distance(a, b);
     }
@@ -516,14 +548,17 @@ public class GuardiaVision : MonoBehaviour
 
     void Awake()
     {
+        // Crea una malla per dibuixar el con de visió sobre el terra.
         mesh = new Mesh { name = "Camp de visió" };
         GetComponent<MeshFilter>().mesh = mesh;
         var renderer = GetComponent<MeshRenderer>();
         renderer.shadowCastingMode = ShadowCastingMode.Off;
         renderer.receiveShadows = false;
         material = renderer.material;
+        // Reserva el centre i els punts de l'arc; cada segment formarà un triangle.
         vertices = new Vector3[segments + 2];
         triangles = new int[segments * 3];
+        // Connecta cada parella de punts de l'arc amb el centre, com un ventall.
         for (int i = 0; i < segments; i++)
         {
             triangles[i * 3] = 0;
@@ -537,18 +572,22 @@ public class GuardiaVision : MonoBehaviour
         Vector3 eye = guard.transform.position + Vector3.up * 0.3f;
         Vector3 center = guard.transform.position;
         center.y = groundHeight;
+        // Els vèrtexs de la malla es desen en coordenades locals d'aquest objecte.
         vertices[0] = transform.InverseTransformPoint(center);
         for (int i = 0; i <= segments; i++)
         {
+            // Reparteix les direccions dels raigs entre les dues vores del camp de visió.
             float angle = Mathf.Lerp(-guard.viewAngle * 0.5f, guard.viewAngle * 0.5f, (float)i / segments);
             Vector3 direction = Quaternion.AngleAxis(angle, Vector3.up) * guard.transform.forward;
             float distance = guard.viewDistance;
+            // Retalla el dibuix del con on el raig troba un mur.
             if (Physics.Raycast(eye, direction, out RaycastHit hit, distance, guard.wallsMask, QueryTriggerInteraction.Ignore))
                 distance = hit.distance;
             vertices[i + 1] = transform.InverseTransformPoint(center + direction * distance);
         }
         mesh.vertices = vertices;
         mesh.triangles = triangles;
+        // Actualitza el volum que Unity utilitza per decidir si la malla queda dins de la vista.
         mesh.RecalculateBounds();
         Color color = guard.State == GuardiaBrain.GuardState.Patrol ? new Color(0.15f, 0.55f, 1, 0.18f) :
                       guard.State == GuardiaBrain.GuardState.Chase ? new Color(1, 0.15f, 0.1f, 0.18f) :
@@ -558,7 +597,9 @@ public class GuardiaVision : MonoBehaviour
 
     void OnDestroy()
     {
+        // Allibera la malla creada per codi quan es destrueix aquest component.
         if (mesh != null) Destroy(mesh);
+        // Allibera la còpia del material perquè no quedi ocupant memòria.
         if (material != null) Destroy(material);
     }
 }
