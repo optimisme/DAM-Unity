@@ -241,9 +241,6 @@ Configura'l:
 - Escala: aproximadament `0.5, 0.5, 0.5`
 - Crea el tag `Collectable` a **Inspector > Tag > Add Tag** i després assigna’l a l’esfera
 - Activa **Is Trigger** al seu `Sphere Collider`
-- Afegeix un **Rigidbody**. (objecte tindrà física)
-- Desactiva **Use Gravity** (desactiva la gravetat)
-- Activa **Is Kinematic** (evita que la física mogui l'objecte)
 
 Assigna l'script `Collectable.cs` a aquesta esfera. Deixa el seu camp **Generator** a **None**: ItemGenerator l’assigna per codi quan crea cada instància.
 
@@ -315,3 +312,9 @@ La cua creix
 <img src="assets/demoprefabs-cua.png" alt="Tres objectes recollits a la cua i un altre disponible al generador" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 En aturar Play, desapareixen les instàncies creades durant la partida. En tornar a fer Play, la cua comença buida i el generador crea un únic recollible.
+
+**Nota** Si no funciona, prova d'afegir un **Rigidbody** al prefab:
+
+- Afegeix un **Rigidbody**. (objecte detecció de triggers)
+- Desactiva **Use Gravity** (desactiva la gravetat)
+- Activa **Is Kinematic** (evita que la física mogui l'objecte)

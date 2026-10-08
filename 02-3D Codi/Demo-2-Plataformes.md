@@ -29,8 +29,6 @@ A **Edit > Project Settings > Player > Other Settings**, deixa **Active Input Ha
 
 Desa l'escena amb nom `DemoProximitat`. Si treballes en un projecte existent, pots reutilitzar **SampleScene**: el nom de l'escena no afecta els scripts.
 
-Les captures d'aquesta guia s'han fet reconstruint la demo a **SampleScene**, amb **Unity 6.6 i URP**. En Built-In, alguns camps de l'Inspector poden tenir una distribució diferent. **Global Volume** és un objecte de la plantilla URP i no forma part de la lògica de la demo; pots conservar-lo.
-
 Si l'escena és completament buida, crea una **Camera** anomenada `Main Camera` amb el tag **MainCamera** i un **Directional Light** abans de continuar. Si reutilitzes una escena, elimina els components antics que apareguin com a **Missing (Mono Script)** i comprova que no hi hagi errors de compilació a Console.
 
 # Crear l'escena
@@ -80,9 +78,7 @@ Skin Width: 0.05
 Min Move Distance: 0
 ```
 
-**Comprovació important:** escriu `0.05` (cinc centèsimes) a **Skin Width**, no `5`. Prem Enter i comprova el valor que ha quedat desat. Amb radi `0.5`, aquest marge és petit; un valor de `5` altera molt les col·lisions i pot deixar el jugador suspès després de moure'l o fer-lo caure.
-
-La càpsula té el pivot al centre: amb **Height = 2**, el seu centre ha de quedar aproximadament a **Y = 1.05** sobre el terra i a **Y = 1.25** sobre el replà o la plataforma. Aquest petit marge és normal. No desplacis el **Center** per compensar un **Skin Width** incorrecte. Revisa també que no hi hagi un segon collider ni un Rigidbody al Player.
+**Comprovació important:** escriu `0.05` (cinc centèsimes) a **Skin Width** (afinar col·lisions)
 
 <img src="assets/demoplataformes-player.png" alt="Inspector del Player: posició, escala i Character Controller amb Skin Width 0.05" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
@@ -106,6 +102,8 @@ El replà té una altura de `0.2`, inferior al **Step Offset** del jugador: s'hi
 
 Afegeix un **3D Object > Cube**:
 
+- Deixa **Static** desactivat (A dalt a la dreta de l'inspector, al costat del nom de l’objecte)
+
 ```text
 Name: Platform
 Position: 0, 0.1, 0
@@ -113,11 +111,9 @@ Scale: 3, 0.2, 3
 ```
 
 - Mantén el **Box Collider** amb **Is Trigger** desactivat.
-- Afegeix un **Rigidbody**.
-- Activa **Is Kinematic**.
-- Desactiva **Use Gravity**.
-- Deixa **Interpolate** a **None**.
-- Deixa **Static** desactivat. És la casella de la capçalera de l’Inspector, al costat del nom de l’objecte; no és un camp del Rigidbody.
+- Afegeix un **Rigidbody**. (objecte detecció de triggers)
+- Desactiva **Use Gravity** (desactiva la gravetat)
+- Activa **Is Kinematic** (evita que la física mogui l'objecte)
 
 <img src="assets/demoplataformes-plataforma.png" alt="Transform, Box Collider i Rigidbody de Platform" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
@@ -125,7 +121,7 @@ Scale: 3, 0.2, 3
 
 El replà i la plataforma tenen la superfície a la mateixa altura.
 
-Mantén el **Mesh Renderer** de Platform i un material **Standard** (Built-In) o **Universal Render Pipeline/Lit** (URP). El script que afegirem canviarà el color de la plataforma per mostrar la detecció:
+L'Script canviarà el color de la plataforma per mostrar la detecció:
 
 - **Gris:** el jugador és fora del radi; la plataforma està aturada.
 - **Verd:** el jugador és dins del radi; la plataforma està activada.
@@ -241,7 +237,7 @@ public class PlayerMovement : MonoBehaviour
                 movement += Vector3.right;
         }
 
-        // Keep the player in contact with the ground.
+        // El player cau cap a terra
         if (controller.isGrounded && verticalSpeed < 0f)
             verticalSpeed = -2f;
 
@@ -250,18 +246,20 @@ public class PlayerMovement : MonoBehaviour
         Vector3 displacement = movement.normalized * speed * Time.deltaTime;
         displacement.y = verticalSpeed * Time.deltaTime;
 
-        // Add the movement of the platform supporting the player.
+        // Si el player està sobre la plataforma, es mou amb ella
         if (platform != null)
             displacement += platform.FrameMovement;
 
-        // The collision callback finds the support again during Move.
+        // El proper frame es detecterà la plataforma automàticament
         platform = null;
+
+        // Moure el personatge
         controller.Move(displacement);
     }
 
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        // Only contacts under the player can provide support.
+        // Detectar que estem sobre la plataforma (el personatge està més alt)
         if (hit.normal.y > 0.5f)
         {
             ProximityPlatform support = hit.collider.GetComponent<ProximityPlatform>();
@@ -330,7 +328,9 @@ public class ProximityPlatform : MonoBehaviour
         }
 
         transform.position = pathPoints[0].position;
-        Physics.SyncTransforms();
+
+        // Actualitza la posició física del collider
+        Physics.SyncTransforms(); 
     }
 
     void Update()
@@ -340,6 +340,7 @@ public class ProximityPlatform : MonoBehaviour
         float distance = Vector3.Distance(player.position, transform.position);
         bool playerIsNear = distance <= activationDistance;
 
+        // Si el player està aprop canviem el color de la plataforma
         if (playerIsNear != isActive)
             SetActivationColor(playerIsNear);
 
@@ -349,23 +350,30 @@ public class ProximityPlatform : MonoBehaviour
         Vector3 previousPosition = transform.position;
         Vector3 targetPosition = pathPoints[targetIndex].position;
 
+        // Moure la plataforma cap al següent punt del recorregut
         transform.position = Vector3.MoveTowards(
             transform.position,
             targetPosition,
             speed * Time.deltaTime
         );
 
+        // Guarda el moviment aplicat a la plataforma dins de 'FrameMovement'
+        // per moure el player si està a sobre de la plataforma
         FrameMovement = transform.position - previousPosition;
+
+        // Actualitza la física amb els canvis que s'han realitzat
         Physics.SyncTransforms();
 
+        // Hem arribat a un punt del recorregut
         if (transform.position == targetPosition)
         {
-            // Reverse at either end; otherwise continue to the next point.
+            // Invertir la direcció del recorregut
             if (targetIndex == pathPoints.Length - 1)
                 direction = -1;
             else if (targetIndex == 0)
                 direction = 1;
 
+            // Escollir el següent punt del recorregut
             targetIndex += direction;
         }
     }
@@ -377,7 +385,7 @@ public class ProximityPlatform : MonoBehaviour
         if (platformRenderer == null)
             return;
 
-        // Change only this renderer, without changing the shared material.
+        // Canvia el color de la plataforma
         platformRenderer.GetPropertyBlock(colorProperties);
         Color color = active ? activeColor : inactiveColor;
         colorProperties.SetColor("_BaseColor", color); // URP/Lit
@@ -430,7 +438,7 @@ public class ProximityLight : MonoBehaviour
     {
         float distance = Vector3.Distance(player.position, transform.position);
 
-        // Enable the light only while the player is nearby.
+        // Activa la llum si el player està aprop
         pointLight.enabled = distance <= activationDistance;
     }
 }
@@ -479,7 +487,7 @@ Per veure clarament quan s'encenen:
 
 - Selecciona **Directional Light** i deixa **Light > Emission > Intensity = 0.2**.
 - A **Window > Rendering > Lighting > Environment > Environment Lighting > Source**, selecciona **Color**
-- Deixa **Ambient Color** en un gris fosc, per exemple `#202020`.
+- Deixa **Ambient Color** en un gris fosc, per exemple `RGB(32,32,32)`.
 
 Afegeix **GameObject > Light > Point Light**:
 
