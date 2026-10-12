@@ -1,336 +1,273 @@
-# Parallax
+# Parallax amb Tilemaps
 
-Parallax permet moure les capes de decoració, a diferent velocitat, per donar sensació de profunditat al joc.
+**Punt de partida:** l'escena **Nivell01**, amb el personatge, el terreny i la càmera dels tutorials anteriors. Farem servir els mateixos sprites del joc i afegirem un decorat nou. Desa l'escena i atura Play abans de començar.
 
-[Explicació Parallax](https://www.youtube.com/shorts/I5lPwTqGDcU)
+Quan mires per la finestra d'un tren, els arbres propers passen ràpid i les muntanyes llunyanes semblen moure's molt poc. **Parallax** és reproduir aquest efecte amb diverses capes de dibuix.
 
-Les capes més llunyanes es mouen més lentament que les més properes.
-
-- Les capes per darrera del jugador es mouen més lentament que el jugador
-- Les capes més pròximes al jugador es mouen més ràpid que al jugador
-
-## Estructura
-
-Crea un nou objecte buit amb *"Create Empty"* anomenat **"Parallax Root"** a les posicions:
-
-- Pos X: 0
-- Pos Y: 0
-
-Fes servir els *Assets* importats de la carpeta **BackgroundImages**
-
-Cal arreglar cada una d'aquestes imatges, sel·lecciona-les i amb l'inspetor configura:
-
-- **Sprite Mode**: Single
-(Per totes les imatges *.png*, ignora l'arxiu *"Backgrounds"*)
-
-**Important:** Guarda els canvis per cada imatge.
-
-- Mou la imatge **Sky** dins de l'objecte **ParallaxRoot** i configura:
-
-    - Pos X: 0
-    - Pos Y: (Que toqui a baix)
-    - Scale X: 3
-    - Scale Y: 2.5
-    - Order in Layer: -100
-
-- Mou les imatges **Back_X** des de la 0 fins a la 4 i configura:
-
-    - Pos X: 0
-    - Pos Y: (Segons la capa, que toquin a baix excepte els núvols)
-    - Scale X: 2
-    - Scale Y: Segons capa
-    - Order in Layer: (la 0 a -99 i anar descomptant 1 per cada capa)
-
-- Mou les imatges **Fore_0** i **Fore_1** i configura:
-
-    - Pos X: 0
-    - Pos Y: -4
-    - Scale X: 2
-    - Scale Y: 1.5
-    - Order in Layer: (la 0 a 100 i anar sumant 1 per cada capa)
-
-Ha de quedar així:
+En aquest tutorial, **el cel, les muntanyes, els núvols, el bosc i la vegetació del davant són Tilemaps**. Només el terreny del joc té col·lisions. El personatge i les monedes continuen sent els objectes dels capítols anteriors.
 
 <center>
-<img src="./assets/parallax-final.png" style="width: 90%; max-width: 600px">
+<img src="./assets/parallax-tiles-resultat.png" alt="El joc amb muntanyes, bosc i vegetació de primer pla" style="width: 95%; max-width: 1000px">
 </center>
 <br/>
 
-## Script
+## 1. Importar el pack
 
-Crea l'arxiu **"ParallaxRoot"** a la carpeta **"Scripts"** i assigna'l a l'objecte **"ParallaxRoot"**
+Descarrega [ParallaxTiles.zip](./ParallaxTiles.zip), descomprimeix-lo i arrossega la carpeta **ParallaxTiles** directament a **Assets**. La ruta ha de ser **Assets/ParallaxTiles**, sense una altra carpeta intermèdia.
+
+**Només les imatges:** [BackgroundImages.zip](./BackgroundImages.zip) conté els quatre PNG nous; els fons antics ja no formen part d'aquest arxiu. Per seguir tots els passos, fes servir ParallaxTiles.zip, que inclou també els scripts. No cal importar tots dos ZIP.
+
+El pack conté:
+
+| Carpeta | Contingut |
+|---|---|
+| Textures | Muntanyes.png, Nuvols.png, Bosc.png i PrimerPla.png, (núvols, bosc i primer pla amb transparència) |
+| Scripts | ParallaxTilemapLayer.cs, que mou i repeteix les capes |
+| Editor | ParallaxTilesBuilder.cs, que prepara els sprites, tiles i prefab |
+
+Espera que Unity compili. Si el menú del pas següent no apareix, mira Console i corregeix primer els errors vermells. Necessites **Universal 2D**, **2D Sprite** i **2D Tilemap Editor**, com als primers capítols.
+
+Els nous gràfics comparteixen tons verds i blavosos: clars al fons, més foscos al davant. Els fulls són de **2172 × 724 píxels**, excepte Nuvols, de **2171 × 724**: l'eina compensa aquest píxel transparent de la vora sense estirar el dibuix. Cada bloc cobreix 24 unitats horitzontals amb diversos grups de vegetació i muntanyes per espaiar les repeticions. Muntanyes inclou el cel del seu full; Nuvols, Bosc i PrimerPla tenen transparència per deixar veure les capes del darrere. Conservem les il·lustracions completes i les dividim en peces; les peces no es poden barrejar a l'atzar sense trencar el dibuix.
+
+## 2. Preparar els tiles
+
+1. Executa **Tools > Parallax > Preparar tiles i prefab** una vegada.
+2. Obre **Assets/ParallaxTiles/Generated**.
+3. Hi trobaràs les carpetes **Muntanyes**, **Nuvols**, **Bosc** i **PrimerPla**, amb **48 tiles cadascuna**; també el tile de cel i el prefab **Parallax**.
+4. Selecciona **Textures/Muntanyes.png**. A l'Inspector comprova **Sprite Mode = Multiple**, **Pixels Per Unit = 90.5**, **Filter Mode = Point**, **Compression = None**, **Max Size = 4096** i mipmaps desactivats. No redueixis Max Size a 2048: canviaria la resolució importada del full.
+5. Prem **Sprite Editor** per veure el retall en **12 columnes × 4 files**, amb peces de **181 × 181 píxels**.
+
+<center>
+<!-- Captura pendent: ./assets/parallax-tiles-retall.png -->
+</center>
+<br/>
+
+**Què vol dir Pixels Per Unit?** Cada peça de 181 píxels ocupa una cel·la de dues unitats. El bloc complet ocupa 24 unitats d'amplada i 8 d'alçada. No cal posar el mateix PPU al personatge: els seus 16 píxels per unitat continuen definint la seva mida.
+
+L'eina fa el mateix retall que **Sprite Editor > Slice > Grid by Cell Size = 181 / 181**, amb pivot al centre i conservant les peces transparents. Aquestes peces buides mantenen la disposició del full. No utilitzis **Automatic**, perquè retallaria segons les siluetes i canviaria la graella.
+
+Cada recurs Tile apunta a un d'aquests sprites i té **Collider Type = None**. El PNG original es conserva; retallar-lo dins de Unity no el divideix en 48 fitxers PNG.
+
+<center>
+<!-- Captura pendent: ./assets/parallax-tiles-recursos.png -->
+</center>
+<br/>
+
+Per editar el dibuix amb el pinzell, crea una **Tile Palette** com al capítol 01 i arrossega-hi els sprites del full. Unity pot crear els tiles de la paleta. Conserva l'ordre de les peces: per a aquest primer exemple és més fàcil utilitzar el bloc ja reconstruït pel prefab.
+
+> Tornar a executar l'eina regenera el prefab i els tiles del pack. Si vols personalitzar-los, duplica abans el prefab i treballa sobre la còpia.
+
+## 3. Posar les capes a l'escena
+
+1. Si havies seguit la versió antiga, desactiva **ParallaxRoot** i el seu script. No deixis dos sistemes movent els mateixos fons.
+2. Arrossega **Generated/Parallax.prefab** a Hierarchy, al nivell principal de l'escena. No el posis dins de Player ni de Main Camera.
+3. Deixa el pare **Parallax** a Position `(0, 0, 0)`, Rotation `(0, 0, 0)` i Scale `(1, 1, 1)`.
+4. Desplega'l. Cada capa té un **Grid** i un fill **Tiles**, amb **Tilemap** i **Tilemap Renderer**.
+5. A cada capa, assigna **Main Camera** al camp **Target Camera**. Si el deixes buit, l'script busca la càmera amb el tag MainCamera.
+6. Comprova que **Source** apunta al fill Tiles d'aquella capa, i no al terreny del joc.
+
+```text
+Parallax
+    Cel                 Grid + ParallaxTilemapLayer
+        Tiles           Tilemap + Tilemap Renderer
+    Muntanyes           Grid + ParallaxTilemapLayer
+        Tiles
+    Nuvols              Grid + ParallaxTilemapLayer
+        Tiles
+    Bosc                Grid + ParallaxTilemapLayer
+        Tiles
+            BaseBosc    Tilemap que allarga el color cap avall
+    PrimerPla           Grid + ParallaxTilemapLayer
+        Tiles
+Grid                    El terreny anterior, amb colliders
+Player
+Main Camera
+Canvas
+```
+
+<center>
+<!-- Captura pendent: ./assets/parallax-tiles-capes.png -->
+</center>
+<br/>
+
+El prefab utilitza una càmera ortogràfica amb **Size = 5** i posició inicial aproximada `(0, 1, -10)`. Si el teu nivell comença en un altre lloc, mou les capes per emmarcar-lo **amb Play aturat**. L'script conserva aquestes posicions inicials.
+
+Els Grid tenen **Cell Size = (2, 2, 0)**, **Cell Gap = (0, 0, 0)** i escala u. El fill Tiles té posició zero, rotació zero i escala u. No estiris els fons amb Scale: ajusta la posició vertical de la capa.
+
+## 4. Ordenar el dibuix i donar profunditat
+
+**Order in Layer** decideix qui tapa qui. **Depth** decideix quant es desplaça aparentment el dibuix quan la càmera avança. Són dues propietats diferents.
+
+Tots aquests renderers utilitzen la Sorting Layer **Default**:
+
+| Capa | Order in Layer | Depth | Posició Y inicial |
+|---|---:|---:|---:|
+| Cel | -100 | 0 | -5 |
+| Muntanyes | -80 | 0.2 | -1 |
+| Núvols | -60 | 0.3 | -1.6 |
+| Bosc | -40 | 0.55 | -3.7 |
+| Terreny del joc | 0 | Sense script | La del nivell |
+| Personatge | 10 | Sense script | La del jugador |
+| Monedes | 20 | Sense script | La de cada moneda |
+| PrimerPla | 40 | 1.2 | -4.9 |
+
+Les cinc capes decoratives comencen a **X = -12**, **Z = 0**. Els seus Tilemap Renderer utilitzen el material **ParallaxUnlit**, generat pel pack: els colors no depenen de les llums 2D de l'escena.
+
+- **Depth = 0:** la capa acompanya la càmera i queda quieta a la pantalla, com el cel.
+- **Depth = 0.2:** sembla moure's poc; la percebem llunyana.
+- **Depth = 1:** es comporta visualment com el terreny fix del joc.
+- **Depth = 1.2:** passa més ràpid que el terreny; la percebem davant del personatge.
+
+Si la càmera avança cap a la dreta, aquests elements passen cap a l'esquerra a la pantalla, a velocitats diferents. Parlem del moviment que veu el jugador, no de la coordenada que escriu l'script.
+
+<center>
+<!-- Captura pendent: ./assets/parallax-tiles-inspector.png -->
+</center>
+<br/>
+
+**Follow Camera Y** activat manté l'altura del decorat respecte a la pantalla quan la càmera puja. En aquest exemple ens centrem en el parallax horitzontal. No és un sistema de fons infinit vertical: si vols un nivell de pujada, cal preparar més decorat vertical i revisar aquesta opció.
+
+**BaseBosc** és un Tilemap fill de Tiles amb un color verd fosc i Order **-41**. Omple la part inferior del decorat, darrere de la il·lustració, perquè als forats del terreny no es vegi una franja de cel sota el bosc. Es repeteix amb el mateix bloc.
+
+Amb el nou cel clar, selecciona **Canvas > CoinsNumber** i canvia el color del text a **172B4D**, A **255**, perquè el comptador sigui llegible.
+
+**Els núvols tenen alçades diferents dins del mateix Tilemap**: els més alts queden sobre els cims i els més baixos se superposen a les muntanyes. Order -60 els dibuixa davant de les muntanyes (-80) però darrere del bosc (-40). El Tilemap dels núvols té **Color = D4F2E8** i **A = 140** per suavitzar-los i no competir amb el personatge. La seva mida reduïda i Depth **0.3**, entre muntanyes (**0.2**) i bosc (**0.55**), els situen a una distància intermèdia. En aquesta primera versió els mou la càmera; no hi afegim vent independent.
+
+El primer pla té herbes i falgueres altes, amb espais transparents entre les fulles. La base queda per sota de la pantalla per evitar una franja rectangular; les puntes emmarquen el joc. Si tapa els peus del personatge o impedeix veure una trampa, baixa la seva Y. **No hi afegeixis colliders:** veure herba davant no significa que sigui un obstacle.
+
+## 5. Repetir sense talls
+
+El bloc original conté les columnes **0 a 11** i les files **0 a 3**. **Block Width Cells = 12**, amb cel·les de 2 unitats, dona una amplada de 24 unitats i indica on acaba el bloc horitzontal, encara que algunes peces siguin transparents.
+
+Una il·lustració generada no garanteix que la vora esquerra sigui igual que la dreta. Per això activem **Mirror Alternate Blocks**:
+
+```text
+bloc normal | bloc en mirall | bloc normal | bloc en mirall
+```
+
+A cada unió es troben dues còpies de **la mateixa vora**. No hi ha un salt de color entre extrems diferents. Pot haver-hi simetria visible: aquest és el compromís del pack. No és un sistema de peces que es puguin combinar en qualsevol ordre.
+
+En prémer Play, l'script crea prou còpies per cobrir l'amplada de la càmera, amb marge als costats. Si la finestra s'eixampla, afegeix les còpies necessàries. No pressuposa que amb tres sempre n'hi haurà prou.
+
+<center>
+<!-- Captura pendent: ./assets/parallax-tiles-unions.png -->
+</center>
+<br/>
+
+Les còpies apareixen com **Tiles_Repeat_...** durant Play. No les editis: en sortir de Play desapareixen. Edita el bloc original amb Play aturat. No pintis fora de les 12 columnes si vols conservar aquesta amplada de repetició.
+
+## 6. Entendre l'script
+
+El pack ja inclou **ParallaxTilemapLayer.cs**. No creïs una segona classe amb el mateix nom. Aquest és el seu codi complet:
 
 ```csharp
-using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
-public class ParallaxRoot : MonoBehaviour
+// La càmera del tutorial es mou a LateUpdate amb ordre 0.
+// Actualitzem el decorat després, amb la posició definitiva de la càmera.
+[DefaultExecutionOrder(100)]
+public class ParallaxTilemapLayer : MonoBehaviour
 {
-    [Header("Camera (si és null, farà servir Camera.main)")]
-    public Camera cam;
+    [SerializeField] private Camera targetCamera;
+    [SerializeField] private Tilemap source;
+    [SerializeField, Min(1)] private int blockWidthCells = 12;
+    [SerializeField, Range(0f, 2f)] private float depth = 0.2f;
+    [SerializeField] private bool followCameraY = true;
+    [SerializeField] private bool mirrorAlternateBlocks = true;
 
-    [Header("Nom de la capa de cel que ha de quedar fixa")]
-    public string skyName = "SKY";
-
-    [Header("Parallax Config")]
-    [Tooltip("BACK factors (0..1) — valor ALT a capes MÉS LLUNYANES (mouen poc), valor MÉS BAIX a capes prop del midground.")]
-    public float backParallaxMin = 0.1f; // per capes més properes al midground
-    public float backParallaxMax = 0.8f; // per capes més llunyanes (gairebé càmera)
-
-    [Tooltip("FORE intensitat (0..1). El factor final és 1 + abs, i es desplaça en SENTIT CONTRARI a la càmera.")]
-    public float foreParallaxAbsMin = 0.40f;   // Fore_0 → factor efectiu = -(0.40)
-    public float foreParallaxAbsMax = 0.50f;   // Fore_N → factor efectiu = -(0.50)
-
-    private const string PrefixBack = "Back_";
-    private const string PrefixFore = "Fore_";
-
-    [System.Serializable]
-    private class LayerTilingData
-    {
-        // duplicació horitzontal
-        public Transform layer;      // tile central
-        public Transform left;       // duplicat esquerra (local -offset)
-        public Transform right;      // duplicat dreta (local +offset)
-
-        // orígens per a deltes (X i Y)
-        public float x0_cam;
-        public float y0_cam;
-        public float x0_layer;
-        public float y0_layer;
-
-        // mesures
-        public float widthWorld;     // amplada efectiva del sprite en món (inclou escales)
-        public float localOffsetX;   // desplaçament local per col·locar _L/_R (widthWorld / lossyScale.x)
-
-        // parallax (valor base: 0..1 per Back/Mid, >1 per Fore)
-        public float parallaxFactor;
-    }
-
-    private readonly List<LayerTilingData> layers = new();
-
-    void Awake()
-    {
-        if (cam == null) cam = Camera.main;
-        if (cam == null) Debug.LogWarning("[ParallaxRoot] No s'ha trobat cap càmera!");
-    }
+    private readonly List<Transform> copies = new List<Transform>();
+    private Vector3 cameraStart;
+    private Vector3 layerStart;
+    private float blockWidth;
 
     void Start()
     {
-        int maxBackIdx = DetectMaxIndex(PrefixBack);
-        int maxForeIdx = DetectMaxIndex(PrefixFore);
-
-        int childCount = transform.childCount;
-        for (int i = 0; i < childCount; i++)
+        if (!targetCamera) targetCamera = Camera.main;
+        var grid = GetComponent<Grid>();
+        if (!targetCamera || !targetCamera.orthographic || !source || !grid)
         {
-            var layer = transform.GetChild(i);
-
-            // --- SKY: ordre i factor 0 (fix) ---
-            if (layer.name == skyName)
-            {
-                SetSortingOrderRecursive(layer, -100);
-                layers.Add(new LayerTilingData
-                {
-                    layer = layer,
-                    left = null,
-                    right = null,
-                    x0_cam = cam ? cam.transform.position.x : 0f,
-                    y0_cam = cam ? cam.transform.position.y : 0f,
-                    x0_layer = layer.position.x,
-                    y0_layer = layer.position.y,
-                    widthWorld = 0f,
-                    localOffsetX = 0f,
-                    parallaxFactor = 0f
-                });
-                continue;
-            }
-
-            var sr = layer.GetComponent<SpriteRenderer>();
-            if (sr == null)
-            {
-                Debug.LogWarning($"[ParallaxRoot] El fill '{layer.name}' no té SpriteRenderer. S'omet.");
-                continue;
-            }
-
-            // --- Assignació d'ordre segons prefix ---
-            int bidx, fidx;
-            if (TryParseIndexedName(layer.name, PrefixBack, out bidx))
-            {
-                SetSortingOrderRecursive(layer, -99 + bidx);
-            }
-            else if (TryParseIndexedName(layer.name, PrefixFore, out fidx))
-            {
-                SetSortingOrderRecursive(layer, 100 + fidx);
-            }
-
-            // --- Preparar duplicats _L/_R amb offset LOCAL ---
-            Transform left = layer.Find(layer.name + "_L");
-            Transform right = layer.Find(layer.name + "_R");
-
-            float worldWidth = Mathf.Abs(sr.bounds.size.x); // en món (inclou escales/ancestres)
-            float sx = Mathf.Abs(layer.lossyScale.x);
-            if (sx < 1e-6f) sx = 1e-6f;
-            float localOffset = worldWidth / sx; // perquè en món la separació sigui = worldWidth
-
-            if (left == null)  left  = CreateClone(layer, -localOffset, "_L", sr);
-            if (right == null) right = CreateClone(layer, +localOffset, "_R", sr);
-
-            // --- Factor de parallax per capa ---
-            float factor;
-            if (TryParseIndexedName(layer.name, PrefixBack, out bidx))
-            {
-                // Back_0 (molt llunya) → factor alt (proper a 1, mou poc relatiu)
-                float t = (maxBackIdx <= 0) ? 0f : Mathf.Clamp01((float)bidx / (float)maxBackIdx);
-                factor = Mathf.Lerp(backParallaxMax, backParallaxMin, t); // 0→max, 1→min
-                factor = Mathf.Clamp01(factor);                          // 0..1
-            }
-            else if (TryParseIndexedName(layer.name, PrefixFore, out fidx))
-            {
-                // Fore_0..N → factor base > 1 (després s'invertirà el sentit a LateUpdate)
-                float t = (maxForeIdx <= 0) ? 0f : Mathf.Clamp01((float)fidx / (float)maxForeIdx);
-                float abs = Mathf.Lerp(foreParallaxAbsMin, foreParallaxAbsMax, t); // 0.40..0.50 (per ex.)
-                factor = 1f + Mathf.Max(0f, abs); // 1.40..1.50 (base)
-            }
-            else
-            {
-                // Sense prefix → midground (1.0)
-                factor = 1f;
-            }
-
-            // --- Desa dades d'aquesta capa ---
-            layers.Add(new LayerTilingData
-            {
-                layer = layer,
-                left = left,
-                right = right,
-                x0_cam = cam ? cam.transform.position.x : 0f,
-                y0_cam = cam ? cam.transform.position.y : 0f,
-                x0_layer = layer.position.x,
-                y0_layer = layer.position.y,
-                widthWorld = worldWidth,
-                localOffsetX = localOffset,
-                parallaxFactor = factor
-            });
+            Debug.LogError("Assigna una càmera ortogràfica i un Tilemap fill d'aquest Grid.", this);
+            enabled = false;
+            return;
         }
+        // El tutorial utilitza Grid amb escala 1, sense rotació ni separació entre cel·les.
+        blockWidth = blockWidthCells * grid.cellSize.x;
+        if (blockWidth <= 0f) { enabled = false; return; }
+        cameraStart = targetCamera.transform.position;
+        layerStart = transform.position;
+        copies.Add(source.transform);
+        UpdateLayer();
     }
 
-    void LateUpdate()
+    void LateUpdate() => UpdateLayer();
+
+    private void UpdateLayer()
     {
-        if (cam == null) return;
+        Vector3 cameraNow = targetCamera.transform.position;
+        Vector3 delta = cameraNow - cameraStart;
+        // depth descriu el moviment APARENT respecte al terreny:
+        // 0 = fix a pantalla; 1 = com el terreny; >1 = primer pla.
+        transform.position = layerStart + new Vector3(
+            delta.x * (1f - depth), followCameraY ? delta.y : 0f, 0f);
 
-        float cx = cam.transform.position.x;
-        float cy = cam.transform.position.y;
+        float halfView = targetCamera.orthographicSize * targetCamera.aspect;
+        float cameraLocalX = cameraNow.x - transform.position.x;
+        int first = Mathf.FloorToInt((cameraLocalX - halfView) / blockWidth) - 1;
+        int last = Mathf.FloorToInt((cameraLocalX + halfView) / blockWidth) + 1;
+        int needed = last - first + 1;
 
-        foreach (var d in layers)
+        // Només creem còpies quan augmenta l'amplada visible, no a cada fotograma.
+        while (copies.Count < needed)
         {
-            if (d.parallaxFactor == 0f)
-            {
-                // SKY: enganxat del tot a la càmera (X i Y)
-                Vector3 p = d.layer.position;
-                d.layer.position = new Vector3(cx, cy, p.z);
-                continue;
-            }
-
-            if (d.widthWorld < 1e-6f) continue;
-
-            // --------- FACTOR EFECTIU (sentit + magnitud) ---------
-            // Back/Mid: 0..1 → mateix sentit (mou menys que la càmera)
-            // Fore: >1   → sentit contrari amb magnitud (factor - 1)
-            float eff;
-            if (d.parallaxFactor <= 1f)
-                eff = d.parallaxFactor;                  // 0..1 (mateix sentit)
-            else
-                eff = -(d.parallaxFactor - 1f);          // -(0..∞) (sentit contrari)
-
-            // --------- HORITZONTAL (parallax + wrap ancorat a CÀMERA) ---------
-            float dx = (cx - d.x0_cam) * eff;            // desplaçament desenvolupat del layer (X)
-            float W  = d.widthWorld;
-
-            float xUnwrapped = d.x0_layer + dx;          // centre sense wrap
-            int   n         = Mathf.RoundToInt((cx - xUnwrapped) / W); // múltiple més proper al centre de càmera
-            float xCentral  = xUnwrapped + n * W;        // centre del tile central
-
-            // --------- VERTICAL (parallax sense replicar) ---------
-            float dy      = (cy - d.y0_cam) * eff;       // desplaçament desenvolupat del layer (Y)
-            float yTarget = d.y0_layer + dy;
-
-            // Mou NOMÉS el tile central; _L/_R romanen a ±offset local
-            var pos = d.layer.position;
-            d.layer.position = new Vector3(xCentral, yTarget, pos.z);
+            var copy = Instantiate(source.gameObject, transform).transform;
+            copy.name = source.name + "_Repeat_" + copies.Count;
+            copies.Add(copy);
         }
-    }
-
-    // ===== Helpers =====
-
-    private int DetectMaxIndex(string prefix)
-    {
-        int maxIdx = -1;
-        var rx = new Regex("^" + Regex.Escape(prefix) + @"(\d+)$");
-        int childCount = transform.childCount;
-        for (int i = 0; i < childCount; i++)
+        for (int i = 0; i < copies.Count; i++)
         {
-            var layer = transform.GetChild(i);
-            var m = rx.Match(layer.name);
-            if (m.Success && int.TryParse(m.Groups[1].Value, out int idx))
-                maxIdx = Mathf.Max(maxIdx, idx);
+            bool used = i < needed;
+            copies[i].gameObject.SetActive(used);
+            if (!used) continue;
+            int index = first + i;
+            bool mirrored = mirrorAlternateBlocks && (index & 1) != 0;
+            // Amb mirall, el costat dret toca una còpia del mateix costat dret.
+            // El desplaçament d'una amplada compensa l'escala X negativa.
+            copies[i].localPosition = new Vector3(
+                (index + (mirrored ? 1 : 0)) * blockWidth, 0f, 0f);
+            copies[i].localScale = new Vector3(mirrored ? -1f : 1f, 1f, 1f);
         }
-        return maxIdx;
-    }
-
-    private bool TryParseIndexedName(string name, string prefix, out int index)
-    {
-        index = 0;
-        if (!name.StartsWith(prefix)) return false;
-        var tail = name.Substring(prefix.Length);
-        return int.TryParse(tail, out index);
-    }
-
-    private void SetSortingOrderRecursive(Transform root, int order)
-    {
-        var srs = root.GetComponentsInChildren<SpriteRenderer>(includeInactive: true);
-        foreach (var s in srs) s.sortingOrder = order;
-    }
-
-    private Transform CreateClone(Transform parentLayer, float offsetLocalX, string suffix, SpriteRenderer srcSr)
-    {
-        string cloneName = parentLayer.name + suffix;
-        GameObject go = new GameObject(cloneName);
-        go.transform.SetParent(parentLayer, worldPositionStays: false);
-
-        // Posició LOCAL fixa (no es tocarà més)
-        go.transform.localPosition = new Vector3(offsetLocalX, 0f, 0f);
-        go.transform.localRotation = Quaternion.identity;
-        go.transform.localScale = Vector3.one; // hereta escala del pare
-
-        var sr = go.AddComponent<SpriteRenderer>();
-        sr.sprite = srcSr.sprite;
-        sr.sharedMaterial = srcSr.sharedMaterial;
-        sr.color = srcSr.color;
-        sr.flipX = srcSr.flipX;
-        sr.flipY = srcSr.flipY;
-        sr.drawMode = srcSr.drawMode;
-        sr.sortingLayerID = srcSr.sortingLayerID;
-        sr.sortingOrder = srcSr.sortingOrder;
-        sr.maskInteraction = srcSr.maskInteraction;
-
-        return go.transform;
     }
 }
 ```
 
-Assigna la **"Main Camera"** a la variable **"Cam"** de l'objecte **"ParallaxRoot"**
+L'script guarda les posicions inicials. A cada fotograma calcula quant s'ha mogut la càmera des d'aquell punt i situa la capa segons Depth. Així no va acumulant petits desplaçaments que puguin desajustar les unions.
+
+**DefaultExecutionOrder(100)** fa que s'executi després del CameraFollow del tutorial, que utilitza l'ordre per defecte. Si un altre controlador mou la càmera més tard, també caldrà ajustar l'ordre.
+
+## 7. Comprovar el resultat
+
+1. Prem Play i camina a dreta i esquerra: muntanyes lentes, bosc més ràpid i primer pla encara més ràpid.
+2. Queda't quiet: si la càmera ja no es mou, el decorat tampoc ha de desplaçar-se.
+3. Passa per diverses unions: no hi ha d'haver franges buides ni salts de color.
+4. Canvia Game entre 16:9 i una finestra més ampla: el decorat ha de continuar cobrint els costats.
+5. Salta: el personatge ha de continuar llegint-se clarament davant del fons.
+6. Recull una moneda i toca una trampa: el decorat no ha d'interferir en la física ni en el HUD.
 
 <center>
-<img src="./assets/parallax-cam.png" style="width: 90%; max-width: 600px">
+<img src="./assets/tecniques-joc-parallax.png" alt="Càmera al tram dret del nivell, després del desplaçament de totes les capes de parallax" style="width: 95%; max-width: 1000px">
 </center>
 <br/>
 
-Aquest objecte, automàticament configura el *Parallax*
+## Errors habituals
 
-- La capa **Sky** es queda fixe de fons
-- Les capes **Back_X** s'ordenen de 0 al fons, fins a X la més pròxima al jugador
-- Les capes **Fore_X** s'ordenen de 0 la més propera al jugador, fins a X la més pròxima a l'espectador
+- **Es veuen buits:** comprova Block Width Cells = 12, Source, Scale = 1 i que el bloc comença a la columna 0.
+- **Tot es mou igual:** revisa Depth de cada capa; l'ordre de dibuix no canvia la velocitat.
+- **El bosc tapa el jugador:** comprova Sorting Layer i Order in Layer.
+- **El primer pla tapa els salts:** baixa la capa; no intentis solucionar-ho canviant la física del jugador.
+- **Els fons surten roses:** aquest pack utilitza el material de Universal 2D; revisa la plantilla i el renderitzador del projecte.
+- **El decorat tremola:** CameraFollow ha d'acabar abans del LateUpdate del parallax.
+- **El cel deixa un buit a dalt o a baix:** el prefab cobreix 24 unitats verticals; augmenta les files del cel si augmentes molt l'Orthographic Size.
 
-Automàticament s'assigna la propietat **"Order"** perquè es sobrepòssin adequadament.
-
-L'script crea els objectes "Left" i "Right" per tal de mostrar-los automàticament amb el moviment de la càmera.
+[Retall de sprites a Unity](https://docs.unity3d.com/6000.0/Documentation/Manual/sprite/sprite-editor/automatic-slicing.html) · [Crear tiles amb la paleta](https://docs.unity.com/en-us/engine/6000.0/manual/unity2d/tilemaps/create-tile-palette/assets).

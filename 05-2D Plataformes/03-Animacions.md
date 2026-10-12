@@ -1,5 +1,7 @@
 # Animacions
 
+**Punt de partida:** jugador amb Player i PlayerJump del tutorial anterior.
+
 Les animacions es formen a partir de diverses imatges que es van mostrant en seqüència.
 
 Es canvia d'animació, segons l'estat del personatge (quiet, caminant, saltant...).
@@ -76,9 +78,9 @@ Posa-hi els següents sprites:
 
 - "Jump 0" a la posició 0:00
 - "Jump 1" a la posició 0:10
-- "Jump 1" a la posició 5:00
 
-El motiu és que es quedi en aquesta posició durant tot el salt.
+
+Desactiva **Loop Time** al clip PlayerJump. En acabar, conserva l’última postura fins que el codi escull PlayerFall; no cal allargar-lo artificialment fins a cinc segons.
 
 ### PlayerFall
 
@@ -107,101 +109,73 @@ Aparta la pestanya d'animacions amb els *"tabs"* de projecte i consola, o tancal
 </center>
 <br/>
 
-## Codi d'animacions
+## Entendre el temps dels clips
 
-Crea un nou script tipus "MonoBehaviour" anomenat **"PlayerAnimation"**, posa-hi el següent codi i arrosega'l al personatge "Player" com un nou component:
+A Animation, obre el menú de la finestra i activa **Show Sample Rate** si no veus **Samples**. Posa **Samples = 60** als clips d'aquest exemple. `0:20` significa segon zero, fotograma vint; no són vint segons. Les posicions anteriors només tenen el mateix ritme si fem servir el mateix nombre de fotogrames per segon.
+
+Selecciona cada clip a Project i configura **Loop Time**:
+
+| Clip | Loop Time | Ús |
+|---|---|---|
+| PlayerIdle | Activat | Repetir mentre està quiet |
+| PlayerRun | Activat | Repetir mentre camina |
+| PlayerJump | Desactivat | Conservar l'últim fotograma en pujar |
+| PlayerFall | Activat | Una sola postura mentre cau |
+
+Obre **Window > Animation > Animator**. Comprova que hi ha un estat per a cada clip amb aquests noms exactes i que el controlador està assignat al component Animator de Player. Aquest exemple selecciona els estats des del codi; no cal crear transicions automàtiques entre ells.
+
+## Codi complet d'animacions
+
+Crea **PlayerAnimation.cs** i afegeix-lo a Player:
 
 ```csharp
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D), typeof(Animator))]
+[RequireComponent(typeof(Rigidbody2D), typeof(Animator), typeof(SpriteRenderer))]
+[RequireComponent(typeof(Player), typeof(PlayerJump))]
 public class PlayerAnimation : MonoBehaviour
 {
     private Rigidbody2D rb;
-    private PlayerJump playerJump; // per saber si està a terra
+    private Player player;
+    private PlayerJump jump;
     private Animator animator;
-    private string currentAnimationState;
+    private SpriteRenderer spriteRenderer;
+    private string currentState;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        playerJump = GetComponent<PlayerJump>();
-        animator = GetComponent<Animator>();
-    }
-
-    void Update()
-    {
-        SetAnimation();
-    }
-
-    private void SetAnimation()
-    {
-        float vy = rb.linearVelocity.y;
-
-        if (playerJump.isGrounded)
-        {
-            if (Mathf.Approximately(rb.linearVelocity.x, 0f))
-                ChangeAnimationState("PlayerIdle");
-            else
-                ChangeAnimationState("PlayerRun");
-        }
-        else
-        {
-            if (vy > 0f) ChangeAnimationState("PlayerJump");
-            else         ChangeAnimationState("PlayerFall");
-        }
-    }
-
-    private void ChangeAnimationState(string newState)
-    {
-        if (currentAnimationState == newState) return;
-        animator.Play(newState);
-        currentAnimationState = newState;
-    }
-}
-```
-
-Així queda l'inspector del personatge "Player":
-
-<center>
-<img src="./assets/animations-playercomponents.png" style="width: 90%; max-width: 400px">
-</center>
-<br/>
-
-Per tal que el personatge es giri segons la direcció. Modifica l'script **"PlayerAnimation.cs"**:
-
-- Afegeix aquesta variable:
-
-```csharp
-    private SpriteRenderer spriteRenderer; 
-```
-
-- Modifica la funció **Awake()**:
-
-```csharp
-    void Awake()
-    {
-        rb = GetComponent<Rigidbody2D>();
-        playerJump = GetComponent<PlayerJump>();
+        player = GetComponent<Player>();
+        jump = GetComponent<PlayerJump>();
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
-```
-
-- Afegeix la funció **SetOrientation()** i modifica la funció **Update()**:
-
-```csharp
-    void UpdateFacing() {
-        // Canvia l'orientació segons la direcció en X
-        if (rb.linearVelocity.x < -0.01f)
-            spriteRenderer.flipX = true;
-        else if (rb.linearVelocity.x > 0.01f)
-            spriteRenderer.flipX = false;
-    }
 
     void Update()
     {
-        UpdateFacing();
-        SetAnimation();
+        // La plataforma pot transportar-nos sense que vulguem caminar.
+        float direction = player.MoveX;
+        if (Mathf.Abs(direction) > 0.01f) spriteRenderer.flipX = direction < 0f;
+        string state = jump.isGrounded
+            ? (Mathf.Abs(direction) > 0.01f ? "PlayerRun" : "PlayerIdle")
+            : (rb.linearVelocity.y > 0f ? "PlayerJump" : "PlayerFall");
+        if (state == currentState) return;
+        animator.Play(state);
+        currentState = state;
     }
+}
 ```
+La direcció i l'animació de caminar utilitzen **MoveX**, la intenció del jugador. Així una plataforma que el transporta no li canvia l'orientació ni el fa caminar visualment quan no prem cap tecla. `flipX` gira només el dibuix, sense invertir la física ni la jerarquia.
+
+## Comprovar el resultat
+
+Es veuen quatre estats diferents i el personatge mira cap a la direcció que demanes.
+
+1. Queda’t quiet, camina, salta i deixa’l caure d’una vora.
+2. Comprova cada estat a Animator mentre jugues.
+
+## Errors habituals
+
+- Si un estat no apareix, comprova el nom exacte a Animator.
+- Si la velocitat de l’animació és incorrecta, revisa Samples.
+- Si es reinicia contínuament, comprova que només canvies d’estat quan el nom és diferent.

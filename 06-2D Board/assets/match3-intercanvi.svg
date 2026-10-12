@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="440" viewBox="0 0 1000 440">
+<rect width="1000" height="440" rx="24" fill="#0d1528"/>
+<g font-family="Arial,sans-serif" text-anchor="middle">
+<text x="500" y="44" font-size="25" fill="white">La mateixa jugada amb clics o arrossegament</text>
+<text x="225" y="89" font-size="18" fill="#b9c9e3">ABANS</text>
+<rect x="124" y="119" width="62" height="62" rx="9" fill="#25334e"/>
+<path d="M 155 125 L 180 150 L 155 175 L 130 150 Z" fill="#43D3CD"/>
+<text x="155" y="158" font-size="23" font-weight="bold" fill="#10223a">1</text>
+<rect x="194" y="119" width="62" height="62" rx="9" fill="#25334e"/>
+<path d="M 225 125 L 250 150 L 225 175 L 200 150 Z" fill="#FFC157"/>
+<text x="225" y="158" font-size="23" font-weight="bold" fill="#10223a">2</text>
+<rect x="264" y="119" width="62" height="62" rx="9" fill="#25334e"/>
+<path d="M 295 125 L 320 150 L 295 175 L 270 150 Z" fill="#43D3CD"/>
+<text x="295" y="158" font-size="23" font-weight="bold" fill="#10223a">1</text>
+<rect x="124" y="189" width="62" height="62" rx="9" fill="#25334e"/>
+<path d="M 155 195 L 180 220 L 155 245 L 130 220 Z" fill="#F478A5"/>
+<text x="155" y="228" font-size="23" font-weight="bold" fill="#10223a">3</text>
+<rect x="194" y="189" width="62" height="62" rx="9" fill="#25334e"/>
+<path d="M 225 195 L 250 220 L 225 245 L 200 220 Z" fill="#43D3CD"/>
+<text x="225" y="228" font-size="23" font-weight="bold" fill="#10223a">1</text>
+<rect x="264" y="189" width="62" height="62" rx="9" fill="#25334e"/>
+<path d="M 295 195 L 320 220 L 295 245 L 270 220 Z" fill="#9C8FFF"/>
+<text x="295" y="228" font-size="23" font-weight="bold" fill="#10223a">4</text>
+<rect x="124" y="259" width="62" height="62" rx="9" fill="#25334e"/>
+<path d="M 155 265 L 180 290 L 155 315 L 130 290 Z" fill="#9C8FFF"/>
+<text x="155" y="298" font-size="23" font-weight="bold" fill="#10223a">4</text>
+<rect x="194" y="259" width="62" height="62" rx="9" fill="#25334e"/>
+<path d="M 225 265 L 250 290 L 225 315 L 200 290 Z" fill="#F478A5"/>
+<text x="225" y="298" font-size="23" font-weight="bold" fill="#10223a">3</text>
+<rect x="264" y="259" width="62" height="62" rx="9" fill="#25334e"/>
+<path d="M 295 265 L 320 290 L 295 315 L 270 290 Z" fill="#FFC157"/>
+<text x="295" y="298" font-size="23" font-weight="bold" fill="#10223a">2</text>
+<text x="225" y="377" font-size="19" fill="white">Intercanvia les dues del centre</text>
+<text x="755" y="89" font-size="18" fill="#b9c9e3">DESPRÉS</text>
+<rect x="654" y="119" width="62" height="62" rx="9" fill="#25334e"/>
+<path d="M 685 125 L 710 150 L 685 175 L 660 150 Z" fill="#43D3CD"/>
+<text x="685" y="158" font-size="23" font-weight="bold" fill="#10223a">1</text>
+<rect x="724" y="119" width="62" height="62" rx="9" fill="#25334e"/>
+<path d="M 755 125 L 780 150 L 755 175 L 730 150 Z" fill="#43D3CD"/>
+<text x="755" y="158" font-size="23" font-weight="bold" fill="#10223a">1</text>
+<rect x="794" y="119" width="62" height="62" rx="9" fill="#25334e"/>
+<path d="M 825 125 L 850 150 L 825 175 L 800 150 Z" fill="#43D3CD"/>
+<text x="825" y="158" font-size="23" font-weight="bold" fill="#10223a">1</text>
+<rect x="654" y="189" width="62" height="62" rx="9" fill="#25334e"/>
+<path d="M 685 195 L 710 220 L 685 245 L 660 220 Z" fill="#F478A5"/>
+<text x="685" y="228" font-size="23" font-weight="bold" fill="#10223a">3</text>
+<rect x="724" y="189" width="62" height="62" rx="9" fill="#25334e"/>
+<path d="M 755 195 L 780 220 L 755 245 L 730 220 Z" fill="#FFC157"/>
+<text x="755" y="228" font-size="23" font-weight="bold" fill="#10223a">2</text>
+<rect x="794" y="189" width="62" height="62" rx="9" fill="#25334e"/>
+<path d="M 825 195 L 850 220 L 825 245 L 800 220 Z" fill="#9C8FFF"/>
+<text x="825" y="228" font-size="23" font-weight="bold" fill="#10223a">4</text>
+<rect x="654" y="259" width="62" height="62" rx="9" fill="#25334e"/>
+<path d="M 685 265 L 710 290 L 685 315 L 660 290 Z" fill="#9C8FFF"/>
+<text x="685" y="298" font-size="23" font-weight="bold" fill="#10223a">4</text>
+<rect x="724" y="259" width="62" height="62" rx="9" fill="#25334e"/>
+<path d="M 755 265 L 780 290 L 755 315 L 730 290 Z" fill="#F478A5"/>
+<text x="755" y="298" font-size="23" font-weight="bold" fill="#10223a">3</text>
+<rect x="794" y="259" width="62" height="62" rx="9" fill="#25334e"/>
+<path d="M 825 265 L 850 290 L 825 315 L 800 290 Z" fill="#FFC157"/>
+<text x="825" y="298" font-size="23" font-weight="bold" fill="#10223a">2</text>
+<text x="755" y="377" font-size="19" fill="white">Tres peces iguals: 30 punts</text>
+<rect x="191" y="116" width="68" height="138" rx="10" fill="none" stroke="white" stroke-width="3"/>
+<rect x="651" y="116" width="208" height="68" rx="10" fill="none" stroke="#73e5d7" stroke-width="3"/>
+<path d="M 390 215 H 580 L 565 205 M 580 215 L 565 225" fill="none" stroke="#73e5d7" stroke-width="4"/>
+<text x="485" y="161" font-size="18" fill="white">Clic + clic</text>
+<text x="485" y="187" font-size="16" fill="#b9c9e3">o bé</text>
+<text x="485" y="254" font-size="18" fill="white">Arrossega i deixa anar</text>
+<text x="500" y="416" font-size="15" fill="#b9c9e3">Esquema de les regles · El tauler del joc té 8 × 8 caselles</text>
+</g></svg>
