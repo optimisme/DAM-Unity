@@ -1,1 +1,0 @@
-Jocs "de taula" tipus cartes en 2D

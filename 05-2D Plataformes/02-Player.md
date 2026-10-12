@@ -1,4 +1,6 @@
-# Player
+# Entrada, moviment i salt bàsic
+
+**Punt de partida:** Nivell01 amb el Tilemap Ground.
 
 Afegirem un personatge animat al joc, a partir d'imatges d'sprite.
 
@@ -10,7 +12,7 @@ El crearem arrossegant un **Sprite** de personatge a l'escena. Busca l'asset **"
 
 *Assets > Simple 2D Platformer BE2 > Sprites > Player > Idle 0*
 
-Arrosega'l a sobre del terreny *Ground*, i anomena'l **"Player"**.
+Arrossega'l a sobre del terreny Ground i anomena'l **Player**. Per al nivell de comprovació, posa **Position = (-6, -1.5, 0)** i **Scale = (1, 1, 1)**. Al full Player conserva **PPU = 16**; a Sprite Renderer posa **Order in Layer = 10**.
 
 <center>
 <img src="./assets/player-new.png" style="width: 90%; max-width: 400px">
@@ -24,7 +26,11 @@ Afegeix-li dos components:
 
 Per tal d'evitar que el personatge giri amb la física, defineix:
 
-- Gravity scale: 2, per tal que no salti massa
+- Body Type: Dynamic
+- Mass: 1
+- Linear Damping: 0
+- Gravity Scale: 2, per fer que la gravetat l’acceleri més de pressa en caure
+- Interpolate: Interpolate, per suavitzar la representació entre passos de física
 - *Constraints > Freeze Rotation Z*, per tal que no roti
 
 
@@ -35,19 +41,49 @@ Per tal d'evitar que el personatge giri amb la física, defineix:
 
 Edita la caixa de col·lisió del personatge, amb el botó de **Edit Collider**:
 
-- Defineix *"Edge Radius"* a 0.05
-- Canvia la mida de la caixa *verda* perquè sigui menor que el relleu del personatge.
+- Per al sprite original: **Size = (0.65, 0.9)**, **Offset = (0, -0.02)** i **Edge Radius = 0.03**.
+- Comprova visualment que la caixa cobreix el cos i arriba als peus.
 
 <center>
 <img src="./assets/player-editcollider.png" style="width: 90%; max-width: 400px">
 </center>
 <br/>
 
-Fixa't que apareix com arrodonida als extrems. Per tal d'evitar problemes amb els canvis de rajoles/tiles.
+La caixa visible i el collider no han de coincidir exactament. Ajusta el collider al cos i deixa fora detalls com cabells o armes; no el facis tan petit que els peus travessin el terra. El Composite del Tilemap resol les juntes entre rajoles.
 
-## Script dreta/esquerra
+## Evitar que quedi enganxat als laterals
 
-A la carpeta **"Scripts"**, crea un spript tipus "MonoBehaviour" anomenat **Player** i arrosega'l a l'inspector de l'objecte **Player**.
+1. A Assets, fes **Create > 2D > Physics Material 2D** i anomena'l **PlayerSenseFriccio**.
+2. Posa **Friction = 0** i **Bounciness = 0**.
+3. Assigna'l al camp **Material** del BoxCollider2D de Player.
+
+És necessari per a aquest controlador: quan mantenim una direcció contra el lateral d'una plataforma, la fricció no ha de frenar la pujada i deixar el personatge enganxat. El transport de les plataformes mòbils es farà amb el seu moviment, no amb la fricció.
+
+## Configurar Input System
+
+1. Obre **Window > Package Management > Package Manager** i comprova que hi ha **Input System**. A **Edit > Project Settings > Player > Other Settings > Active Input Handling**, utilitza **Input System Package (New)**. Si has de canviar-ho i Unity demana reiniciar, desa abans.
+2. A **Assets**, fes **Create > Input Actions** i anomena el recurs **Controls**. Obre'l amb doble clic.
+3. Crea un **Action Map** anomenat **Gameplay**.
+4. Dins seu, crea **Move**, amb **Action Type = Value** i **Control Type = Vector2**. Afegeix un **2D Vector Composite**: Up `W`, Down `S`, Left `A`, Right `D`. Afegeix un segon composite per a les quatre fletxes.
+5. Crea **Jump**, amb **Action Type = Button**, i un binding **Space**. A **Interactions**, afegeix **Press** i posa **Trigger Behavior = Press And Release**. Amb **Send Messages**, aquesta opció fa arribar tant la pulsació com l'alliberament; el salt bàsic ignora l'alliberament i el capítol 11 el farà servir per al salt curt. Desa l'asset amb **Save Asset**.
+6. Selecciona Player i afegeix **Player Input**. Arrossega Controls al camp **Actions**, escull **Default Map = Gameplay** i **Behavior = Send Messages**. Per a aquest primer exemple de teclat no cal crear Control Schemes.
+
+`Move` cridarà `OnMove` i `Jump` cridarà `OnJump` als components del mateix objecte Player. Afegir PlayerInput sense assignar aquestes accions no configura els controls.
+
+<center>
+<img src="./assets/revisio-input-actions.png" alt="Accions Move i Jump al mapa Gameplay" style="width: 90%; max-width: 700px">
+</center>
+<br/>
+
+
+<center>
+<img src="./assets/revisio-player-input.png" alt="Player Input amb Controls, Gameplay i Send Messages" style="width: 90%; max-width: 550px">
+</center>
+<br/>
+
+## Moviment horitzontal
+
+Crea **Assets/Scripts/Player.cs**, substitueix-ne el contingut pel codi complet i afegeix-lo a Player. El nom del fitxer i el de la classe han de coincidir.
 
 ```csharp
 using UnityEngine;
@@ -57,185 +93,122 @@ using UnityEngine.InputSystem;
 public class Player : MonoBehaviour
 {
     public float moveSpeed = 5f;
-
+    public int coins { get; private set; }
+    public float MoveX { get; private set; }
     private Rigidbody2D rb;
-    private Vector2 move;
 
-    void Awake()
+    void Awake() => rb = GetComponent<Rigidbody2D>();
+
+    public void OnMove(InputValue value)
     {
-        rb = GetComponent<Rigidbody2D>();
-    }
-
-    // Input System: callback d'una acció "Move" (Vector2)
-    void OnMove(InputValue value) { 
-        move = value.Get<Vector2>();
+        MoveX = value.Get<Vector2>().x;
     }
 
     void FixedUpdate()
     {
-        // Moure el jugador a dreta i esquerra, preserva la gravetat
-        rb.linearVelocity = new Vector2(move.x * moveSpeed, rb.linearVelocity.y);
+        rb.linearVelocity = new Vector2(MoveX * moveSpeed, rb.linearVelocity.y);
     }
+
+    public void AddCoin() => coins++;
 }
 ```
+`OnMove` guarda la direcció demanada. `FixedUpdate` aplica el moviment al cos físic i conserva la velocitat vertical. `coins` i `AddCoin` preparen el comptador que utilitzarem més endavant; encara val zero.
 
-De l'script anterior:
+## Preparar el salt
 
-- Força els components **Rigidbody2D** i **PlayerInput** a l'objecte.
-- Manté la velocitat Y segons les físiques, i només canvia la velocitat X segons l'input.
-
-Prova que el personatge cau sobre el terreny, i es mou amb les tecles de fletxa o les tecles A i D.
-
-## Saltar
-
-El personatge ha de poder saltar sobre el terreny i altres plataformes.
-
-Per fer-ho genèric definirem el concepte de "jumpable", on hi apuntarem aquells objectes sobre els que es pot saltar.
-
-Des de l'inspector de l'objecte **Ground**, crea una nova **Layer** anomenada **Jumpable**, i assigna-la a l'objecte **Ground**.
-
-<center>
-<img src="./assets/player-layeradd.png" style="width: 90%; max-width: 400px">
-</center>
-<br/>
-
-<center>
-<img src="./assets/player-layername.png" style="width: 90%; max-width: 400px">
-</center>
-<br/>
-
-Assigna el nou layer **Jumpable** a l'objecte **Ground**.
-
-<center>
-<img src="./assets/player-layerassign.png" style="width: 90%; max-width: 400px">
-</center>
-<br/>
-
-Finalment, cal afegir el cercle als peus del personatge, que farà la detecció de "jumpable".
-
-Afegeix un cercle buit com a fill de l'objecte **"Player"**, anomena'l **"GroundCheck"**, i situa'l als peus del personatge.
-
-<center>
-<img src="./assets/player-groundcheck-empty.png" style="width: 90%; max-width: 400px">
-</center>
-<br/>
-
-Anomena'l **"GroundCheck"** i situa'l als peus del personatge.
-
-<center>
-<img src="./assets/player-groundcheck-position.png" style="width: 90%; max-width: 400px">
-</center>
-<br/>
-
-A la carpeta **"Assets"**, afegeix un nou script tipus "MonoBehaviour" anomenat **PlayerJump** amb el següent codi, i afegeix-lo a l'objecte **"Player"**.
-
+1. Selecciona Ground. A **Layer > Add Layer**, crea **Jumpable**, torna a Ground i assigna-li aquesta Layer. Crear-la no l'assigna automàticament.
+2. Crea **PlayerJump.cs**, copia el codi següent i afegeix-lo al mateix Player.
+3. Al component PlayerJump, marca **Jumpable** a **Jumpable Layers** i posa **Jump Speed = 10**.
+4. No cal cap objecte GroundCheck. Consultarem els contactes reals del Rigidbody2D amb el terra.
 
 ```csharp
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[DefaultExecutionOrder(-100)]
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerJump : MonoBehaviour
 {
-    [Header("Jump")]
-    public float jumpForce = 10f;
-    public float coyoteTime = 0.10f;
-    public float jumpBufferTime = 0.10f;
-    public bool variableJumpHeight = true;
-
-    [Header("Jumpable Ground Check")]
-    public float groundCheckRadius = 0.25f;
-    public bool validateGroundNormal = true;
-    [Range(0f, 1f)] public float groundNormalMinY = 0.4f;
+    public float jumpSpeed = 10f;
+    public LayerMask jumpableLayers;
+    public bool isGrounded { get; private set; }
+    public Collider2D GroundCollider { get; private set; }
 
     private Rigidbody2D rb;
-    private Transform groundCheck;
-    private LayerMask jumpableLayer;
+    private readonly ContactPoint2D[] contacts = new ContactPoint2D[16];
+    private bool jumpRequested;
+    private bool jumpConsumed;
+    private bool wasSupported;
 
-    public bool isGrounded { get; private set; }
-    private float lastGroundedTime = -999f;
-    private float lastJumpPressedTime = -999f;
+    void Awake() => rb = GetComponent<Rigidbody2D>();
 
-    void Awake()
+    public void OnJump(InputValue value)
     {
-        rb = GetComponent<Rigidbody2D>();
-
-        groundCheck = transform.Find("GroundCheck");
-        if (!groundCheck)
-            Debug.LogError("No s’ha trobat cap fill amb nom 'GroundCheck'.");
-
-        int layerIndex = LayerMask.NameToLayer("Jumpable");
-        if (layerIndex == -1)
-            Debug.LogError("No existeix cap Layer 'Jumpable'. Crea-la al menú Layers!");
-        else
-            jumpableLayer = 1 << layerIndex; // Mask index to bit
-    }
-
-    public void OnJump(InputValue v)
-    {
-        if (v.isPressed)
-        {
-            lastJumpPressedTime = Time.time;
-        }
-        else if (variableJumpHeight)
-        {
-            if (rb.linearVelocity.y > 0f)
-                rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * 0.5f);
-        }
+        if (value.isPressed) jumpRequested = true;
     }
 
     void FixedUpdate()
     {
         UpdateGrounded();
-
-        bool canCoyote = (Time.time - lastGroundedTime) <= coyoteTime;
-        bool hasBufferedJump = (Time.time - lastJumpPressedTime) <= jumpBufferTime;
-
-        if (hasBufferedJump && (isGrounded || canCoyote))
+        if (jumpRequested && isGrounded)
         {
-            lastJumpPressedTime = -999f;
-
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
-            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            jumpConsumed = true;
+            isGrounded = false;
+            GroundCollider = null;
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpSpeed);
         }
+        // En el salt bàsic no guardem una pulsació feta a l'aire.
+        jumpRequested = false;
     }
 
     private void UpdateGrounded()
     {
-        bool hitSomething = false;
-        Collider2D hitCollider = Physics2D.OverlapCircle(
-            groundCheck.position, groundCheckRadius, jumpableLayer);
-
-        if (hitCollider)
+        GroundCollider = null;
+        float bestNormalY = 0.5f;
+        int count = rb.GetContacts(contacts);
+        for (int i = 0; i < count; i++)
         {
-            if (validateGroundNormal)
+            var contact = contacts[i];
+            var other = contact.collider;
+            if (!other || other.attachedRigidbody == rb) continue;
+            bool jumpable = (jumpableLayers.value & (1 << other.gameObject.layer)) != 0;
+            if (jumpable && contact.normal.y > bestNormalY)
             {
-                RaycastHit2D hit = Physics2D.Raycast(
-                    groundCheck.position, Vector2.down, groundCheckRadius + 0.05f, jumpableLayer);
-                hitSomething = hit.collider && hit.normal.y >= groundNormalMinY;
-            }
-            else
-            {
-                hitSomething = true;
+                bestNormalY = contact.normal.y;
+                GroundCollider = other;
             }
         }
-
-        isGrounded = hitSomething;
-        if (isGrounded) lastGroundedTime = Time.time;
-    }
-
-    void OnDrawGizmosSelected()
-    {
-        if (groundCheck)
-        {
-            Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
-        }
+        bool supported = GroundCollider != null;
+        // Només una nova arribada al terra torna a donar dret a saltar.
+        if (supported && !wasSupported) jumpConsumed = false;
+        wasSupported = supported;
+        isGrounded = supported && !jumpConsumed;
+        if (!isGrounded) GroundCollider = null;
     }
 }
 ```
+**Com sap que toca terra?** `GetContacts` recull els punts de contacte. Només acceptem objectes de les capes seleccionades i superfícies que ens sostenen des de sota. `normal.y` indica quant apunta amunt la superfície: una paret vertical no compta com a terra. El mateix contacte proporciona **GroundCollider**, que després identificarà una plataforma mòbil.
 
+`jumpConsumed` impedeix tornar a saltar fins a aterrar. `DefaultExecutionOrder(-100)` fa que aquesta comprovació s'executi abans del moviment normal del jugador. No cal canviar l'ordre a Project Settings.
 
+**Amb aquests valors, el salt puja aproximadament 2,45 unitats.** Les dues primeres pujades del nivell de comprovació són de 2 unitats; deixa marge, no col·loquis les plataformes just a l'altura màxima. La velocitat inicial 10, amb massa 1, conserva l'impuls de 10 de l'exemple original. Mantén Espai als salts llargs quan activem l'altura variable al capítol 11.
 
+Aquest és un **salt bàsic d'altura fixa**: una pulsació, un salt. Les ajudes per saltar una mica tard o abans d'aterrar s'explicaran al final del bloc.
 
+[Referència de PlayerInput](https://docs.unity3d.com/Packages/com.unity.inputsystem@1.11/manual/PlayerInput.html).
 
+## Comprovar el resultat
+
+El jugador cau sobre el terra, camina i salta amb Espai.
+
+1. Prem Play i fes clic a Game per donar-li el focus.
+2. Prova A/D i les fletxes.
+3. Salta; torna a prémer Espai a l’aire: no ha de fer un segon salt.
+4. Apropa’t a una paret i comprova que tocar-la lateralment no habilita el salt.
+
+## Errors habituals
+
+- Sense moviment: comprova Actions, Default Map i Send Messages.
+- Sense salt: revisa Jumpable a Ground i Jumpable Layers al component.
+- Si travessa el terra, comprova que tots els components de física siguin **2D** i Is Trigger estigui desactivat.
+- Si s’enganxa a les parets, comprova que PlayerSenseFriccio està assignat al collider del jugador.

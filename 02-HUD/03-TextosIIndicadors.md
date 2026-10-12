@@ -48,6 +48,8 @@ Per escollir un preset en aquests passos, mantén **Alt+Shift** a Windows o **Op
 
 ## Crear el fons de la barra
 
+Si no apareix **Assets > Create > 2D > Sprites > Square**, obre **Window > Package Management > Package Manager**, selecciona **Unity Registry**, busca **2D Sprite** i instal·la'l si encara no hi és. Aquest paquet proporciona el menú per crear Square. Espera que Unity acabi de compilar abans de continuar.
+
 1. Selecciona **Canvas**, no TextVida.
 2. Fes **GameObject > UI (Canvas) > Image** i anomena-la **FonsVida**.
 3. A **Rect Transform**, escull **middle / center** amb **Alt+Shift / Option+Shift**.
