@@ -1,6 +1,6 @@
 # Projectes de les demos de shaders
 
-Cada ZIP conté un **projecte Unity independent** amb escenes acabades, Shader Graphs editables, materials i controls per experimentar. No cal importar cap demo anterior ni baixar textures de tercers: els recursos necessaris són dins dels projectes. Aigua inclou quatre textures pròpies.
+Cada ZIP conté un **projecte Unity independent** amb escenes acabades, Shader Graphs editables, materials i controls per experimentar. No cal importar cap demo anterior ni baixar textures de tercers: els recursos necessaris són dins dels projectes. Aigua inclou quatre textures pròpies. Pèls inclou un mapa d’altures de pèl fi, el generador de recursos i una escena amb shells i POM esfèric.
 
 ## Requisits
 
@@ -33,8 +33,8 @@ Les mides són MB decimals aproximats. La mida descomprimida no inclou la memòr
 | [Demo-4-Aigua](Demo-4-Aigua.zip) | `DemoAigua.unity` i `DemoAiguaGalaxy.unity` | 1.27 MB | 2.78 MB | [Tutorial](../Demo-4-Aigua.md) |
 | [Demo-5-Holograma](Demo-5-Holograma.zip) | `DemoHolograma.unity` | 0.08 MB | 0.31 MB | [Tutorial](../Demo-5-Holograma.md) |
 | [Demo-6-Forat](Demo-6-Forat.zip) | `DemoForat.unity` | 0.08 MB | 0.34 MB | [Tutorial](../Demo-6-Forat.md) |
-
 | [Demo-7-Sombra](Demo-7-Sombra.zip) | `DemoSombra.unity` | 0.07 MB | 0.28 MB | [Tutorial](../Demo-7-Sombra.md) |
+| [Demo-8-Pels](Demo-8-Pels.zip) | `DemoPels.unity` | 1.67 MB | 2.80 MB | [Tutorial](../Demo-8-Pels.md) |
 
 La variant **DemoAiguaGalaxy** mostra reflexos retallats, un fons de pedra amb distorsió i càustiques, tint segons profunditat i escuma en contacte amb les roques. El controlador té **Time Scale = 2**; posa’l a 1 per reduir la velocitat. Les dues escenes comparteixen el mateix ZIP.
 
@@ -50,10 +50,10 @@ La variant **DemoAiguaGalaxy** mostra reflexos retallats, un fons de pedra amb d
 |---|---|
 | Patró, Rajoles, Roca, Lava, Aigua, Holograma | Lliscador del paràmetre, Espai pausa el temps, R reinicia, H amaga el panell |
 | Forat | A/D mouen el personatge, Espai alterna automàtic/manual, F activa el retall, R reinicia, H amaga el panell; lliscador de radi; obertura i tancament progressius (0.35 s per defecte) |
-
 | Sombra | A/D mouen el personatge, Espai alterna automàtic/manual, F activa la silueta, R reinicia, H amaga el panell; el gris omple només les parts ocultes |
+| Pèls | Lliscador de llargada; botons de capes i passos POM; C activa la curvatura, R reinicia, H amaga el panell |
 
-Els shaders són a **Assets/Demos/<nom>/Shaders** i els materials a **Materials**. Obre el Shader Graph amb doble clic i selecciona un grup numerat i prem F per comparar-lo amb la captura del pas corresponent. Els scripts són a **Assets/Common**. Roca i Aigua inclouen també la utilitat **GenerarMalles** al menú **Demos**.
+Els shaders són a **Assets/Demos/<nom>/Shaders** i els materials a **Materials**. Obre el Shader Graph amb doble clic i selecciona un grup numerat i prem F per comparar-lo amb la captura del pas corresponent. Els scripts són a **Assets/Common**; Pèls inclou també **Assets/Demos/Pels/Scripts** i dues Custom Functions al fitxer **Shaders/Pels.hlsl**. Roca i Aigua inclouen també la utilitat **GenerarMalles** al menú **Demos**.
 
 Totes les escenes inclouen **DemoOrbitCamera** a Main Camera: **botó dret + arrossegar** per orbitar al voltant del centre de la demo, **roda** per fer zoom i **Home** per recuperar la vista inicial. No actua sobre el panell de controls. El component permet ajustar centre, sensibilitat i límits de distància i inclinació. [Codi del controlador](DemoOrbitCamera.cs).
 
@@ -79,6 +79,10 @@ Revisió del **9 d’octubre de 2026**, sobre els fitxers de la branca **main**:
 - Els **137 recursos** de la biblioteca del ZIP coincideixen amb el `.unitypackage` importable.
 
 La reconstrucció i les proves són automatitzades; no és una repetició manual de cada clic de l’alumne. S’han reutilitzat els Shader Graphs després de contrastar-ne totes les connexions i entrades. S’han inspeccionat les captures de les deu escenes. El catàleg va superar el límit de temps de la primera prova mentre compilava totes les famílies; la comprovació completa s’ha acabat amb més marge reutilitzant aquella importació. No s’ha provat en Windows o Linux. Una excepció del cercador intern de Unity (`UnityEditor.Search.SearchDatabase`) s’ha distingit dels errors de les demos.
+
+## Comprovació de Pèls
+
+La **Demo-8-Pels** s’ha reconstruït des de zero amb la plantilla Universal 3D el **13 d’octubre de 2026**, utilitzant el codi i les taules del tutorial: 46 connexions dels grafs, 181 comprovacions de configuració i escena i 60 comprovacions en Play. El ZIP s’ha extret en una carpeta nova i les proves d’escena i Play s’han repetit correctament. [Informe i abast de la validació](Validacio-Demo-8-Pels.md).
 
 ## Si alguna cosa no funciona
 
