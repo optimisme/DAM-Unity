@@ -70,3 +70,9 @@ Connecta **la posició final**, no només el desplaçament, a Vertex / Position 
 A la demo Aigua caldrà triar una malla adequada i distingir el moviment real de vèrtexs del detall aparent de normals.
 
 **Errors habituals:** esperar relleu físic d'un normal map; esperar Bloom sense configurar-lo; connectar alpha sense activar el mode adequat; desplaçar pocs vèrtexs i esperar ones suaus.
+
+## Pèl amb capes i amb POM
+
+La [Demo 8: Pèls](Demo-8-Pels.md) compara dues esferes. Les **shells** superposen còpies de la malla extrudides al llarg de les normals, amb alpha determinat pel mapa d’altures i l’índex de capa. El **POM amb curvatura esfèrica** busca la intersecció d’un raig amb el mapa i descarta els fragments sense intersecció per retallar la silueta.
+
+La demo inclou grafs editables, les funcions HLSL, captures detallades i un generador de pèl fi. El POM està especialitzat per a una esfera de radi 1: la curvatura no s’aplica automàticament a qualsevol malla.
