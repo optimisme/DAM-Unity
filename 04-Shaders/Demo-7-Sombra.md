@@ -8,7 +8,7 @@ Quan una paret tapa el personatge, mostrarem la seva silueta plana emplenada en 
 
 ## 1. Partir de Universal 3D
 
-1. Amb **Unity 6000.6.3f1**, crea un projecte **Universal 3D (URP)**. Les demos utilitzen **Universal RP 17.6.0**, **Shader Graph 17.6.0** i **Input System 1.20.0**.
+1. Crea un projecte "Universal 3D"
 2. A **Edit > Project Settings > Player > Active Input Handling**, selecciona **Input System Package (New)**. Accepta el reinici si Unity el demana.
 3. Crea **Assets/Demos/Sombra**, amb les carpetes **Shaders**, **Materials** i **Scenes**. Crea també **Assets/Common**.
 4. Obre **Assets/Scenes/SampleScene**. Conserva **Main Camera**, **Directional Light** i **Global Volume**. Amb **File > Save As…**, desa una còpia com a **DemoSombra** dins de Scenes.
