@@ -14,7 +14,7 @@ La guia inclou el codi complet: pots començar amb un projecte buit de la planti
 
 ## 1. Crear el projecte des de zero
 
-1. A Unity Hub, crea un projecte **Universal 3D (URP)** amb **Unity 6000.6.3f1**, anomenat **Demo-8-Pels**. No triïs Built-in ni HDRP.
+1. Crea un projecte **Universal 3D (URP)** anomenat **Demo-8-Pels**. No triïs Built-in ni HDRP.
 2. A **Window > Package Management > Package Manager**, comprova **Universal RP 17.6.0**, **Shader Graph 17.6.0** i **Input System 1.20.0**. Espera que acabin la importació i la compilació.
 3. A **Edit > Project Settings > Player > Other Settings > Active Input Handling**, selecciona **Input System Package (New)**. Accepta el reinici si es demana. A **Player > Resolution and Presentation**, activa **Run In Background**.
 4. A **Project Settings > Graphics**, conserva l’URP Asset de la plantilla. A **Quality**, el nivell actiu ha d’utilitzar **PC_RPAsset**, dins d’Assets/Settings.
