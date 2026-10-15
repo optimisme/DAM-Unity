@@ -4,12 +4,12 @@ Construirem una roca amb tons minerals, detall de superfície i molsa que aparei
 
 **Projecte acabat:** [Demo-2-Roca.zip](demos/Demo-2-Roca.zip). Descomprimeix-lo i obre la carpeta amb Assets, Packages i ProjectSettings des de Unity Hub. La primera importació obre automàticament `Assets/Demos/Roca/Scenes/DemoRoca.unity`; prem Play. Els materials poden trigar una estona a carregar-se.
 
-<img src="assets/demoroca-escena.png" alt="Escena de la demo Roca renderitzada a Unity" width="600" style="width: 90%; max-width: 600px; height: auto;">
+<a href="assets/demoroca-escena.png"><img src="assets/demoroca-escena.png" alt="Escena de la demo Roca renderitzada a Unity" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
 ## 1. Partir de Universal 3D
 
 1. Crea un projecte **Universal 3D (URP)**.
-2. A Package Manager, comprova **Universal RP 17.6.0**, **Shader Graph 17.6.0** i **Input System 1.20.0**. Shader Graph arriba com a dependència d’URP.
+2. A Package Manager, comprova **Universal RP**, **Shader Graph** i **Input System**. Shader Graph arriba com a dependència d’URP.
 3. A **Project Settings > Player > Active Input Handling**, selecciona **Input System Package (New)**. Accepta el reinici si Unity el demana.
 4. Crea `Assets/Demos/Roca` amb les carpetes **Shaders**, **Materials**, **Scenes** i **Meshes**. Crea també **Assets/Common** per als scripts.
 5. Obre **Assets/Scenes/SampleScene**, que ja inclou **Main Camera**, **Directional Light** i **Global Volume**. Conserva aquests objectes. Amb **File > Save As…**, desa una còpia com a `DemoRoca` dins de Scenes. Més endavant ajustarem la càmera i la llum existents.
@@ -40,135 +40,148 @@ Afegeix al Blackboard aquestes propietats. Activa **Exposed** i escriu les **Ref
 
 Arrossega les propietats al gràfic per crear els seus nodes. La propietat no es crea escrivint-ne el nom en un node Float: s’ha de crear al Blackboard.
 
-## 3. Entendre l’efecte
+## 3. Connectar els nodes
 
-### Pedra
+Segueix els passos en ordre dins del mateix Shader Graph. Prem **Espai** per crear un node del tipus indicat; arrossega les propietats des del Blackboard. Els identificadors de les taules serveixen per distingir nodes repetits: no cal canviar els noms dels nodes. Si ho necessites, posa una **Sticky Note** al costat del node amb l’identificador.
 
-Position World es divideix i es combinen X i Z com a coordenades. Simple Noise varia el color mineral i Gradient Noise afegeix detall. És una projecció planar: a les cares gairebé verticals pot allargar el patró. Aquesta limitació es pot millorar amb projecció triplanar en una ampliació.
+A cada fila de cables, arrossega des del **port de sortida** del node origen fins al **port d’entrada** del node destí. Reutilitza els nodes dels passos anteriors. `Out` indica la sortida principal; als nodes de propietat pot mostrar el nom de la propietat.
 
-### Molsa
+Per organitzar el graf com a la captura, selecciona els nodes de cada pas i tria **Group Selection** al menú del botó dret. Mantén els grups a prop i deixa prou espai per veure els cables.
 
-Dot Product entre Normal Vector World i (0,1,0) mesura l’orientació cap amunt. Afegim una petita irregularitat de soroll i usem Smoothstep entre Llindar i Llindar + 0.25. El resultat barreja la pedra amb dos verds de molsa.
+Per veure el resultat d’un node, fes-hi botó dret i tria **View > Expand Preview**; amb **Collapse Preview** el pots plegar.
 
-Girar una roca canvia quines cares miren amunt. Un llindar més baix estén la molsa; un llindar més alt la concentra. El relleu de normals té Strength 0.002 per conservar un detall discret.
+Escriu els valors de la taula als camps sense cable. Si el camp és vectorial i només s’indica un valor, repeteix-lo a tots els components. Clica les captures per veure-les a mida completa.
 
-## 4. Connectar els nodes
+**Graf complet:** segueix els grups numerats fins al **Master Stack**. Les previsualitzacions mostren els sorolls, la màscara de molsa, els colors i la normal. [Obre la imatge a mida completa](assets/demoroca-graf-complet.png) per llegir els ports i seguir tots els cables.
 
-Cada fila identifica un node. `Eixos:R` vol dir la sortida **R** del node identificat com Eixos; `Nom:Out` vol dir la seva sortida. Si el nom correspon a una propietat del Blackboard, utilitza el seu node Property. Els números sense `:` són valors literals escrits al port d’entrada. Els àlies Temps, Mode i Centre corresponen a les propietats amb Reference `_Temps`, `_Mode` i `_Centre`, quan existeixen en aquesta demo. En un port vectorial, un literal únic s’ha de repetir a tots els components: per exemple Frequency = 12 vol dir (12,12).
-
-Les captures següents provenen del Shader Graph de Unity. A les captures de cada pas s’han ocultat els cables que només travessen el grup sense connectar-hi; es mantenen les seves entrades i sortides. Alguns camps numèrics es veuen arrodonits per l’amplada del node: utilitza els valors exactes de la taula. Cada grup numerat és un pas del mateix graf final. Segueix l’ordre, afegeix els nodes del pas i connecta’ls com a la captura i a la taula. Les propietats es creen al Blackboard segons l’apartat 2; els nodes Property simplement les llegeixen.
-
-Els cables que entren des de fora del grup provenen de passos anteriors: el nom de la taula identifica l’origen. Al projecte acabat pots seleccionar un grup i prémer **F** per enquadrar-lo. Les previsualitzacions dels nodes estan plegades a les captures per deixar llegir ports i valors; pots desplegar-les per inspeccionar una màscara.
-
-### Connexions entre grups
-
-Aquest mapa mostra com es connecten els grups del graf. Cada fletxa agrupa el nombre de cables indicat; la taula inferior detalla **tots els cables entre grups i cap al Master Stack**, amb els ports exactes. Les captures dels passos següents mostren les connexions interiors.
-
-```mermaid
-flowchart TD
-    G1["01 · Coordenades i sorolls"]
-    G2["02 · Color de la pedra"]
-    G3["03 · Orientacio i limits"]
-    G4["04 · Molsa i sortida"]
-    G5["Sortides · Master Stack"]
-    G1 -->|"1 cable"| G2
-    G1 -->|"1 cable"| G3
-    G1 -->|"2 cables"| G4
-    G2 -->|"1 cable"| G4
-    G3 -->|"3 cables"| G4
-    G4 -->|"3 cables"| G5
-```
-
-Llegeix cada fila d’esquerra a dreta: **grup d’origen → node i port de sortida → grup de destinació → node i port d’entrada**. Per exemple, `Eixos:R` és el port R del node Eixos. Un mateix port pot alimentar diversos grups; conserva totes les branques indicades.
-
-| Grup origen | Node:sortida | Grup destinació | Node:entrada |
-|---|---|---|---|
-| 01 | `Grans:Out` | 02 | `Pedra:T` |
-| 01 | `Grans:Out` | 03 | `SorollMolsa:A` |
-| 01 | `Detall:Out` | 04 | `Relleu:In` |
-| 01 | `Detall:Out` | 04 | `Verd:T` |
-| 02 | `Pedra:Out` | 04 | `ColorFinal:A` |
-| 03 | `Llindar:Out` | 04 | `MascaraMolsa:Edge1` |
-| 03 | `LimitSuperior:Out` | 04 | `MascaraMolsa:Edge2` |
-| 03 | `Irregularitat:Out` | 04 | `MascaraMolsa:In` |
-| 04 | `ColorFinal:Out` | Master Stack | `Fragment:Base Color` |
-| 04 | `Relleu:Out` | Master Stack | `Fragment:Normal (Tangent Space)` |
-| 04 | `Brillantor:Out` | Master Stack | `Fragment:Smoothness` |
-
-A Unity, allunya el zoom per veure dos grups alhora. **F** enquadra la selecció; **A** enquadra tot el graf. Per seguir un cable llarg, identifica primer els dos extrems a la taula i localitza els grups numerats.
+<a href="assets/demoroca-graf-complet.png"><img src="assets/demoroca-graf-complet.png" alt="Graf complet de Roca amb totes les connexions i les previsualitzacions" width="1600" style="width: 100%; max-width: 1600px; height: auto;"></a>
 
 ### Pas 1. Coordenades i sorolls
 
 Combina X i Z de Position World. Els dos sorolls comparteixen coordenades però tenen escales diferents.
 
-<img src="assets/demoroca-nodes-01.jpg" alt="Shader Graph Roca, pas 1: Coordenades i sorolls" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `UV` | UV |   |
+| `UV` | UV | Channel = UV0 |
 | `PosicioMon` | Position | Space: World |
-| `Eixos` | Split | In ← PosicioMon:Out |
-| `XZ` | Combine | R ← Eixos:R; G ← Eixos:B |
-| `Grans` | Simple Noise | UV ← XZ:RG; Scale ← 5 |
-| `Detall` | Gradient Noise | UV ← XZ:RG; Scale ← 32 |
+| `Eixos` | Split | Valors per defecte |
+| `XZ` | Combine | Valors per defecte |
+| `Grans` | Simple Noise | Scale = 5 |
+| `Detall` | Gradient Noise | Scale = 32 |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `PosicioMon` | Out | `Eixos` | In |
+| `Eixos` | R | `XZ` | R |
+| `Eixos` | B | `XZ` | G |
+| `XZ` | RG | `Grans` | UV |
+| `XZ` | RG | `Detall` | UV |
+
+**Comprova el resultat:** Desplega **Simple Noise** i **Gradient Noise**: han de mostrar taques en escala de grisos amb mides diferents.
 
 ### Pas 2. Color de la pedra
 
 Aquest Lerp crea el color mineral abans d’afegir la molsa.
 
-<img src="assets/demoroca-nodes-02.jpg" alt="Shader Graph Roca, pas 2: Color de la pedra" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `Pedra` | Lerp | A ← Fosc:Out; B ← Clar:Out; T ← Grans:Out |
+| `Pedra` | Lerp | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Fosc` | Out | `Pedra` | A |
+| `Clar` | Out | `Pedra` | B |
+| `Grans` | Out | `Pedra` | T |
+
+**Comprova el resultat:** Desplega **Lerp** (Pedra): el soroll ha de barrejar els colors Fosc i Clar.
 
 ### Pas 3. Orientacio i limits
 
 Dot Product amb el vector (0,1,0) selecciona la part superior. El soroll irregularitza el límit.
 
-<img src="assets/demoroca-nodes-03.jpg" alt="Shader Graph Roca, pas 3: Orientacio i limits" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
 | `NormalMon` | Normal Vector | Space: World |
-| `Amunt` | Vector 3 | X ← 0; Y ← 1; Z ← 0 |
-| `Orientacio` | Dot Product | A ← NormalMon:Out; B ← Amunt:Out |
-| `LimitSuperior` | Add | A ← Llindar:Out; B ← 0.25 |
-| `SorollMolsa` | Multiply | A ← Grans:Out; B ← 0.35 |
-| `Irregularitat` | Add | A ← Orientacio:Out; B ← SorollMolsa:Out |
+| `Amunt` | Vector 3 | X = 0; Y = 1; Z = 0 |
+| `Orientacio` | Dot Product | Valors per defecte |
+| `LimitSuperior` | Add | B = 0.25 |
+| `SorollMolsa` | Multiply | B = 0.35 |
+| `Irregularitat` | Add | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `NormalMon` | Out | `Orientacio` | A |
+| `Amunt` | Out | `Orientacio` | B |
+| `Llindar` | Out | `LimitSuperior` | A |
+| `Grans` | Out | `SorollMolsa` | A |
+| `Orientacio` | Out | `Irregularitat` | A |
+| `SorollMolsa` | Out | `Irregularitat` | B |
+
+**Comprova el resultat:** Desplega **Dot Product** (Orientacio): sobre una previsualització esfèrica, la zona orientada cap amunt ha de ser més clara.
 
 ### Pas 4. Molsa i sortida
 
 Smoothstep crea la transició pedra–molsa. El relleu de normals és deliberadament discret.
 
-<img src="assets/demoroca-nodes-04.jpg" alt="Shader Graph Roca, pas 4: Molsa i sortida" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `MascaraMolsa` | Smoothstep | Edge1 ← Llindar:Out; Edge2 ← LimitSuperior:Out; In ← Irregularitat:Out |
-| `Verd` | Lerp | A ← MolsaFosca:Out; B ← MolsaClara:Out; T ← Detall:Out |
-| `ColorFinal` | Lerp | A ← Pedra:Out; B ← Verd:Out; T ← MascaraMolsa:Out |
-| `Relleu` | Normal From Height | In ← Detall:Out; Strength ← 0.002 |
+| `MascaraMolsa` | Smoothstep | Valors per defecte |
+| `Verd` | Lerp | Valors per defecte |
+| `ColorFinal` | Lerp | Valors per defecte |
+| `Relleu` | Normal From Height | Strength = 0.002 |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Llindar` | Out | `MascaraMolsa` | Edge1 |
+| `LimitSuperior` | Out | `MascaraMolsa` | Edge2 |
+| `Irregularitat` | Out | `MascaraMolsa` | In |
+| `MolsaFosca` | Out | `Verd` | A |
+| `MolsaClara` | Out | `Verd` | B |
+| `Detall` | Out | `Verd` | T |
+| `Pedra` | Out | `ColorFinal` | A |
+| `Verd` | Out | `ColorFinal` | B |
+| `MascaraMolsa` | Out | `ColorFinal` | T |
+| `Detall` | Out | `Relleu` | In |
+
+**Comprova el resultat:** Desplega **Smoothstep** (MascaraMolsa) i **Lerp** (ColorFinal): comprova la màscara i el color resultant. La distribució definitiva es comprova sobre les roques de l’escena.
 
 ### Pas 5. Master Stack i connexions finals
 
-Connecta les branques als blocs del Master Stack indicats a continuació. Comprova l’espai de les normals i si les sortides són de Vertex o de Fragment. Els blocs sense cable conserven el valor per defecte.
+Connecta les sortides als blocs del Master Stack indicats a la taula de cables. Si hi ha un bloc Normal, configura’l en Tangent. Els blocs sense cable conserven el valor per defecte.
 
-<img src="assets/demoroca-nodes-sortides.jpg" alt="Shader Graph Roca, pas 5: Master Stack i connexions finals" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Cables: arrossega de la sortida a l’entrada indicada.**
 
-| ID | Node | Entrades |
-|---|---|---|
-| Sortida | BaseColor | ColorFinal:Out |
-| Sortida | Normal (Tangent) | Relleu:Out |
-| Sortida | Smoothness | Brillantor:Out |
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `ColorFinal` | Out | `Fragment / Base Color` | Base Color |
+| `Relleu` | Out | `Fragment / Normal (Tangent)` | Normal (Tangent) |
+| `Brillantor` | Out | `Fragment / Smoothness` | Smoothness |
 
 Els números de les entrades són valors literals. En un vector, repeteix el valor a tots els components quan s’indica un únic nombre. A Combine, tria RG per a Vector2; a Split, R/G/B equivalen a X/Y/Z. Desa el graf abans de crear els materials.
 
-## 5. Crear els materials
+**Comprova el resultat:** Desa el graf i comprova al material de l’escena que la molsa apareix sobretot a les superfícies orientades cap amunt.
+
+## 4. Crear els materials
 
 A la carpeta **Materials**, utilitza **Create > Rendering > Material** per a cada material indicat. A l’Inspector, selecciona **Shader > DAM Shaders > SRoca** (o arrossega SRoca del Project sobre el material). `MRoca0`, `MRoca1`, `MRoca2`: Llindar = **0.65, 0.35, 0.05**. Les roques utilitzen Rock1, Rock2 i Rock3. Rotacions Euler: **(15,0,10), (15,40,10), (15,80,10)**.
 
-## 6. Construir l’escena
+## 5. Construir l’escena
 
 Les posicions són globals i les escales corresponen a les primitives de Unity. Mantén els objectes a l’arrel, sense un pare escalat. Els elements decoratius i textos es poden ometre: no intervenen en el shader.
 
@@ -289,7 +302,7 @@ Selecciona la **Directional Light** existent, canvia-li el nom a **Key Light** i
 
 Al **Global Volume** existent, duplica el perfil a la carpeta de la demo i assigna-hi la còpia. Conserva només **Bloom** i activa Intensity = **0.35**, Threshold = **1** i Scatter = **0.6**. Mantén **HDR** i **Post Processing** activats a Main Camera.
 
-## 7. Afegir els controls
+## 6. Afegir els controls
 
 ### Càmera orbital i zoom
 
@@ -414,25 +427,21 @@ Crea un objecte buit **Controls** i afegeix-hi DemoControls. A **Surfaces**, ass
 | Maximum | 1 |
 | Initial Value | 0.35 |
 
-**Controls:** lliscador per modificar `_Llindar`; Espai pausa el temps; R reinicia temps i paràmetre; H amaga el panell. En moure el lliscador, el valor s’aplica a totes les mostres. Abans de tocar-lo, cada material conserva les variants de l’apartat 5. Els rètols de l’escena identifiquen aquestes variants inicials; el panell mostra el valor actual del control.
+**Controls:** lliscador per modificar `_Llindar`; Espai pausa el temps; R reinicia temps i paràmetre; H amaga el panell. En moure el lliscador, el valor s’aplica a totes les mostres. Abans de tocar-lo, cada material conserva les variants de l’apartat 4. Els rètols de l’escena identifiquen aquestes variants inicials; el panell mostra el valor actual del control.
 
 Els canvis durant Play són temporals. Per canviar els valors inicials de manera permanent, atura Play i edita els assets de material.
 
-## 8. Provar la demo
+## 7. Provar la demo
 
 1. Comprova que la molsa tendeix a aparèixer a les parts superiors.
 2. Mou Llindar cap a 1: retrocedeix la molsa. Mou-lo cap a −0.2: s’estén.
 3. Atura Play i gira una roca: la selecció continua seguint la vertical del món.
 4. Desactiva les normals de detall i distingeix el relleu aparent de la forma real de la malla.
 
-<img src="assets/demoroca-variant.png" alt="Variant amb el lliscador al màxim" width="600" style="width: 90%; max-width: 600px; height: auto;">
+<a href="assets/demoroca-variant.png"><img src="assets/demoroca-variant.png" alt="Variant amb el lliscador al màxim" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
 ## Si alguna cosa no funciona
 
 Si la molsa apareix en un costat estrany, comprova que Normal Vector és World. Si veus estirament vertical, és la limitació de projectar amb XZ; no es resol canviant el color.
 
 Si el material és rosa, comprova URP, la compilació del gràfic i la Console. Si el teclat no respon, comprova Input System, entra a Play i clica Game.
-
-## Ampliació
-
-Compara la projecció XZ amb una triplanar. Afegeix una textura de color i un normal map, mantenint la màscara de molsa per orientació.

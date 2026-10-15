@@ -40,7 +40,7 @@ Les animacions fan servir el node **Time** de Shader Graph: no necessiten DemoCo
 
 1. Descomprimeix **Biblioteca-Materials.zip**.
 2. A Unity Hub, selecciona **Add > Add project from disk** i tria la carpeta que conté Assets, Packages i ProjectSettings.
-3. Obre-la amb **Unity 6000.6.3f1**. El projecte utilitza **Universal RP i Shader Graph 17.6.0**, i **Input System 1.20.0** per als controls del catàleg.
+3. Obre-la amb **Unity**. El projecte utilitza **Universal RP i Shader Graph**, i **Input System** per als controls del catàleg.
 4. Espera que Unity resolgui els paquets i importi els recursos.
 5. S’obrirà automàticament **CatalegMaterials**. Prem Play. Per tornar-hi després, utilitza **Demo > Obrir escena principal**.
 6. El catàleg comença amb Base aïllat. Clica una família per mostrar només els seus exemples i apropar-t’hi. Mantén el **botó dret** i arrossega per orbitar; utilitza la **roda** per fer zoom. **Home** recupera la vista general i **H** amaga el panell.
@@ -75,7 +75,7 @@ Per veure les animacions, entra en Play i selecciona la família al panell. La c
 
 ### 1. Preparar el projecte de destinació
 
-Utilitza un projecte **Universal 3D / URP**. La biblioteca s’ha preparat amb les versions indicades més amunt; no és una biblioteca per a Built-in Render Pipeline ni HDRP. Importar el paquet no canvia el render pipeline del projecte.
+Utilitza un projecte **Universal 3D / URP**. La biblioteca està preparada per a URP. Importar el paquet no canvia el render pipeline del projecte.
 
 Comprova al Package Manager que Universal RP i Shader Graph estan disponibles. El `.unitypackage` conté recursos, **no instal·la els paquets de Unity**. La biblioteca de materials no necessita Input System; aquesta dependència és només del catàleg complet.
 
@@ -203,6 +203,6 @@ M_Plastic parteix d’un acabat suau; M_PlasticBrillant incrementa Brillantor. E
 
 ## Comprovació
 
-Provat amb Unity 6000.6.3f1 a macOS. S’han comprovat la compilació i les referències de textura dels 36 materials, i s’han renderitzat totes les variants de fusta, roca, maons i gel. El gel s’ha renderitzat des de dos angles i s’ha comparat amb Profunditat a zero: el paràmetre modifica el resultat. També s’ha comprovat l’aïllament de les 15 famílies i les combinacions al taller. No s’ha mesurat un guany concret d’FPS ni s’ha validat en Windows o Linux.
+Provat amb Unity a macOS. S’han comprovat la compilació i les referències de textura dels 36 materials, i s’han renderitzat totes les variants de fusta, roca, maons i gel. El gel s’ha renderitzat des de dos angles i s’ha comparat amb Profunditat a zero: el paràmetre modifica el resultat. També s’ha comprovat l’aïllament de les 15 famílies i les combinacions al taller. No s’ha mesurat un guany concret d’FPS ni s’ha validat en Windows o Linux.
 
 L’ampliació s’ha comprovat amb 84 textures i 36 materials: variants diferents, mapes d’altura lineals, importació dels normals i compilació dels shaders. El gel s’ha comparat amb profunditat zero i amb un mapa gris uniforme; tots dos canvis modifiquen el resultat. S’han renderitzat també els tres jocs nous de cristalls.

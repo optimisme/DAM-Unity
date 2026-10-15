@@ -4,12 +4,12 @@ Construirem tres figures semitransparents amb franges animades i vores que s’i
 
 **Projecte acabat:** [Demo-5-Holograma.zip](demos/Demo-5-Holograma.zip). Descomprimeix-lo i obre la carpeta amb Assets, Packages i ProjectSettings des de Unity Hub. La primera importació obre automàticament `Assets/Demos/Holograma/Scenes/DemoHolograma.unity`; prem Play. Els materials poden trigar una estona a carregar-se.
 
-<img src="assets/demoholograma-escena.png" alt="Escena de la demo Holograma renderitzada a Unity" width="600" style="width: 90%; max-width: 600px; height: auto;">
+<a href="assets/demoholograma-escena.png"><img src="assets/demoholograma-escena.png" alt="Escena de la demo Holograma renderitzada a Unity" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
 ## 1. Partir de Universal 3D
 
 1. Crea un projecte **Universal 3D (URP)**.
-2. A Package Manager, comprova **Universal RP 17.6.0**, **Shader Graph 17.6.0** i **Input System 1.20.0**. Shader Graph arriba com a dependència d’URP.
+2. A Package Manager, comprova **Universal RP**, **Shader Graph** i **Input System**. Shader Graph arriba com a dependència d’URP.
 3. A **Project Settings > Player > Active Input Handling**, selecciona **Input System Package (New)**. Accepta el reinici si Unity el demana.
 4. Crea `Assets/Demos/Holograma` amb les carpetes **Shaders**, **Materials**, **Scenes** i **Meshes**. Crea també **Assets/Common** per als scripts.
 5. Obre **Assets/Scenes/SampleScene**, que ja inclou **Main Camera**, **Directional Light** i **Global Volume**. Conserva aquests objectes. Amb **File > Save As…**, desa una còpia com a `DemoHolograma` dins de Scenes. Més endavant ajustarem la càmera i la llum existents.
@@ -40,114 +40,117 @@ Afegeix al Blackboard aquestes propietats. Activa **Exposed** i escriu les **Ref
 
 Arrossega les propietats al gràfic per crear els seus nodes. La propietat no es crea escrivint-ne el nom en un node Float: s’ha de crear al Blackboard.
 
-## 3. Entendre l’efecte
+## 3. Connectar els nodes
 
-### Franges
+Segueix els passos en ordre dins del mateix Shader Graph. Prem **Espai** per crear un node del tipus indicat; arrossega les propietats des del Blackboard. Els identificadors de les taules serveixen per distingir nodes repetits: no cal canviar els noms dels nodes. Si ho necessites, posa una **Sticky Note** al costat del node amb l’identificador.
 
-La coordenada Y en espai Object, multiplicada per Frequencia i sumada a Temps, entra a Sine. Smoothstep entre 0.3 i 0.6 selecciona les bandes. La freqüència és angular per unitat local; el número del material no és un recompte exacte de franges.
+A cada fila de cables, arrossega des del **port de sortida** del node origen fins al **port d’entrada** del node destí. Reutilitza els nodes dels passos anteriors. `Out` indica la sortida principal; als nodes de propietat pot mostrar el nom de la propietat.
 
-### Vores
+Per organitzar el graf com a la captura, selecciona els nodes de cada pas i tria **Group Selection** al menú del botó dret. Mantén els grups a prop i deixa prou espai per veure els cables.
 
-Fresnel amb Power = 3 destaca les zones on la superfície es veu de gairell. Maximum combina aquesta màscara amb les franges. No és una detecció de col·lisió ni un contorn geomètric nou.
+Per veure el resultat d’un node, fes-hi botó dret i tria **View > Expand Preview**; amb **Collapse Preview** el pots plegar.
 
-### Transparència
+Escriu els valors de la taula als camps sense cable. Si el camp és vectorial i només s’indica un valor, repeteix-lo a tots els components. Clica les captures per veure-les a mida completa.
 
-La màscara barreja alpha entre 0.08 i 0.8 i controla l’emissió. La superfície és Transparent amb barreja Alpha; no activis Alpha Clipping. L’ordre de dibuix pot ser problemàtic amb diversos hologrames superposats.
+**Graf complet:** segueix els grups numerats fins al **Master Stack**. Les previsualitzacions mostren les franges, el contorn Fresnel, el color i l’alpha. [Obre la imatge a mida completa](assets/demoholograma-graf-complet.png) per llegir els ports i seguir tots els cables.
 
-## 4. Connectar els nodes
-
-Cada fila identifica un node. `Eixos:R` vol dir la sortida **R** del node identificat com Eixos; `Nom:Out` vol dir la seva sortida. Si el nom correspon a una propietat del Blackboard, utilitza el seu node Property. Els números sense `:` són valors literals escrits al port d’entrada. Els àlies Temps, Mode i Centre corresponen a les propietats amb Reference `_Temps`, `_Mode` i `_Centre`, quan existeixen en aquesta demo. En un port vectorial, un literal únic s’ha de repetir a tots els components: per exemple Frequency = 12 vol dir (12,12).
-
-Les captures següents provenen del Shader Graph de Unity. A les captures de cada pas s’han ocultat els cables que només travessen el grup sense connectar-hi; es mantenen les seves entrades i sortides. Alguns camps numèrics es veuen arrodonits per l’amplada del node: utilitza els valors exactes de la taula. Cada grup numerat és un pas del mateix graf final. Segueix l’ordre, afegeix els nodes del pas i connecta’ls com a la captura i a la taula. Les propietats es creen al Blackboard segons l’apartat 2; els nodes Property simplement les llegeixen.
-
-Els cables que entren des de fora del grup provenen de passos anteriors: el nom de la taula identifica l’origen. Al projecte acabat pots seleccionar un grup i prémer **F** per enquadrar-lo. Les previsualitzacions dels nodes estan plegades a les captures per deixar llegir ports i valors; pots desplegar-les per inspeccionar una màscara.
-
-### Connexions entre grups
-
-Aquest mapa mostra com es connecten els grups del graf. Cada fletxa agrupa el nombre de cables indicat; la taula inferior detalla **tots els cables entre grups i cap al Master Stack**, amb els ports exactes. Les captures dels passos següents mostren les connexions interiors.
-
-```mermaid
-flowchart TD
-    G1["01 · Franges animades"]
-    G2["02 · Vora Fresnel i alpha"]
-    G3["03 · Color i emissio"]
-    G4["Sortides · Master Stack"]
-    G1 -->|"1 cable"| G2
-    G2 -->|"1 cable"| G3
-    G2 -->|"1 cable"| G4
-    G3 -->|"2 cables"| G4
-```
-
-Llegeix cada fila d’esquerra a dreta: **grup d’origen → node i port de sortida → grup de destinació → node i port d’entrada**. Per exemple, `Eixos:R` és el port R del node Eixos. Un mateix port pot alimentar diversos grups; conserva totes les branques indicades.
-
-| Grup origen | Node:sortida | Grup destinació | Node:entrada |
-|---|---|---|---|
-| 01 | `Franges:Out` | 02 | `Mascara:A` |
-| 02 | `Mascara:Out` | 03 | `IntensitatFinal:A` |
-| 02 | `Transparencia:Out` | Master Stack | `Fragment:Alpha` |
-| 03 | `Color:Out` | Master Stack | `Fragment:Base Color` |
-| 03 | `Emissio:Out` | Master Stack | `Fragment:Emission` |
-
-A Unity, allunya el zoom per veure dos grups alhora. **F** enquadra la selecció; **A** enquadra tot el graf. Per seguir un cable llarg, identifica primer els dos extrems a la taula i localitza els grups numerats.
+<a href="assets/demoholograma-graf-complet.png"><img src="assets/demoholograma-graf-complet.png" alt="Graf complet de Holograma amb totes les connexions i les previsualitzacions" width="1600" style="width: 100%; max-width: 1600px; height: auto;"></a>
 
 ### Pas 1. Franges animades
 
 Position Object.y fixa les franges a l’objecte. Temps anima la fase sense moure la geometria.
 
-<img src="assets/demoholograma-nodes-01.jpg" alt="Shader Graph Holograma, pas 1: Franges animades" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `UV` | UV |   |
+| `UV` | UV | Channel = UV0 |
 | `Posicio` | Position | Space: Object |
-| `Eixos` | Split | In ← Posicio:Out |
-| `Altura` | Multiply | A ← Eixos:G; B ← Frequencia:Out |
-| `Fase` | Add | A ← Altura:Out; B ← Temps:Out |
-| `Ona` | Sine | In ← Fase:Out |
-| `Franges` | Smoothstep | Edge1 ← 0.3; Edge2 ← 0.6; In ← Ona:Out |
+| `Eixos` | Split | Valors per defecte |
+| `Altura` | Multiply | Valors per defecte |
+| `Fase` | Add | Valors per defecte |
+| `Ona` | Sine | Valors per defecte |
+| `Franges` | Smoothstep | Edge1 = 0.3; Edge2 = 0.6 |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Posicio` | Out | `Eixos` | In |
+| `Eixos` | G | `Altura` | A |
+| `Frequencia` | Out | `Altura` | B |
+| `Altura` | Out | `Fase` | A |
+| `Temps` | Out | `Fase` | B |
+| `Fase` | Out | `Ona` | In |
+| `Ona` | Out | `Franges` | In |
+
+**Comprova el resultat:** Desplega **Sine** i **Smoothstep** (Franges): comprova com les bandes suaus es converteixen en franges delimitades.
 
 ### Pas 2. Vora Fresnel i alpha
 
 Maximum combina les franges amb Fresnel. Lerp conserva un mínim d’alpha de 0.08.
 
-<img src="assets/demoholograma-nodes-02.jpg" alt="Shader Graph Holograma, pas 2: Vora Fresnel i alpha" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `Vores` | Fresnel Effect | Power ← 3 |
-| `Mascara` | Maximum | A ← Franges:Out; B ← Vores:Out |
-| `Transparencia` | Lerp | A ← 0.08; B ← 0.8; T ← Mascara:Out |
+| `Vores` | Fresnel Effect | Power = 3 |
+| `Mascara` | Maximum | Valors per defecte |
+| `Transparencia` | Lerp | A = 0.08; B = 0.8 |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Franges` | Out | `Mascara` | A |
+| `Vores` | Out | `Mascara` | B |
+| `Mascara` | Out | `Transparencia` | T |
+
+**Comprova el resultat:** Desplega **Fresnel Effect** i **Maximum** (Mascara): en una previsualització esfèrica, el Fresnel il·lumina el contorn i Maximum hi afegeix les franges.
 
 ### Pas 3. Color i emissio
 
 Multiplica el color per la màscara i Intensitat per alimentar Emission.
 
-<img src="assets/demoholograma-nodes-03.jpg" alt="Shader Graph Holograma, pas 3: Color i emissio" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `IntensitatFinal` | Multiply | A ← Mascara:Out; B ← Intensitat:Out |
-| `Emissio` | Multiply | A ← Color:Out; B ← IntensitatFinal:Out |
+| `IntensitatFinal` | Multiply | Valors per defecte |
+| `Emissio` | Multiply | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Mascara` | Out | `IntensitatFinal` | A |
+| `Intensitat` | Out | `IntensitatFinal` | B |
+| `Color` | Out | `Emissio` | A |
+| `IntensitatFinal` | Out | `Emissio` | B |
+
+**Comprova el resultat:** Desplega **Multiply** (Emissio): ha de mostrar el color de l’holograma modulat per la màscara.
 
 ### Pas 4. Master Stack i connexions finals
 
-Connecta les branques als blocs del Master Stack indicats a continuació. Comprova l’espai de les normals i si les sortides són de Vertex o de Fragment. Els blocs sense cable conserven el valor per defecte.
+Connecta les sortides als blocs del Master Stack indicats a la taula de cables. Si hi ha un bloc Normal, configura’l en Tangent. Els blocs sense cable conserven el valor per defecte.
 
-<img src="assets/demoholograma-nodes-sortides.jpg" alt="Shader Graph Holograma, pas 4: Master Stack i connexions finals" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Cables: arrossega de la sortida a l’entrada indicada.**
 
-| ID | Node | Entrades |
-|---|---|---|
-| Sortida | BaseColor | Color:Out |
-| Sortida | Emission | Emissio:Out |
-| Sortida | Alpha | Transparencia:Out |
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Color` | Out | `Fragment / Base Color` | Base Color |
+| `Emissio` | Out | `Fragment / Emission` | Emission |
+| `Transparencia` | Out | `Fragment / Alpha` | Alpha |
 
 Els números de les entrades són valors literals. En un vector, repeteix el valor a tots els components quan s’indica un únic nombre. A Combine, tria RG per a Vector2; a Split, R/G/B equivalen a X/Y/Z. Desa el graf abans de crear els materials.
 
-## 5. Crear els materials
+**Comprova el resultat:** Desa el graf. Comprova la transparència sobre la mostra i la resplendor amb el Bloom de l’escena.
+
+## 4. Crear els materials
 
 A la carpeta **Materials**, utilitza **Create > Rendering > Material** per a cada material indicat. A l’Inspector, selecciona **Shader > DAM Shaders > SHolograma** (o arrossega SHolograma del Project sobre el material). `MHolograma0`, `MHolograma1`, `MHolograma2`: Frequencia = **12, 24, 36**. Color RGB: **(5,204,255), (102,38,255), (255,46,89)**.
 
-## 6. Construir l’escena
+## 5. Construir l’escena
 
 Les posicions són globals i les escales corresponen a les primitives de Unity. Mantén els objectes a l’arrel, sense un pare escalat. Els elements decoratius i textos es poden ometre: no intervenen en el shader.
 
@@ -169,7 +172,7 @@ Selecciona la **Directional Light** existent, canvia-li el nom a **Key Light** i
 
 Activa **HDR** i **Post Processing** a la càmera existent. Selecciona el **Global Volume** existent; duplica el seu perfil a la carpeta de la demo i assigna-hi la còpia. Conserva només **Bloom** al perfil de la demo (elimina els altres overrides per reproduir aquesta il·luminació) i activa els seus overrides: Intensity **0.35**, Threshold **1**, Scatter **0.6**.
 
-## 7. Afegir els controls
+## 6. Afegir els controls
 
 ### Càmera orbital i zoom
 
@@ -294,27 +297,23 @@ Crea un objecte buit **Controls** i afegeix-hi DemoControls. A **Surfaces**, ass
 | Maximum | 50 |
 | Initial Value | 18 |
 
-**Controls:** lliscador per modificar `_Frequencia`; Espai pausa el temps; R reinicia temps i paràmetre; H amaga el panell. En moure el lliscador, el valor s’aplica a totes les mostres. Abans de tocar-lo, cada material conserva les variants de l’apartat 5. Els rètols de l’escena identifiquen aquestes variants inicials; el panell mostra el valor actual del control.
+**Controls:** lliscador per modificar `_Frequencia`; Espai pausa el temps; R reinicia temps i paràmetre; H amaga el panell. En moure el lliscador, el valor s’aplica a totes les mostres. Abans de tocar-lo, cada material conserva les variants de l’apartat 4. Els rètols de l’escena identifiquen aquestes variants inicials; el panell mostra el valor actual del control.
 
 Els canvis durant Play són temporals. Per canviar els valors inicials de manera permanent, atura Play i edita els assets de material.
 
-## 8. Provar la demo
+## 7. Provar la demo
 
 1. Comprova les franges de les tres figures i l’animació vertical.
 2. Prem Espai per congelar el temps.
 3. Mou Frequencia: augmenta o disminueix la densitat de les franges.
 4. Gira la càmera a l’editor: Fresnel continua destacant les zones vistes de gairell.
 
-<img src="assets/demoholograma-variant.png" alt="Variant amb el lliscador al màxim" width="600" style="width: 90%; max-width: 600px; height: auto;">
+<a href="assets/demoholograma-variant.png"><img src="assets/demoholograma-variant.png" alt="Variant amb el lliscador al màxim" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
-<img src="assets/demoholograma-animacio.png" alt="Animació en un altre instant, amb el paràmetre inicial" width="600" style="width: 90%; max-width: 600px; height: auto;">
+<a href="assets/demoholograma-animacio.png"><img src="assets/demoholograma-animacio.png" alt="Animació en un altre instant, amb el paràmetre inicial" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
 ## Si alguna cosa no funciona
 
 Si és opac, revisa Surface Type Transparent i la connexió Alpha. Si les franges no avancen, comprova `_Temps` i Surfaces.
 
 Si el material és rosa, comprova URP, la compilació del gràfic i la Console. Si el teclat no respon, comprova Input System, entra a Play i clica Game.
-
-## Ampliació
-
-Multiplica l’emissió per una pulsació lenta i afegeix una franja vertical de lectura. Mantén independent el temps de les bandes i el del parpelleig.

@@ -4,8 +4,8 @@ Cada ZIP conté un **projecte Unity independent** amb escenes acabades, Shader G
 
 ## Requisits
 
-- **Unity 6000.6.3f1**, la versió amb què s’han construït i provat els projectes.
-- **Universal RP 17.6.0**, **Shader Graph 17.6.0** i **Input System 1.20.0**. Les dependències es resolen amb Package Manager.
+- **Unity** amb un projecte Universal 3D (URP).
+- **Universal RP**, **Shader Graph** i **Input System**. Les dependències es resolen amb Package Manager.
 - Internet durant la primera obertura si els paquets no són a la memòria cau.
 
 ## Obrir una demo
@@ -13,7 +13,7 @@ Cada ZIP conté un **projecte Unity independent** amb escenes acabades, Shader G
 1. Descarrega el ZIP i descomprimeix-lo completament.
 2. A Unity Hub, utilitza **Add > Add project from disk**.
 3. Selecciona la carpeta que conté directament **Assets**, **Packages** i **ProjectSettings**.
-4. Obre-la amb **6000.6.3f1** i espera que acabi la importació.
+4. Obre-la amb **Unity** i espera que acabi la importació.
 5. En acabar la primera importació, s’obre automàticament l’escena principal de la demo. Els materials poden trigar una estona a carregar-se. Aigua també inclou una segona escena, `DemoAiguaGalaxy`, que pots obrir des de `Assets/Demos/Aigua/Scenes/`.
 6. Prem **Play** i clica la vista **Game**. El panell mostra els controls.
 7. Atura Play abans d’editar valors que vulguis conservar als materials.
@@ -73,7 +73,7 @@ Revisió del **9 d’octubre de 2026**, sobre els fitxers de la branca **main**:
 - Els set tutorials 0–6 parteixen de **Universal 3D / SampleScene**, conservant Main Camera, Directional Light i Global Volume. Les escenes s’han reconstruït amb aquests objectes originals, els scripts publicats i les utilitats de malles dels tutorials.
 - **551 comprovacions** de les escenes: posicions i escales contrastades amb les taules dels Markdown, variants dels materials, controls, referències, càmera, malles, profunditat i configuració de Galaxy.
 - **306 connexions, 69 entrades literals i 56 propietats** dels deu Shader Graphs contrastades amb les taules dels tutorials.
-- Els **vuit ZIP de les demos 0–6 i del catàleg** s’han extret en carpetes noves i s’han obert amb **Unity 6000.6.3f1 en mode gràfic a macOS**. Les nou escenes han funcionat en Play: **589 comprovacions** d’obertura automàtica, compilació, renderitzat, paràmetres, animacions, càmera orbital, obertura i tancament progressius de Forat i aïllament de les 15 famílies del catàleg.
+- Els **vuit ZIP de les demos 0–6 i del catàleg** s’han extret en carpetes noves i s’han obert amb **Unity en mode gràfic a macOS**. Les nou escenes han funcionat en Play: **589 comprovacions** d’obertura automàtica, compilació, renderitzat, paràmetres, animacions, càmera orbital, obertura i tancament progressius de Forat i aïllament de les 15 famílies del catàleg.
 - **Demo-7-Sombra** també parteix de Universal 3D i s’ha obert des del seu ZIP en una carpeta nova: silueta emplenada en gris, paret intacta, oclusió parcial, activació/desactivació i càmera orbital. La prova completa ha passat **111 comprovacions**, incloses 30 de posició, rotació i escala contra les taules del tutorial. Aquestes 30 comprovacions s’han afegit en una segona obertura reutilitzant la importació inicial.
 - Corregida una referència buida al perfil **Bloom** dels projectes de demo: el resplendor es conserva en tornar-los a obrir.
 - Els **137 recursos** de la biblioteca del ZIP coincideixen amb el `.unitypackage` importable.
@@ -87,7 +87,7 @@ La **Demo-8-Pels** s’ha reconstruït des de zero amb la plantilla Universal 3D
 ## Si alguna cosa no funciona
 
 - **Projecte no reconegut:** selecciona la carpeta amb Assets, Packages i ProjectSettings, no el ZIP ni la carpeta exterior.
-- **Material rosa:** espera que acabi la compilació i comprova la versió d’URP i de Unity.
+- **Material rosa:** espera que acabi la compilació i comprova que el projecte utilitza URP i revisa els errors de la Console.
 - **Escena buida:** utilitza **Demo > Obrir escena principal**.
 - **Teclat sense resposta:** clica Game, comprova que Pause estigui desactivat i que Input System sigui el sistema d’entrada actiu.
 - **Escuma incorrecta:** comprova Depth Texture a l’URP Asset actiu i a la càmera.

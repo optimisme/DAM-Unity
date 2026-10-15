@@ -4,12 +4,12 @@ Construirem una paret que es retalla al voltant del personatge quan l’oculta. 
 
 **Projecte acabat:** [Demo-6-Forat.zip](demos/Demo-6-Forat.zip). Descomprimeix-lo i obre la carpeta amb Assets, Packages i ProjectSettings des de Unity Hub. La primera importació obre automàticament `Assets/Demos/Forat/Scenes/DemoForat.unity`; prem Play. Els materials poden trigar una estona a carregar-se.
 
-<img src="assets/demoforat-escena.png" alt="Escena de la demo Forat renderitzada a Unity" width="600" style="width: 90%; max-width: 600px; height: auto;">
+<a href="assets/demoforat-escena.png"><img src="assets/demoforat-escena.png" alt="Escena de la demo Forat renderitzada a Unity" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
 ## 1. Partir de Universal 3D
 
 1. Crea un projecte **Universal 3D (URP)**.
-2. A Package Manager, comprova **Universal RP 17.6.0**, **Shader Graph 17.6.0** i **Input System 1.20.0**. Shader Graph arriba com a dependència d’URP.
+2. A Package Manager, comprova **Universal RP**, **Shader Graph** i **Input System**. Shader Graph arriba com a dependència d’URP.
 3. A **Project Settings > Player > Active Input Handling**, selecciona **Input System Package (New)**. Accepta el reinici si Unity el demana.
 4. Crea `Assets/Demos/Forat` amb les carpetes **Shaders**, **Materials**, **Scenes** i **Meshes**. Crea també **Assets/Common** per als scripts.
 5. Obre **Assets/Scenes/SampleScene**, que ja inclou **Main Camera**, **Directional Light** i **Global Volume**. Conserva aquests objectes. Amb **File > Save As…**, desa una còpia com a `DemoForat` dins de Scenes. Més endavant ajustarem la càmera i la llum existents.
@@ -40,155 +40,158 @@ Afegeix al Blackboard aquestes propietats. Activa **Exposed** i escriu les **Ref
 
 Arrossega les propietats al gràfic per crear els seus nodes. La propietat no es crea escrivint-ne el nom en un node Float: s’ha de crear al Blackboard.
 
-## 3. Entendre l’efecte
+## 3. Connectar els nodes
 
-### Qui decideix si hi ha una paret?
+Segueix els passos en ordre dins del mateix Shader Graph. Prem **Espai** per crear un node del tipus indicat; arrossega les propietats des del Blackboard. Els identificadors de les taules serveixen per distingir nodes repetits: no cal canviar els noms dels nodes. Si ho necessites, posa una **Sticky Note** al costat del node amb l’identificador.
 
-El controlador projecta un punt del personatge amb WorldToViewportPoint i consulta el segment càmera–personatge amb Physics.RaycastAll. Només els colliders de la capa 8, DioramaWalls, poden activar l’efecte. El raig arriba fins al personatge, no més enllà.
+A cada fila de cables, arrossega des del **port de sortida** del node origen fins al **port d’entrada** del node destí. Reutilitza els nodes dels passos anteriors. `Out` indica la sortida principal; als nodes de propietat pot mostrar el nom de la propietat.
 
-### Què fa el shader?
+Per organitzar el graf com a la captura, selecciona els nodes de cada pas i tria **Group Selection** al menú del botó dret. Mantén els grups a prop i deixa prou espai per veure els cables.
 
-Screen Position Default proporciona les coordenades de cada fragment. Restem el centre projectat del personatge, corregim X amb la relació d’aspecte i calculem Length. Step retorna 0 dins del radi i 1 fora.
+Per veure el resultat d’un node, fes-hi botó dret i tria **View > Expand Preview**; amb **Collapse Preview** el pots plegar.
 
-```text
-delta = screenUV - Centre.xy
-distancia = length((delta.x * Aspecte, delta.y))
-fora = Step(Radi, distancia)
-alpha = Lerp(1, fora, Actiu)
-```
+Escriu els valors de la taula als camps sense cable. Si el camp és vectorial i només s’indica un valor, repeteix-lo a tots els components. Clica les captures per veure-les a mida completa.
 
-Alpha Clipping amb llindar 0.5 elimina l’interior del cercle quan Actiu = 1. Una segona diferència de llindars crea una vora emissiva de gruix 0.006. La paret manté el collider.
+**Graf complet:** segueix els grups numerats fins al **Master Stack**. Les previsualitzacions mostren la distància al centre, el retall, el color de la paret i l’anell. [Obre la imatge a mida completa](assets/demoforat-graf-complet.png) per llegir els ports i seguir tots els cables.
 
-### Materials compartits
-
-Les dues parets comparteixen MParet. El controlador utilitza MaterialPropertyBlock per donar Actiu, Centre i Radi a cada Renderer: activar una paret no activa l’altra. Això pot afectar el batching; per a la demo prioritzem distingir clarament l’estat de cada paret.
-
-S’ha desactivat Cast Shadows al target del shader per evitar que una màscara dependent de la càmera generi ombres incoherents. El personatge és un marcador visual que es mou lateralment; aquesta demo no implementa un controlador físic de joc complet.
-
-## 4. Connectar els nodes
-
-Cada fila identifica un node. `Eixos:R` vol dir la sortida **R** del node identificat com Eixos; `Nom:Out` vol dir la seva sortida. Si el nom correspon a una propietat del Blackboard, utilitza el seu node Property. Els números sense `:` són valors literals escrits al port d’entrada. Els àlies Temps, Mode i Centre corresponen a les propietats amb Reference `_Temps`, `_Mode` i `_Centre`, quan existeixen en aquesta demo. En un port vectorial, un literal únic s’ha de repetir a tots els components: per exemple Frequency = 12 vol dir (12,12).
-
-Les captures següents provenen del Shader Graph de Unity. A les captures de cada pas s’han ocultat els cables que només travessen el grup sense connectar-hi; es mantenen les seves entrades i sortides. Alguns camps numèrics es veuen arrodonits per l’amplada del node: utilitza els valors exactes de la taula. Cada grup numerat és un pas del mateix graf final. Segueix l’ordre, afegeix els nodes del pas i connecta’ls com a la captura i a la taula. Les propietats es creen al Blackboard segons l’apartat 2; els nodes Property simplement les llegeixen.
-
-Els cables que entren des de fora del grup provenen de passos anteriors: el nom de la taula identifica l’origen. Al projecte acabat pots seleccionar un grup i prémer **F** per enquadrar-lo. Les previsualitzacions dels nodes estan plegades a les captures per deixar llegir ports i valors; pots desplegar-les per inspeccionar una màscara.
-
-### Connexions entre grups
-
-Aquest mapa mostra com es connecten els grups del graf. Cada fletxa agrupa el nombre de cables indicat; la taula inferior detalla **tots els cables entre grups i cap al Master Stack**, amb els ports exactes. Les captures dels passos següents mostren les connexions interiors.
-
-```mermaid
-flowchart TD
-    G1["01 · Pantalla i centre"]
-    G2["02 · Distancia i retall"]
-    G3["03 · Color paret"]
-    G4["04 · Anell emissiu"]
-    G5["Sortides · Master Stack"]
-    G1 -->|"3 cables"| G2
-    G1 -->|"1 cable"| G3
-    G2 -->|"4 cables"| G4
-    G2 -->|"2 cables"| G5
-    G3 -->|"1 cable"| G5
-    G4 -->|"1 cable"| G5
-```
-
-Llegeix cada fila d’esquerra a dreta: **grup d’origen → node i port de sortida → grup de destinació → node i port d’entrada**. Per exemple, `Eixos:R` és el port R del node Eixos. Un mateix port pot alimentar diversos grups; conserva totes les branques indicades.
-
-| Grup origen | Node:sortida | Grup destinació | Node:entrada |
-|---|---|---|---|
-| 01 | `SP:G` | 02 | `DY:A` |
-| 01 | `CP:G` | 02 | `DY:B` |
-| 01 | `DX:Out` | 02 | `Delta:R` |
-| 01 | `UV:Out` | 03 | `Maons:UV` |
-| 02 | `Actiu:Out` | 04 | `Anell:A` |
-| 02 | `Distancia:Out` | 04 | `Exterior:In` |
-| 02 | `Radi:Out` | 04 | `RadiVora:A` |
-| 02 | `Fora:Out` | 04 | `Vora:A` |
-| 02 | `AlphaFinal:Out` | Master Stack | `Fragment:Alpha` |
-| 02 | `Llindar:Out` | Master Stack | `Fragment:Alpha Clip Threshold` |
-| 03 | `ColorFinal:Out` | Master Stack | `Fragment:Base Color` |
-| 04 | `Emissio:Out` | Master Stack | `Fragment:Emission` |
-
-A Unity, allunya el zoom per veure dos grups alhora. **F** enquadra la selecció; **A** enquadra tot el graf. Per seguir un cable llarg, identifica primer els dos extrems a la taula i localitza els grups numerats.
+<a href="assets/demoforat-graf-complet.png"><img src="assets/demoforat-graf-complet.png" alt="Graf complet de Forat amb totes les connexions i les previsualitzacions" width="1600" style="width: 100%; max-width: 1600px; height: auto;"></a>
 
 ### Pas 1. Pantalla i centre
 
 Resta el centre enviat pel controlador a Screen Position. Multiplica només X per Aspecte.
 
-<img src="assets/demoforat-nodes-01.jpg" alt="Shader Graph Forat, pas 1: Pantalla i centre" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `UV` | UV |   |
-| `Pantalla` | Screen Position |   |
-| `SP` | Split | In ← Pantalla:Out |
-| `CP` | Split | In ← Centre:Out |
-| `RestaX` | Subtract | A ← SP:R; B ← CP:R |
-| `DX` | Multiply | A ← RestaX:Out; B ← Aspecte:Out |
+| `UV` | UV | Channel = UV0 |
+| `Pantalla` | Screen Position | Mode = Default |
+| `SP` | Split | Valors per defecte |
+| `CP` | Split | Valors per defecte |
+| `RestaX` | Subtract | Valors per defecte |
+| `DX` | Multiply | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Pantalla` | Out | `SP` | In |
+| `Centre` | Out | `CP` | In |
+| `SP` | R | `RestaX` | A |
+| `CP` | R | `RestaX` | B |
+| `RestaX` | Out | `DX` | A |
+| `Aspecte` | Out | `DX` | B |
+
+**Comprova el resultat:** Aquesta branca calcula coordenades de pantalla. El centre del forat el fixarà el controlador de l’escena; no el validis només amb la miniatura del graf.
 
 ### Pas 2. Distancia i retall
 
 Length dona una distància circular corregida. Actiu decideix si s’aplica el retall.
 
-<img src="assets/demoforat-nodes-02.jpg" alt="Shader Graph Forat, pas 2: Distancia i retall" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `DY` | Subtract | A ← SP:G; B ← CP:G |
-| `Delta` | Combine | R ← DX:Out; G ← DY:Out |
-| `Distancia` | Length | In ← Delta:RG |
-| `Fora` | Step | Edge ← Radi:Out; In ← Distancia:Out |
-| `AlphaFinal` | Lerp | A ← 1; B ← Fora:Out; T ← Actiu:Out |
-| `Llindar` | Float | X ← 0.5 |
+| `DY` | Subtract | Valors per defecte |
+| `Delta` | Combine | Valors per defecte |
+| `Distancia` | Length | Valors per defecte |
+| `Fora` | Step | Valors per defecte |
+| `AlphaFinal` | Lerp | A = 1 |
+| `Llindar` | Float | X = 0.5 |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `SP` | G | `DY` | A |
+| `CP` | G | `DY` | B |
+| `DX` | Out | `Delta` | R |
+| `DY` | Out | `Delta` | G |
+| `Delta` | RG | `Distancia` | In |
+| `Radi` | Out | `Fora` | Edge |
+| `Distancia` | Out | `Fora` | In |
+| `Fora` | Out | `AlphaFinal` | B |
+| `Actiu` | Out | `AlphaFinal` | T |
 
 `Llindar` és l’àlies d’aquest node Float constant; al graf del projecte el node es mostra com a **Float**, dins del grup 02. No és una propietat del Blackboard.
+
+**Comprova el resultat:** Desplega **Length** (Distancia) i **Step** (Fora) per inspeccionar la distància i el tall. Comprova la posició definitiva del cercle amb la càmera de l’escena.
 
 ### Pas 3. Color paret
 
 Checkerboard aporta textura a la paret i Multiply la tenyeix.
 
-<img src="assets/demoforat-nodes-03.jpg" alt="Shader Graph Forat, pas 3: Color paret" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `Maons` | Checkerboard | UV ← UV:Out; Color A ← RGB (77,77,77); Color B ← RGB (128,128,128); Frequency ← 12 |
-| `ColorFinal` | Multiply | A ← Maons:Out; B ← Paret:Out |
+| `Maons` | Checkerboard | Color A = RGB (77,77,77); Color B = RGB (128,128,128); Frequency = 12 |
+| `ColorFinal` | Multiply | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `UV` | Out | `Maons` | UV |
+| `Maons` | Out | `ColorFinal` | A |
+| `Paret` | Out | `ColorFinal` | B |
+
+**Comprova el resultat:** Desplega **Checkerboard** i **Multiply** (ColorFinal): comprova el patró i el tint de la paret.
 
 ### Pas 4. Anell emissiu
 
 La diferència entre dos Step forma un anell estret. Actiu també controla aquesta emissió.
 
-<img src="assets/demoforat-nodes-04.jpg" alt="Shader Graph Forat, pas 4: Anell emissiu" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `RadiVora` | Add | A ← Radi:Out; B ← 0.006 |
-| `Exterior` | Step | Edge ← RadiVora:Out; In ← Distancia:Out |
-| `Vora` | Subtract | A ← Fora:Out; B ← Exterior:Out |
-| `Anell` | Multiply | A ← Actiu:Out; B ← Vora:Out |
-| `IntensitatVora` | Multiply | A ← Anell:Out; B ← 2 |
-| `Emissio` | Multiply | A ← VoraColor:Out; B ← IntensitatVora:Out |
+| `RadiVora` | Add | B = 0.006 |
+| `Exterior` | Step | Valors per defecte |
+| `Vora` | Subtract | Valors per defecte |
+| `Anell` | Multiply | Valors per defecte |
+| `IntensitatVora` | Multiply | B = 2 |
+| `Emissio` | Multiply | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Radi` | Out | `RadiVora` | A |
+| `RadiVora` | Out | `Exterior` | Edge |
+| `Distancia` | Out | `Exterior` | In |
+| `Fora` | Out | `Vora` | A |
+| `Exterior` | Out | `Vora` | B |
+| `Actiu` | Out | `Anell` | A |
+| `Vora` | Out | `Anell` | B |
+| `Anell` | Out | `IntensitatVora` | A |
+| `VoraColor` | Out | `Emissio` | A |
+| `IntensitatVora` | Out | `Emissio` | B |
+
+**Comprova el resultat:** Desplega **Subtract** (Vora): amb el forat actiu, la màscara ha de delimitar un anell estret. Comprova’n la posició a l’escena.
 
 ### Pas 5. Master Stack i connexions finals
 
-Connecta les branques als blocs del Master Stack indicats a continuació. Comprova l’espai de les normals i si les sortides són de Vertex o de Fragment. Els blocs sense cable conserven el valor per defecte.
+Connecta les sortides als blocs del Master Stack indicats a la taula de cables. Si hi ha un bloc Normal, configura’l en Tangent. Els blocs sense cable conserven el valor per defecte.
 
-<img src="assets/demoforat-nodes-sortides.jpg" alt="Shader Graph Forat, pas 5: Master Stack i connexions finals" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Cables: arrossega de la sortida a l’entrada indicada.**
 
-| ID | Node | Entrades |
-|---|---|---|
-| Sortida | Alpha | AlphaFinal:Out |
-| Sortida | Alpha Clip Threshold | Llindar:Out |
-| Sortida | BaseColor | ColorFinal:Out |
-| Sortida | Emission | Emissio:Out |
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `AlphaFinal` | Out | `Fragment / Alpha` | Alpha |
+| `Llindar` | Out | `Fragment / Alpha Clip Threshold` | Alpha Clip Threshold |
+| `ColorFinal` | Out | `Fragment / Base Color` | Base Color |
+| `Emissio` | Out | `Fragment / Emission` | Emission |
 
 Els números de les entrades són valors literals. En un vector, repeteix el valor a tots els components quan s’indica un únic nombre. A Combine, tria RG per a Vector2; a Split, R/G/B equivalen a X/Y/Z. Desa el graf abans de crear els materials.
 
-## 5. Crear els materials
+**Comprova el resultat:** Desa el graf. Amb l’escena i els controls muntats, comprova el retall de la paret i l’anell emissiu.
+
+## 4. Crear els materials
 
 A la carpeta **Materials**, utilitza **Create > Rendering > Material** per a cada material indicat. A l’Inspector, selecciona **Shader > DAM Shaders > SForat** (o arrossega SForat del Project sobre el material). Crea un únic material `MParet` i assigna’l a les dues parets. El personatge porta un material **Universal Render Pipeline/Unlit**, RGB (5,255,204). No assignis el shader Forat al personatge.
 
-## 6. Construir l’escena
+## 5. Construir l’escena
 
 Les posicions són globals i les escales corresponen a les primitives de Unity. Mantén els objectes a l’arrel, sense un pare escalat. Els elements decoratius i textos es poden ometre: no intervenen en el shader.
 
@@ -208,7 +211,7 @@ Selecciona la **Directional Light** existent, canvia-li el nom a **Key Light** i
 
 Activa **HDR** i **Post Processing** a la càmera existent. Selecciona el **Global Volume** existent; duplica el seu perfil a la carpeta de la demo i assigna-hi la còpia. Conserva només **Bloom** al perfil de la demo (elimina els altres overrides per reproduir aquesta il·luminació) i activa els seus overrides: Intensity **0.35**, Threshold **1**, Scatter **0.6**.
 
-## 7. Afegir els controls
+## 6. Afegir els controls
 
 ### Càmera orbital i zoom
 
@@ -387,7 +390,7 @@ El forat creix de radi zero fins a **Radius** en **Transition Duration** segons,
 
 **Controls:** A/D mouen lateralment i aturen el moviment automàtic; Espai alterna automàtic/manual; F activa l’efecte; R reinicia; H amaga el panell. El lliscador modifica el radi.
 
-## 8. Provar la demo
+## 7. Provar la demo
 
 1. Amb el personatge centrat, el comptador ha de mostrar una paret activa i s’ha de veure el personatge pel retall.
 2. Prem F: el forat disminueix fins a desaparèixer en 0.35 segons i la paret torna a ocultar el personatge. Prem F de nou: el cercle creix fins al radi del lliscador.
@@ -397,24 +400,20 @@ El forat creix de radi zero fins a **Radius** en **Transition Duration** segons,
 6. Alterna F abans d’acabar una transició: el radi ha de canviar de sentit sense saltar.
 7. Desactiva ForatController: restaura la paret immediatament per no deixar propietats de retall sense un controlador actiu.
 
-<img src="assets/demoforat-sense.png" alt="Efecte desactivat: la paret oculta el personatge" width="600" style="width: 90%; max-width: 600px; height: auto;">
+<a href="assets/demoforat-sense.png"><img src="assets/demoforat-sense.png" alt="Efecte desactivat: la paret oculta el personatge" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
-<img src="assets/demoforat-lateral.png" alt="Personatge lateral: la paret recupera el seu aspecte complet" width="600" style="width: 90%; max-width: 600px; height: auto;">
+<a href="assets/demoforat-lateral.png"><img src="assets/demoforat-lateral.png" alt="Personatge lateral: la paret recupera el seu aspecte complet" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
 ### Transició del radi
 
 Durant l’obertura, el radi passa de zero al valor del lliscador; durant el tancament, recorre el camí invers. Aquestes captures mostren un instant d’obertura i un instant de tancament:
 
-<img src="assets/demoforat-obertura.png" alt="Forat durant l’obertura amb radi petit" width="600" style="width: 90%; max-width: 600px; height: auto;">
+<a href="assets/demoforat-obertura.png"><img src="assets/demoforat-obertura.png" alt="Forat durant l’obertura amb radi petit" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
-<img src="assets/demoforat-tancament.png" alt="Forat durant el tancament amb radi intermedi" width="600" style="width: 90%; max-width: 600px; height: auto;">
+<a href="assets/demoforat-tancament.png"><img src="assets/demoforat-tancament.png" alt="Forat durant el tancament amb radi intermedi" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
 ## Si alguna cosa no funciona
 
 Si no s’activa, comprova la capa 8 dels colliders, Wall Mask, Player i View Camera. Si es retallen les dues parets, revisa que el codi utilitzi MaterialPropertyBlock. Si apareix una el·lipse, comprova `_Aspecte` i la multiplicació de Delta.x.
 
 Si el material és rosa, comprova URP, la compilació del gràfic i la Console. Si el teclat no respon, comprova Input System, entra a Play i clica Game.
-
-## Ampliació
-
-Prova dues parets davant del personatge: cada una ha de conservar la seva transició. Experimenta amb Transition Duration = 0.15 i 0.7. Mantén sense retall les parets situades al darrere.

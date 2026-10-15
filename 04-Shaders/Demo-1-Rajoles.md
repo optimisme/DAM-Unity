@@ -4,12 +4,12 @@ Construirem un material Lit de rajoles amb juntes fosques, alternança de colors
 
 **Projecte acabat:** [Demo-1-Rajoles.zip](demos/Demo-1-Rajoles.zip). Descomprimeix-lo i obre la carpeta amb Assets, Packages i ProjectSettings des de Unity Hub. La primera importació obre automàticament `Assets/Demos/Rajoles/Scenes/DemoRajoles.unity`; prem Play. Els materials poden trigar una estona a carregar-se.
 
-<img src="assets/demorajoles-escena.png" alt="Escena de la demo Rajoles renderitzada a Unity" width="600" style="width: 90%; max-width: 600px; height: auto;">
+<a href="assets/demorajoles-escena.png"><img src="assets/demorajoles-escena.png" alt="Escena de la demo Rajoles renderitzada a Unity" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
 ## 1. Partir de Universal 3D
 
 1. Crea un projecte **Universal 3D (URP)**.
-2. A Package Manager, comprova **Universal RP 17.6.0**, **Shader Graph 17.6.0** i **Input System 1.20.0**. Shader Graph arriba com a dependència d’URP.
+2. A Package Manager, comprova **Universal RP**, **Shader Graph** i **Input System**. Shader Graph arriba com a dependència d’URP.
 3. A **Project Settings > Player > Active Input Handling**, selecciona **Input System Package (New)**. Accepta el reinici si Unity el demana.
 4. Crea `Assets/Demos/Rajoles` amb les carpetes **Shaders**, **Materials**, **Scenes** i **Meshes**. Crea també **Assets/Common** per als scripts.
 5. Obre **Assets/Scenes/SampleScene**, que ja inclou **Main Camera**, **Directional Light** i **Global Volume**. Conserva aquests objectes. Amb **File > Save As…**, desa una còpia com a `DemoRajoles` dins de Scenes. Més endavant ajustarem la càmera i la llum existents.
@@ -40,155 +40,178 @@ Afegeix al Blackboard aquestes propietats. Activa **Exposed** i escriu les **Ref
 
 Arrossega les propietats al gràfic per crear els seus nodes. La propietat no es crea escrivint-ne el nom en un node Float: s’ha de crear al Blackboard.
 
-## 3. Entendre l’efecte
+## 3. Connectar els nodes
 
-### Juntes i interior
+Segueix els passos en ordre dins del mateix Shader Graph. Prem **Espai** per crear un node del tipus indicat; arrossega les propietats des del Blackboard. Els identificadors de les taules serveixen per distingir nodes repetits: no cal canviar els noms dels nodes. Si ho necessites, posa una **Sticky Note** al costat del node amb l’identificador.
 
-Les branques de Fraction i Step creen les línies de cada eix. Maximum n’uneix les màscares; l’interior de les rajoles és One Minus d’aquesta quadrícula.
+A cada fila de cables, arrossega des del **port de sortida** del node origen fins al **port d’entrada** del node destí. Reutilitza els nodes dels passos anteriors. `Out` indica la sortida principal; als nodes de propietat pot mostrar el nom de la propietat.
 
-### Color i desgast
+Per organitzar el graf com a la captura, selecciona els nodes de cada pas i tria **Group Selection** al menú del botó dret. Mantén els grups a prop i deixa prou espai per veure els cables.
 
-Floor i la paritat trien ColorA o ColorB. Simple Noise introdueix una variació d’intensitat entre 0.65 i 1 abans de combinar el color de la rajola amb el de la junta.
+Per veure el resultat d’un node, fes-hi botó dret i tria **View > Expand Preview**; amb **Collapse Preview** el pots plegar.
 
-### Relleu aparent
+Escriu els valors de la taula als camps sense cable. Si el camp és vectorial i només s’indica un valor, repeteix-lo a tots els components. Clica les captures per veure-les a mida completa.
 
-Normal From Height converteix la màscara d’interior en una variació de la normal tangent. Strength és 0.035: augmentar-lo massa dona vores exagerades. La silueta continua sent la d’un cub; no s’ha modificat la geometria.
+**Graf complet:** segueix els grups numerats i els cables fins al **Master Stack**. Les previsualitzacions mostren les juntes, els colors, el desgast i el relleu. [Obre la imatge a mida completa](assets/demorajoles-graf-complet.png) per llegir els ports i els valors.
 
-## 4. Connectar els nodes
-
-Cada fila identifica un node. `Eixos:R` vol dir la sortida **R** del node identificat com Eixos; `Nom:Out` vol dir la seva sortida. Si el nom correspon a una propietat del Blackboard, utilitza el seu node Property. Els números sense `:` són valors literals escrits al port d’entrada. Els àlies Temps, Mode i Centre corresponen a les propietats amb Reference `_Temps`, `_Mode` i `_Centre`, quan existeixen en aquesta demo. En un port vectorial, un literal únic s’ha de repetir a tots els components: per exemple Frequency = 12 vol dir (12,12).
-
-Les captures següents provenen del Shader Graph de Unity. A les captures de cada pas s’han ocultat els cables que només travessen el grup sense connectar-hi; es mantenen les seves entrades i sortides. Alguns camps numèrics es veuen arrodonits per l’amplada del node: utilitza els valors exactes de la taula. Cada grup numerat és un pas del mateix graf final. Segueix l’ordre, afegeix els nodes del pas i connecta’ls com a la captura i a la taula. Les propietats es creen al Blackboard segons l’apartat 2; els nodes Property simplement les llegeixen.
-
-Els cables que entren des de fora del grup provenen de passos anteriors: el nom de la taula identifica l’origen. Al projecte acabat pots seleccionar un grup i prémer **F** per enquadrar-lo. Les previsualitzacions dels nodes estan plegades a les captures per deixar llegir ports i valors; pots desplegar-les per inspeccionar una màscara.
-
-### Connexions entre grups
-
-Aquest mapa mostra com es connecten els grups del graf. Cada fletxa agrupa el nombre de cables indicat; la taula inferior detalla **tots els cables entre grups i cap al Master Stack**, amb els ports exactes. Les captures dels passos següents mostren les connexions interiors.
-
-```mermaid
-flowchart TD
-    G1["01 · UV i repeticio"]
-    G2["02 · Juntes"]
-    G3["03 · Alternanca"]
-    G4["04 · Color i desgast"]
-    G5["05 · Juntes i relleu"]
-    G6["Sortides · Master Stack"]
-    G1 -->|"2 cables"| G2
-    G1 -->|"2 cables"| G3
-    G1 -->|"1 cable"| G4
-    G2 -->|"2 cables"| G5
-    G3 -->|"1 cable"| G4
-    G4 -->|"1 cable"| G5
-    G5 -->|"3 cables"| G6
-```
-
-Llegeix cada fila d’esquerra a dreta: **grup d’origen → node i port de sortida → grup de destinació → node i port d’entrada**. Per exemple, `Eixos:R` és el port R del node Eixos. Un mateix port pot alimentar diversos grups; conserva totes les branques indicades.
-
-| Grup origen | Node:sortida | Grup destinació | Node:entrada |
-|---|---|---|---|
-| 01 | `FaseU:Out` | 02 | `TallU:In` |
-| 01 | `FaseV:Out` | 02 | `TallV:In` |
-| 01 | `Eixos:R` | 03 | `CelU:In` |
-| 01 | `Eixos:G` | 03 | `CelV:In` |
-| 01 | `UV:Out` | 04 | `Desgast:UV` |
-| 03 | `Alternat:Out` | 04 | `Rajola:T` |
-| 02 | `Quadricula:Out` | 05 | `ColorFinal:T` |
-| 02 | `Quadricula:Out` | 05 | `Interior:In` |
-| 04 | `ColorDesgast:Out` | 05 | `ColorFinal:A` |
-| 05 | `ColorFinal:Out` | Master Stack | `Fragment:Base Color` |
-| 05 | `Relleu:Out` | Master Stack | `Fragment:Normal (Tangent Space)` |
-| 05 | `Brillantor:Out` | Master Stack | `Fragment:Smoothness` |
-
-A Unity, allunya el zoom per veure dos grups alhora. **F** enquadra la selecció; **A** enquadra tot el graf. Per seguir un cable llarg, identifica primer els dos extrems a la taula i localitza els grups numerats.
+<a href="assets/demorajoles-graf-complet.png"><img src="assets/demorajoles-graf-complet.png" alt="Graf complet de Rajoles, amb totes les connexions i les previsualitzacions obertes" width="1600" style="width: 100%; max-width: 1600px; height: auto;"></a>
 
 ### Pas 1. UV i repeticio
 
 Parteix de les UV i separa els dos eixos per repetir les cel·les.
 
-<img src="assets/demorajoles-nodes-01.jpg" alt="Shader Graph Rajoles, pas 1: UV i repeticio" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `UV` | UV |   |
-| `Escala` | Multiply | A ← UV:Out; B ← Repeticions:Out |
-| `Eixos` | Split | In ← Escala:Out |
-| `FaseU` | Fraction | In ← Eixos:R |
-| `FaseV` | Fraction | In ← Eixos:G |
+| `UV` | UV | Channel = UV0 |
+| `Escala` | Multiply | Valors per defecte |
+| `Eixos` | Split | Valors per defecte |
+| `FaseU` | Fraction | Valors per defecte |
+| `FaseV` | Fraction | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `UV` | Out | `Escala` | A |
+| `Repeticions` | Out | `Escala` | B |
+| `Escala` | Out | `Eixos` | In |
+| `Eixos` | R | `FaseU` | In |
+| `Eixos` | G | `FaseV` | In |
+
+**Comprova el resultat:** Desplega els dos **Fraction**: han de mostrar rampes repetides en dues direccions perpendiculars.
 
 ### Pas 2. Juntes
 
 La màscara blanca representa les juntes. Augmentar Gruix eixampla les dues direccions.
 
-<img src="assets/demorajoles-nodes-02.jpg" alt="Shader Graph Rajoles, pas 2: Juntes" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `TallU` | Step | Edge ← Gruix:Out; In ← FaseU:Out |
-| `LiniaU` | One Minus | In ← TallU:Out |
-| `TallV` | Step | Edge ← Gruix:Out; In ← FaseV:Out |
-| `LiniaV` | One Minus | In ← TallV:Out |
-| `Quadricula` | Maximum | A ← LiniaU:Out; B ← LiniaV:Out |
+| `TallU` | Step | Valors per defecte |
+| `LiniaU` | One Minus | Valors per defecte |
+| `TallV` | Step | Valors per defecte |
+| `LiniaV` | One Minus | Valors per defecte |
+| `Quadricula` | Maximum | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Gruix` | Out | `TallU` | Edge |
+| `FaseU` | Out | `TallU` | In |
+| `TallU` | Out | `LiniaU` | In |
+| `Gruix` | Out | `TallV` | Edge |
+| `FaseV` | Out | `TallV` | In |
+| `TallV` | Out | `LiniaV` | In |
+| `LiniaU` | Out | `Quadricula` | A |
+| `LiniaV` | Out | `Quadricula` | B |
+
+**Comprova el resultat:** Desplega els **One Minus** per veure les línies separades i **Maximum** per veure la quadrícula de juntes blanca sobre negre.
 
 ### Pas 3. Alternanca
 
 La paritat alterna les rajoles; no utilitzis Fraction directament sense identificar abans la cel·la amb Floor.
 
-<img src="assets/demorajoles-nodes-03.jpg" alt="Shader Graph Rajoles, pas 3: Alternanca" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `CelU` | Floor | In ← Eixos:R |
-| `CelV` | Floor | In ← Eixos:G |
-| `SumaCels` | Add | A ← CelU:Out; B ← CelV:Out |
-| `Meitat` | Multiply | A ← SumaCels:Out; B ← 0.5 |
-| `Paritat` | Fraction | In ← Meitat:Out |
-| `Alternat` | Multiply | A ← Paritat:Out; B ← 2 |
+| `CelU` | Floor | Valors per defecte |
+| `CelV` | Floor | Valors per defecte |
+| `SumaCels` | Add | Valors per defecte |
+| `Meitat` | Multiply | B = 0.5 |
+| `Paritat` | Fraction | Valors per defecte |
+| `Alternat` | Multiply | B = 2 |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Eixos` | R | `CelU` | In |
+| `Eixos` | G | `CelV` | In |
+| `CelU` | Out | `SumaCels` | A |
+| `CelV` | Out | `SumaCels` | B |
+| `SumaCels` | Out | `Meitat` | A |
+| `Meitat` | Out | `Paritat` | In |
+| `Paritat` | Out | `Alternat` | A |
+
+**Comprova el resultat:** Desplega l’últim **Multiply** (Alternat): ha de mostrar quadres negres i blancs alternats.
 
 ### Pas 4. Color i desgast
 
 Barreja els colors de ceràmica i multiplica el resultat per una variació entre 0.65 i 1.
 
-<img src="assets/demorajoles-nodes-04.jpg" alt="Shader Graph Rajoles, pas 4: Color i desgast" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `Rajola` | Lerp | A ← ColorA:Out; B ← ColorB:Out; T ← Alternat:Out |
-| `Desgast` | Simple Noise | UV ← UV:Out; Scale ← 65 |
-| `Variacio` | Lerp | A ← 0.65; B ← 1; T ← Desgast:Out |
-| `ColorDesgast` | Multiply | A ← Rajola:Out; B ← Variacio:Out |
+| `Rajola` | Lerp | Valors per defecte |
+| `Desgast` | Simple Noise | Scale = 65 |
+| `Variacio` | Lerp | A = 0.65; B = 1 |
+| `ColorDesgast` | Multiply | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `ColorA` | Out | `Rajola` | A |
+| `ColorB` | Out | `Rajola` | B |
+| `Alternat` | Out | `Rajola` | T |
+| `UV` | Out | `Desgast` | UV |
+| `Desgast` | Out | `Variacio` | T |
+| `Rajola` | Out | `ColorDesgast` | A |
+| `Variacio` | Out | `ColorDesgast` | B |
+
+**Comprova el resultat:** Desplega **Lerp** (Rajola) i **Multiply** (ColorDesgast): el primer alterna els dos colors; el segon hi afegeix variacions de lluminositat.
 
 ### Pas 5. Juntes i relleu
 
 Lerp introdueix el color de la junta. One Minus dona l’interior de rajola per generar les normals.
 
-<img src="assets/demorajoles-nodes-05.jpg" alt="Shader Graph Rajoles, pas 5: Juntes i relleu" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `ColorFinal` | Lerp | A ← ColorDesgast:Out; B ← Junta:Out; T ← Quadricula:Out |
-| `Interior` | One Minus | In ← Quadricula:Out |
-| `Relleu` | Normal From Height | In ← Interior:Out; Strength ← 0.035 |
+| `ColorFinal` | Lerp | Valors per defecte |
+| `Interior` | One Minus | Valors per defecte |
+| `Relleu` | Normal From Height | Strength = 0.035 |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `ColorDesgast` | Out | `ColorFinal` | A |
+| `Junta` | Out | `ColorFinal` | B |
+| `Quadricula` | Out | `ColorFinal` | T |
+| `Quadricula` | Out | `Interior` | In |
+| `Interior` | Out | `Relleu` | In |
+
+**Comprova el resultat:** Desplega **Lerp** (ColorFinal): les juntes han de tenir el color Junta i els interiors han de conservar els colors de les rajoles.
 
 ### Pas 6. Master Stack i connexions finals
 
-Connecta les branques als blocs del Master Stack indicats a continuació. Comprova l’espai de les normals i si les sortides són de Vertex o de Fragment. Els blocs sense cable conserven el valor per defecte.
+Connecta les sortides als blocs del Master Stack indicats a la taula de cables. Si hi ha un bloc Normal, configura’l en Tangent. Els blocs sense cable conserven el valor per defecte.
 
-<img src="assets/demorajoles-nodes-sortides.jpg" alt="Shader Graph Rajoles, pas 6: Master Stack i connexions finals" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Cables: arrossega de la sortida a l’entrada indicada.**
 
-| ID | Node | Entrades |
-|---|---|---|
-| Sortida | Normal (Tangent) | Relleu:Out |
-| Sortida | Smoothness | Brillantor:Out |
-| Sortida | BaseColor | ColorFinal:Out |
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Relleu` | Out | `Fragment / Normal (Tangent)` | Normal (Tangent) |
+| `Brillantor` | Out | `Fragment / Smoothness` | Smoothness |
+| `ColorFinal` | Out | `Fragment / Base Color` | Base Color |
 
 Els números de les entrades són valors literals. En un vector, repeteix el valor a tots els components quan s’indica un únic nombre. A Combine, tria RG per a Vector2; a Split, R/G/B equivalen a X/Y/Z. Desa el graf abans de crear els materials.
 
-## 5. Crear els materials
+**Comprova el resultat:** Desa el graf. Comprova el relleu i la brillantor amb el material aplicat a la mostra de l’escena.
+
+## 4. Crear els materials
 
 A la carpeta **Materials**, utilitza **Create > Rendering > Material** per a cada material indicat. A l’Inspector, selecciona **Shader > DAM Shaders > SRajoles** (o arrossega SRajoles del Project sobre el material). `MRajoles0`, `MRajoles1`, `MRajoles2`: Repeticions = **4, 6, 8** i Brillantor = **0.3, 0.6, 0.9**. ColorA en RGB és (6,56,74), (115,31,18) i (20,61,36), respectivament. La resta de propietats conserva els valors inicials.
 
-## 6. Construir l’escena
+## 5. Construir l’escena
 
 Les posicions són globals i les escales corresponen a les primitives de Unity. Mantén els objectes a l’arrel, sense un pare escalat. Els elements decoratius i textos es poden ometre: no intervenen en el shader.
 
@@ -212,7 +235,7 @@ Selecciona la **Directional Light** existent, canvia-li el nom a **Key Light** i
 
 Al **Global Volume** existent, duplica el perfil a la carpeta de la demo i assigna-hi la còpia. Conserva només **Bloom** i activa Intensity = **0.35**, Threshold = **1** i Scatter = **0.6**. Mantén **HDR** i **Post Processing** activats a Main Camera.
 
-## 7. Afegir els controls
+## 6. Afegir els controls
 
 ### Càmera orbital i zoom
 
@@ -337,25 +360,21 @@ Crea un objecte buit **Controls** i afegeix-hi DemoControls. A **Surfaces**, ass
 | Maximum | 0.2 |
 | Initial Value | 0.065 |
 
-**Controls:** lliscador per modificar `_Gruix`; Espai pausa el temps; R reinicia temps i paràmetre; H amaga el panell. En moure el lliscador, el valor s’aplica a totes les mostres. Abans de tocar-lo, cada material conserva les variants de l’apartat 5. Els rètols de l’escena identifiquen aquestes variants inicials; el panell mostra el valor actual del control.
+**Controls:** lliscador per modificar `_Gruix`; Espai pausa el temps; R reinicia temps i paràmetre; H amaga el panell. En moure el lliscador, el valor s’aplica a totes les mostres. Abans de tocar-lo, cada material conserva les variants de l’apartat 4. Els rètols de l’escena identifiquen aquestes variants inicials; el panell mostra el valor actual del control.
 
 Els canvis durant Play són temporals. Per canviar els valors inicials de manera permanent, atura Play i edita els assets de material.
 
-## 8. Provar la demo
+## 7. Provar la demo
 
 1. Comprova els tres colors de ceràmica i el nombre creixent de cel·les.
 2. Mou Gruix fins a 0.2: les juntes ocupen una part visible de cada rajola.
 3. Atura Play, canvia Brillantor i gira la llum: varia el reflex sense canviar les UV.
 4. Desconnecta temporalment NormalTS: desapareix el relleu aparent, però es mantenen color i juntes.
 
-<img src="assets/demorajoles-variant.png" alt="Variant amb el lliscador al màxim" width="600" style="width: 90%; max-width: 600px; height: auto;">
+<a href="assets/demorajoles-variant.png"><img src="assets/demorajoles-variant.png" alt="Variant amb el lliscador al màxim" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
 ## Si alguna cosa no funciona
 
 Si només veus juntes, revisa Gruix (fracció de cel·la, no píxels). Si el relleu és exagerat, revisa Strength de Normal From Height i l’espai Tangent.
 
 Si el material és rosa, comprova URP, la compilació del gràfic i la Console. Si el teclat no respon, comprova Input System, entra a Play i clica Game.
-
-## Ampliació
-
-Substitueix la paritat per colors que depenguin de l’índex de cel·la. Després limita el desgast a les vores de les rajoles.
