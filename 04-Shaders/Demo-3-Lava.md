@@ -4,12 +4,12 @@ Construirem una superfície fosca travessada per esquerdes calentes. El temps de
 
 **Projecte acabat:** [Demo-3-Lava.zip](demos/Demo-3-Lava.zip). Descomprimeix-lo i obre la carpeta amb Assets, Packages i ProjectSettings des de Unity Hub. La primera importació obre automàticament `Assets/Demos/Lava/Scenes/DemoLava.unity`; prem Play. Els materials poden trigar una estona a carregar-se.
 
-<img src="assets/demolava-escena.png" alt="Escena de la demo Lava renderitzada a Unity" width="600" style="width: 90%; max-width: 600px; height: auto;">
+<a href="assets/demolava-escena.png"><img src="assets/demolava-escena.png" alt="Escena de la demo Lava renderitzada a Unity" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
 ## 1. Partir de Universal 3D
 
 1. Crea un projecte **Universal 3D (URP)**.
-2. A Package Manager, comprova **Universal RP 17.6.0**, **Shader Graph 17.6.0** i **Input System 1.20.0**. Shader Graph arriba com a dependència d’URP.
+2. A Package Manager, comprova **Universal RP**, **Shader Graph** i **Input System**. Shader Graph arriba com a dependència d’URP.
 3. A **Project Settings > Player > Active Input Handling**, selecciona **Input System Package (New)**. Accepta el reinici si Unity el demana.
 4. Crea `Assets/Demos/Lava` amb les carpetes **Shaders**, **Materials**, **Scenes** i **Meshes**. Crea també **Assets/Common** per als scripts.
 5. Obre **Assets/Scenes/SampleScene**, que ja inclou **Main Camera**, **Directional Light** i **Global Volume**. Conserva aquests objectes. Amb **File > Save As…**, desa una còpia com a `DemoLava` dins de Scenes. Més endavant ajustarem la càmera i la llum existents.
@@ -40,141 +40,154 @@ Afegeix al Blackboard aquestes propietats. Activa **Exposed** i escriu les **Ref
 
 Arrossega les propietats al gràfic per crear els seus nodes. La propietat no es crea escrivint-ne el nom en un node Float: s’ha de crear al Blackboard.
 
-## 3. Entendre l’efecte
+## 3. Connectar els nodes
 
-### Esquerdes
+Segueix els passos en ordre dins del mateix Shader Graph. Prem **Espai** per crear un node del tipus indicat; arrossega les propietats des del Blackboard. Els identificadors de les taules serveixen per distingir nodes repetits: no cal canviar els noms dels nodes. Si ho necessites, posa una **Sticky Note** al costat del node amb l’identificador.
 
-Simple Noise genera el camp. Subtract 0.5 i Absolute calculen la proximitat a un valor central. One Minus de Smoothstep selecciona una franja estreta d’aquest camp, amb transició entre 0.008 i 0.035.
+A cada fila de cables, arrossega des del **port de sortida** del node origen fins al **port d’entrada** del node destí. Reutilitza els nodes dels passos anteriors. `Out` indica la sortida principal; als nodes de propietat pot mostrar el nom de la propietat.
 
-### Animació
+Per organitzar el graf com a la captura, selecciona els nodes de cada pas i tria **Group Selection** al menú del botó dret. Mantén els grups a prop i deixa prou espai per veure els cables.
 
-Temps × Velocitat desplaça les UV; l’eix V utilitza un 40% del desplaçament d’U. Un sinus modifica la intensitat, independentment de la velocitat de desplaçament. La propietat Temps rep segons del controlador; això permet pausar i reiniciar. Si només vols temps continu, es pot substituir per la sortida Time del node Time.
+Per veure el resultat d’un node, fes-hi botó dret i tria **View > Expand Preview**; amb **Collapse Preview** el pots plegar.
 
-### Emissió
+Escriu els valors de la taula als camps sense cable. Si el camp és vectorial i només s’indica un valor, repeteix-lo a tots els components. Clica les captures per veure-les a mida completa.
 
-La màscara controla l’emissió taronja/groga, multiplicada per Intensitat i la pulsació. La superfície fosca té Smoothness 0.15. Bloom afegeix resplendor, però no il·lumina físicament els objectes veïns.
+**Graf complet:** segueix els grups numerats fins al **Master Stack**. Les previsualitzacions mostren les esquerdes, els colors i l’emissió. [Obre la imatge a mida completa](assets/demolava-graf-complet.png) per llegir els ports i seguir tots els cables.
 
-## 4. Connectar els nodes
-
-Cada fila identifica un node. `Eixos:R` vol dir la sortida **R** del node identificat com Eixos; `Nom:Out` vol dir la seva sortida. Si el nom correspon a una propietat del Blackboard, utilitza el seu node Property. Els números sense `:` són valors literals escrits al port d’entrada. Els àlies Temps, Mode i Centre corresponen a les propietats amb Reference `_Temps`, `_Mode` i `_Centre`, quan existeixen en aquesta demo. En un port vectorial, un literal únic s’ha de repetir a tots els components: per exemple Frequency = 12 vol dir (12,12).
-
-Les captures següents provenen del Shader Graph de Unity. A les captures de cada pas s’han ocultat els cables que només travessen el grup sense connectar-hi; es mantenen les seves entrades i sortides. Alguns camps numèrics es veuen arrodonits per l’amplada del node: utilitza els valors exactes de la taula. Cada grup numerat és un pas del mateix graf final. Segueix l’ordre, afegeix els nodes del pas i connecta’ls com a la captura i a la taula. Les propietats es creen al Blackboard segons l’apartat 2; els nodes Property simplement les llegeixen.
-
-Els cables que entren des de fora del grup provenen de passos anteriors: el nom de la taula identifica l’origen. Al projecte acabat pots seleccionar un grup i prémer **F** per enquadrar-lo. Les previsualitzacions dels nodes estan plegades a les captures per deixar llegir ports i valors; pots desplegar-les per inspeccionar una màscara.
-
-### Connexions entre grups
-
-Aquest mapa mostra com es connecten els grups del graf. Cada fletxa agrupa el nombre de cables indicat; la taula inferior detalla **tots els cables entre grups i cap al Master Stack**, amb els ports exactes. Les captures dels passos següents mostren les connexions interiors.
-
-```mermaid
-flowchart TD
-    G1["01 · Animacio UV"]
-    G2["02 · Mascara esquerdes"]
-    G3["03 · Colors"]
-    G4["04 · Pulsacio i emissio"]
-    G5["Sortides · Master Stack"]
-    G1 -->|"1 cable"| G2
-    G1 -->|"1 cable"| G4
-    G2 -->|"2 cables"| G3
-    G2 -->|"2 cables"| G4
-    G3 -->|"1 cable"| G4
-    G3 -->|"1 cable"| G5
-    G4 -->|"3 cables"| G5
-```
-
-Llegeix cada fila d’esquerra a dreta: **grup d’origen → node i port de sortida → grup de destinació → node i port d’entrada**. Per exemple, `Eixos:R` és el port R del node Eixos. Un mateix port pot alimentar diversos grups; conserva totes les branques indicades.
-
-| Grup origen | Node:sortida | Grup destinació | Node:entrada |
-|---|---|---|---|
-| 01 | `UVAnimada:Out` | 02 | `Camp:UV` |
-| 02 | `Esquerdes:Out` | 03 | `Calor:T` |
-| 02 | `Esquerdes:Out` | 03 | `ColorFinal:T` |
-| 01 | `Temps:Out` | 04 | `Sinus:In` |
-| 02 | `Esquerdes:Out` | 04 | `Energia:A` |
-| 02 | `Camp:Out` | 04 | `Relleu:In` |
-| 03 | `Calor:Out` | 04 | `Emissio:A` |
-| 03 | `ColorFinal:Out` | Master Stack | `Fragment:Base Color` |
-| 04 | `Emissio:Out` | Master Stack | `Fragment:Emission` |
-| 04 | `Relleu:Out` | Master Stack | `Fragment:Normal (Tangent Space)` |
-| 04 | `Rugositat:Out` | Master Stack | `Fragment:Smoothness` |
-
-A Unity, allunya el zoom per veure dos grups alhora. **F** enquadra la selecció; **A** enquadra tot el graf. Per seguir un cable llarg, identifica primer els dos extrems a la taula i localitza els grups numerats.
+<a href="assets/demolava-graf-complet.png"><img src="assets/demolava-graf-complet.png" alt="Graf complet de Lava amb totes les connexions i les previsualitzacions" width="1600" style="width: 100%; max-width: 1600px; height: auto;"></a>
 
 ### Pas 1. Animacio UV
 
 Les UV es desplacen amb Temps × Velocitat. Combine envia un moviment diferent a cada eix.
 
-<img src="assets/demolava-nodes-01.jpg" alt="Shader Graph Lava, pas 1: Animacio UV" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `UV` | UV |   |
-| `TempsEscalat` | Multiply | A ← Temps:Out; B ← Velocitat:Out |
-| `MigTemps` | Multiply | A ← TempsEscalat:Out; B ← 0.4 |
-| `Desplacament` | Combine | R ← TempsEscalat:Out; G ← MigTemps:Out |
-| `UVAnimada` | Add | A ← UV:Out; B ← Desplacament:RG |
+| `UV` | UV | Channel = UV0 |
+| `TempsEscalat` | Multiply | Valors per defecte |
+| `MigTemps` | Multiply | B = 0.4 |
+| `Desplacament` | Combine | Valors per defecte |
+| `UVAnimada` | Add | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Temps` | Out | `TempsEscalat` | A |
+| `Velocitat` | Out | `TempsEscalat` | B |
+| `TempsEscalat` | Out | `MigTemps` | A |
+| `TempsEscalat` | Out | `Desplacament` | R |
+| `MigTemps` | Out | `Desplacament` | G |
+| `UV` | Out | `UVAnimada` | A |
+| `Desplacament` | RG | `UVAnimada` | B |
+
+**Comprova el resultat:** Canvia temporalment Temps al Blackboard per comprovar el desplaçament de les UV; torna’l a 0. L’animació contínua començarà quan afegeixis els controls de l’escena.
 
 ### Pas 2. Mascara esquerdes
 
 La proximitat del soroll a 0.5 defineix les esquerdes. Absolute tracta igual els dos costats.
 
-<img src="assets/demolava-nodes-02.jpg" alt="Shader Graph Lava, pas 2: Mascara esquerdes" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `Camp` | Simple Noise | UV ← UVAnimada:Out; Scale ← 38 |
-| `Centrat` | Subtract | A ← Camp:Out; B ← 0.5 |
-| `DistanciaEsquerda` | Absolute | In ← Centrat:Out |
-| `Vores` | Smoothstep | Edge1 ← 0.008; Edge2 ← 0.035; In ← DistanciaEsquerda:Out |
-| `Esquerdes` | One Minus | In ← Vores:Out |
+| `Camp` | Simple Noise | Scale = 38 |
+| `Centrat` | Subtract | B = 0.5 |
+| `DistanciaEsquerda` | Absolute | Valors per defecte |
+| `Vores` | Smoothstep | Edge1 = 0.008; Edge2 = 0.035 |
+| `Esquerdes` | One Minus | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `UVAnimada` | Out | `Camp` | UV |
+| `Camp` | Out | `Centrat` | A |
+| `Centrat` | Out | `DistanciaEsquerda` | In |
+| `DistanciaEsquerda` | Out | `Vores` | In |
+| `Vores` | Out | `Esquerdes` | In |
+
+**Comprova el resultat:** Desplega **Absolute** i **One Minus** (Esquerdes): el primer mostra la distància al llindar i el segon línies clares estretes sobre un fons fosc.
 
 ### Pas 3. Colors
 
 La màscara barreja l’escorça fosca amb els colors calents.
 
-<img src="assets/demolava-nodes-03.jpg" alt="Shader Graph Lava, pas 3: Colors" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `Calor` | Lerp | A ← Taronja:Out; B ← Groc:Out; T ← Esquerdes:Out |
-| `ColorFinal` | Lerp | A ← Escorca:Out; B ← Calor:Out; T ← Esquerdes:Out |
+| `Calor` | Lerp | Valors per defecte |
+| `ColorFinal` | Lerp | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Taronja` | Out | `Calor` | A |
+| `Groc` | Out | `Calor` | B |
+| `Esquerdes` | Out | `Calor` | T |
+| `Escorca` | Out | `ColorFinal` | A |
+| `Calor` | Out | `ColorFinal` | B |
+| `Esquerdes` | Out | `ColorFinal` | T |
+
+**Comprova el resultat:** Desplega l’últim **Lerp** (ColorFinal): les esquerdes han de tenir colors càlids i la resta el color Escorca.
 
 ### Pas 4. Pulsacio i emissio
 
 El sinus controla la pulsació. La màscara limita l’emissió a les esquerdes, mentre Normal From Height afecta el relleu aparent.
 
-<img src="assets/demolava-nodes-04.jpg" alt="Shader Graph Lava, pas 4: Pulsacio i emissio" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `Sinus` | Sine | In ← Temps:Out |
-| `Pulsacio` | Add | A ← 1.5; B ← Sinus:Out |
-| `Forca` | Multiply | A ← Pulsacio:Out; B ← Intensitat:Out |
-| `Energia` | Multiply | A ← Esquerdes:Out; B ← Forca:Out |
-| `Emissio` | Multiply | A ← Calor:Out; B ← Energia:Out |
-| `Relleu` | Normal From Height | In ← Camp:Out; Strength ← 0.002 |
-| `Rugositat` | Float | X ← 0.15 |
+| `Sinus` | Sine | Valors per defecte |
+| `Pulsacio` | Add | A = 1.5 |
+| `Forca` | Multiply | Valors per defecte |
+| `Energia` | Multiply | Valors per defecte |
+| `Emissio` | Multiply | Valors per defecte |
+| `Relleu` | Normal From Height | Strength = 0.002 |
+| `Rugositat` | Float | X = 0.15 |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Temps` | Out | `Sinus` | In |
+| `Sinus` | Out | `Pulsacio` | B |
+| `Pulsacio` | Out | `Forca` | A |
+| `Intensitat` | Out | `Forca` | B |
+| `Esquerdes` | Out | `Energia` | A |
+| `Forca` | Out | `Energia` | B |
+| `Calor` | Out | `Emissio` | A |
+| `Energia` | Out | `Emissio` | B |
+| `Camp` | Out | `Relleu` | In |
+
+**Comprova el resultat:** Desplega **Multiply** (Emissio). Les esquerdes han d’aportar el color emissiu; la resplendor de Bloom es comprovarà a l’escena.
 
 ### Pas 5. Master Stack i connexions finals
 
-Connecta les branques als blocs del Master Stack indicats a continuació. Comprova l’espai de les normals i si les sortides són de Vertex o de Fragment. Els blocs sense cable conserven el valor per defecte.
+Connecta les sortides als blocs del Master Stack indicats a la taula de cables. Si hi ha un bloc Normal, configura’l en Tangent. Els blocs sense cable conserven el valor per defecte.
 
-<img src="assets/demolava-nodes-sortides.jpg" alt="Shader Graph Lava, pas 5: Master Stack i connexions finals" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Cables: arrossega de la sortida a l’entrada indicada.**
 
-| ID | Node | Entrades |
-|---|---|---|
-| Sortida | BaseColor | ColorFinal:Out |
-| Sortida | Emission | Emissio:Out |
-| Sortida | Normal (Tangent) | Relleu:Out |
-| Sortida | Smoothness | Rugositat:Out |
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `ColorFinal` | Out | `Fragment / Base Color` | Base Color |
+| `Emissio` | Out | `Fragment / Emission` | Emission |
+| `Relleu` | Out | `Fragment / Normal (Tangent)` | Normal (Tangent) |
+| `Rugositat` | Out | `Fragment / Smoothness` | Smoothness |
 
 Els números de les entrades són valors literals. En un vector, repeteix el valor a tots els components quan s’indica un únic nombre. A Combine, tria RG per a Vector2; a Split, R/G/B equivalen a X/Y/Z. Desa el graf abans de crear els materials.
 
-## 5. Crear els materials
+**Comprova el resultat:** Desa el graf. Comprova el color i l’emissió sobre la mostra; activa el Bloom indicat a l’apartat de l’escena.
+
+## 4. Crear els materials
 
 A la carpeta **Materials**, utilitza **Create > Rendering > Material** per a cada material indicat. A l’Inspector, selecciona **Shader > DAM Shaders > SLava** (o arrossega SLava del Project sobre el material). `MLava0`, `MLava1`, `MLava2`: Intensitat = **1, 3, 5** i Velocitat = **0.09, 0.17, 0.25**, respectivament.
 
-## 6. Construir l’escena
+## 5. Construir l’escena
 
 Les posicions són globals i les escales corresponen a les primitives de Unity. Mantén els objectes a l’arrel, sense un pare escalat. Els elements decoratius i textos es poden ometre: no intervenen en el shader.
 
@@ -196,7 +209,7 @@ Selecciona la **Directional Light** existent, canvia-li el nom a **Key Light** i
 
 Activa **HDR** i **Post Processing** a la càmera existent. Selecciona el **Global Volume** existent; duplica el seu perfil a la carpeta de la demo i assigna-hi la còpia. Conserva només **Bloom** al perfil de la demo (elimina els altres overrides per reproduir aquesta il·luminació) i activa els seus overrides: Intensity **0.35**, Threshold **1**, Scatter **0.6**.
 
-## 7. Afegir els controls
+## 6. Afegir els controls
 
 ### Càmera orbital i zoom
 
@@ -321,27 +334,23 @@ Crea un objecte buit **Controls** i afegeix-hi DemoControls. A **Surfaces**, ass
 | Maximum | 8 |
 | Initial Value | 3 |
 
-**Controls:** lliscador per modificar `_Intensitat`; Espai pausa el temps; R reinicia temps i paràmetre; H amaga el panell. En moure el lliscador, el valor s’aplica a totes les mostres. Abans de tocar-lo, cada material conserva les variants de l’apartat 5. Els rètols de l’escena identifiquen aquestes variants inicials; el panell mostra el valor actual del control.
+**Controls:** lliscador per modificar `_Intensitat`; Espai pausa el temps; R reinicia temps i paràmetre; H amaga el panell. En moure el lliscador, el valor s’aplica a totes les mostres. Abans de tocar-lo, cada material conserva les variants de l’apartat 4. Els rètols de l’escena identifiquen aquestes variants inicials; el panell mostra el valor actual del control.
 
 Els canvis durant Play són temporals. Per canviar els valors inicials de manera permanent, atura Play i edita els assets de material.
 
-## 8. Provar la demo
+## 7. Provar la demo
 
 1. Prem Play: canvien les esquerdes i la pulsació.
 2. Prem Espai: el patró queda congelat; torna a prémer per continuar.
 3. Mou Intensitat a 0: desapareix l’emissió, però continua existint el color de la superfície.
 4. Prem R: el temps torna a zero i la intensitat al valor del controlador.
 
-<img src="assets/demolava-variant.png" alt="Variant amb el lliscador al màxim" width="600" style="width: 90%; max-width: 600px; height: auto;">
+<a href="assets/demolava-variant.png"><img src="assets/demolava-variant.png" alt="Variant amb el lliscador al màxim" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
-<img src="assets/demolava-animacio.png" alt="Animació en un altre instant, amb el paràmetre inicial" width="600" style="width: 90%; max-width: 600px; height: auto;">
+<a href="assets/demolava-animacio.png"><img src="assets/demolava-animacio.png" alt="Animació en un altre instant, amb el paràmetre inicial" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
 ## Si alguna cosa no funciona
 
 Si no s’anima, comprova la Reference `_Temps`, la llista Surfaces del controlador i que no estigui pausat. Si no hi ha resplendor, comprova HDR, Post Processing i Bloom.
 
 Si el material és rosa, comprova URP, la compilació del gràfic i la Console. Si el teclat no respon, comprova Input System, entra a Play i clica Game.
-
-## Ampliació
-
-Afegeix una segona escala de soroll per trencar la regularitat de les esquerdes. Compara el cost i el resultat amb una sola capa.

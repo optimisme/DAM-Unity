@@ -2,32 +2,25 @@
 
 **Vídeo de referència:** [Com es simula el pèl als videojocs](https://www.youtube.com/watch?v=SSoedKq6wt0). Les shells s’expliquen a partir de **00:27** i el POM amb curvatura a partir de **04:34**, especialment **06:09–06:29**.
 
-Construirem una escena amb dues esferes peludes: a l’esquerra, capes semitransparents amb ratlles inspirades en l’abella; a la dreta, pèl daurat amb Parallax Occlusion Mapping i retall de silueta. És una implementació didàctica pròpia; no reprodueix el codi original de Nintendo.
+Construirem una escena amb dues esferes peludes: a l’esquerra, capes semitransparents amb ratlles inspirades en l’abella; a la dreta, pèl daurat amb Parallax Occlusion Mapping i retall de silueta.
 
-**Projecte acabat:** [Demo-8-Pels.zip](demos/Demo-8-Pels.zip). Descomprimeix-lo, afegeix la carpeta amb Assets, Packages i ProjectSettings a Unity Hub i obre-la amb **Unity 6000.6.3f1**. L’escena és `Assets/Demos/Pels/Scenes/DemoPels.unity`.
+**Projecte acabat:** [Demo-8-Pels.zip](demos/Demo-8-Pels.zip). Descomprimeix-lo, afegeix la carpeta amb Assets, Packages i ProjectSettings a Unity Hub i obre-la amb **Unity**. L’escena és `Assets/Demos/Pels/Scenes/DemoPels.unity`.
 
 La guia inclou el codi complet: pots començar amb un projecte buit de la plantilla indicada, sense importar el ZIP. Els grafs són editables. El POM utilitza una **Custom Function HLSL**, amb els ports i connexions detallats més avall.
 
-<img src="assets/demopels-escena.png" alt="Dues esferes de pèl fi: shells amb ratlles a l’esquerra i POM daurat a la dreta" width="600" style="width: 90%; max-width: 600px; height: auto;">
-
-[Obrir la captura a mida completa](assets/demopels-escena.png).
+<a href="assets/demopels-escena.png"><img src="assets/demopels-escena.png" alt="Dues esferes de pèl fi: shells amb ratlles a l’esquerra i POM daurat a la dreta" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
 ## 1. Crear el projecte des de zero
 
 1. Crea un projecte **Universal 3D (URP)** anomenat **Demo-8-Pels**. No triïs Built-in ni HDRP.
-2. A **Window > Package Management > Package Manager**, comprova **Universal RP 17.6.0**, **Shader Graph 17.6.0** i **Input System 1.20.0**. Espera que acabin la importació i la compilació.
+2. A **Window > Package Management > Package Manager**, comprova **Universal RP**, **Shader Graph** i **Input System**. Espera que acabin la importació i la compilació.
 3. A **Edit > Project Settings > Player > Other Settings > Active Input Handling**, selecciona **Input System Package (New)**. Accepta el reinici si es demana. A **Player > Resolution and Presentation**, activa **Run In Background**.
 4. A **Project Settings > Graphics**, conserva l’URP Asset de la plantilla. A **Quality**, el nivell actiu ha d’utilitzar **PC_RPAsset**, dins d’Assets/Settings.
 5. Crea **Assets/Demos/Pels**, amb les carpetes **Shaders**, **Materials**, **Textures**, **Meshes**, **Scripts** i **Scenes**. Crea també **Assets/Common**.
 6. Obre **Assets/Scenes/SampleScene.unity**. Conserva **Main Camera**, **Directional Light** i **Global Volume**. Amb **File > Save As…**, desa l’escena com a **Assets/Demos/Pels/Scenes/DemoPels.unity**.
 7. Desactiva **Global Volume** amb la casella al costat del nom a l’Inspector. La demo no necessita postprocessament, Scene Depth ni Opaque Texture.
 
-## 2. Què farem en cada esfera
-
-| Tècnica | Geometria | Visibilitat del pèl | Cost principal |
-|---|---|---|---|
-| Shells | Base i 40 còpies de la malla | Cada capa mostra una secció del mapa d’altures amb alpha suau | Vèrtexs i fragments superposats |
-| POM | Una sola malla exterior | El raig busca el primer punt que toca el mapa d’altures; si no en troba, descarta el fragment | Mostres del mapa i càlcul per píxel |
+## 2. Preparar les dimensions de les esferes
 
 Les dues esferes comparteixen el mateix mapa. La base té **radi 1**, la llargada màxima és **0.16 unitats locals** i l’envolupant exterior arriba a **radi 1.16**. No utilitzarem directament la Sphere de Unity, que té radi 0.5: generarem una malla de radi 1 amb UV coherents amb la funció POM.
 
@@ -250,45 +243,86 @@ Al Blackboard crea les propietats següents. Activa **Exposed**; les Reference h
 
 **Capa = 0.5 és només el valor de previsualització del material.** El component PelsShells enviarà a cada còpia el seu índex normalitzat: 0 per a la base i 1/40…40/40 per a les capes. Llargada i Ratlles també es controlaran des del component.
 
-A les taules, els noms de la columna ID són identificadors per reconèixer els nodes. `Out` és la sortida principal; als nodes Property aquesta sortida mostra el nom de la propietat. Crea grups amb els noms de les captures per poder-los enquadrar amb **F**. Plega les previsualitzacions si tapen els ports.
+Segueix els passos en ordre dins del mateix Shader Graph. Prem **Espai** per crear un node del tipus indicat; arrossega les propietats des del Blackboard. Els identificadors de les taules serveixen per distingir nodes repetits: no cal canviar els noms dels nodes. Si ho necessites, posa una **Sticky Note** al costat del node amb l’identificador.
+
+A cada fila de cables, arrossega des del **port de sortida** del node origen fins al **port d’entrada** del node destí. Reutilitza els nodes dels passos anteriors. `Out` indica la sortida principal; als nodes de propietat pot mostrar el nom de la propietat.
+
+Per organitzar el graf com a la captura, selecciona els nodes de cada pas i tria **Group Selection** al menú del botó dret. Mantén els grups a prop i deixa prou espai per veure els cables.
+
+Per veure el resultat d’un node, fes-hi botó dret i tria **View > Expand Preview**; amb **Collapse Preview** el pots plegar.
+
+Escriu els valors de la taula als camps sense cable. Si el camp és vectorial i només s’indica un valor, repeteix-lo a tots els components. Clica les captures per veure-les a mida completa.
+
+**Graf complet de Shells:** segueix els grups numerats i els cables fins al **Master Stack**. [Obre la captura a mida completa](assets/demopels-shells-graf-complet.png) per llegir els ports i els valors.
+
+<a href="assets/demopels-shells-graf-complet.png"><img src="assets/demopels-shells-graf-complet.png" alt="Graf complet de Shells, amb totes les connexions i previsualitzacions" width="1600" style="width: 100%; max-width: 1600px; height: auto;"></a>
 
 ### Pas 1. Extrusió al llarg de la normal
 
-<img src="assets/demopels-shells-nodes-01.png" alt="Shells: connexions entre posició, normal, llargada i índex de capa" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-[Obrir la captura a mida completa](assets/demopels-shells-nodes-01.png).
-
-| ID | Node | Configuració i entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| Posicio | Position | Space = Object |
-| Normal | Normal Vector | Space = Object |
-| Llargada | Property | Llargada |
-| Capa | Property | Capa |
-| AlturaCapa | Multiply | A ← Capa:Out; B ← Llargada:Out |
-| Extrusio | Multiply | A ← Normal:Out; B ← AlturaCapa:Out |
-| PosicioFinal | Add | A ← Posicio:Out; B ← Extrusio:Out |
+| `Posicio` | Position | Space = Object |
+| `Normal` | Normal Vector | Space = Object |
+| `Llargada` | Property | Llargada |
+| `Capa` | Property | Capa |
+| `AlturaCapa` | Multiply | Valors per defecte |
+| `Extrusio` | Multiply | Valors per defecte |
+| `PosicioFinal` | Add | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Capa` | Out | `AlturaCapa` | A |
+| `Llargada` | Out | `AlturaCapa` | B |
+| `Normal` | Out | `Extrusio` | A |
+| `AlturaCapa` | Out | `Extrusio` | B |
+| `Posicio` | Out | `PosicioFinal` | A |
+| `Extrusio` | Out | `PosicioFinal` | B |
+| `PosicioFinal` | Out | `Vertex / Position` | Position |
 
 Connecta **PosicioFinal:Out → Vertex / Position**. Es connecta la posició final, no només l’increment. Mantén Vertex / Normal i Tangent amb els valors inicials.
 
+**Comprova el resultat:** Comprova l’extrusió en la previsualització principal després de connectar Vertex / Position. La distribució de totes les capes es comprova a l’escena amb PelsShells.
+
 ### Pas 2. Secció del pèl i opacitat
 
-<img src="assets/demopels-shells-nodes-02.png" alt="Shells: mostreig del mapa, llindars suaus i base opaca, amb els ports visibles" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-[Obrir la captura a mida completa](assets/demopels-shells-nodes-02.png).
-
-| ID | Node | Configuració i entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| Mapa | Property | Mapa |
-| UV | UV | Channel = UV0 |
-| Mostra | Sample Texture 2D | Type = Default; Texture ← Mapa:Out; UV ← UV:Out; Sampler sense connectar |
-| Inici | Subtract | A ← Capa:Out; B = 0.035 |
-| Final | Add | A ← Capa:Out; B = 0.035 |
-| TallSuau | Smoothstep | Edge1 ← Inici:Out; Edge2 ← Final:Out; In ← Mostra:R |
-| EsCapa | Step | Edge = 0.0001; In ← Capa:Out |
-| EsBase | One Minus | In ← EsCapa:Out |
-| Opacitat | Maximum | A ← TallSuau:Out; B ← EsBase:Out |
+| `Mapa` | Property | Mapa |
+| `UV` | UV | Channel = UV0 |
+| `Mostra` | Sample Texture 2D | Type = Default; Sampler sense connectar |
+| `Inici` | Subtract | B = 0.035 |
+| `Final` | Add | B = 0.035 |
+| `TallSuau` | Smoothstep | Valors per defecte |
+| `EsCapa` | Step | Edge = 0.0001 |
+| `EsBase` | One Minus | Valors per defecte |
+| `Opacitat` | Maximum | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Mapa` | Out | `Mostra` | Texture |
+| `UV` | Out | `Mostra` | UV |
+| `Capa` | Out | `Inici` | A |
+| `Capa` | Out | `Final` | A |
+| `Inici` | Out | `TallSuau` | Edge1 |
+| `Final` | Out | `TallSuau` | Edge2 |
+| `Mostra` | R | `TallSuau` | In |
+| `Capa` | Out | `EsCapa` | In |
+| `EsCapa` | Out | `EsBase` | In |
+| `TallSuau` | Out | `Opacitat` | A |
+| `EsBase` | Out | `Opacitat` | B |
+| `Opacitat` | Out | `Fragment / Alpha` | Alpha |
 
 Connecta **Opacitat:Out → Fragment / Alpha**. No utilitzis la sortida A de la textura: el mapa d’altures es llegeix pel canal **R**. La base té opacitat 1; les altres capes són visibles només on el mapa arriba a aquella altura. L’interval ±0.035 suavitza la transició entre seccions. Els camps estrets de Unity poden mostrar els decimals retallats a la captura: escriu **0.035** a Inici i Final i **0.0001** a EsCapa, tal com indica la taula.
+
+**Comprova el resultat:** Desplega **Sample Texture 2D**, **Smoothstep** i **Maximum** (Opacitat): comprova el mapa d’altures, el tall suau i la màscara final. Amb Capa = 0, Opacitat ha de ser blanca.
 
 ### Pas 3. Color del pèl
 
@@ -296,48 +330,31 @@ Crea una **Custom Function** amb **Type = File**, **Source = Pels.hlsl**, **Name
 
 A la llista Inputs afegeix, en aquest ordre: **PosOS (Vector3)**, **ViewOS (Vector3)**, **Height (Float)**, **Stripes (Float)**, **Gold (Vector3)** i **Dark (Vector3)**. A Outputs afegeix **Color (Vector3)**. Els noms distingeixen majúscules de minúscules. Anomenarem aquest node **Llum** a les taules.
 
-<img src="assets/demopels-shells-nodes-03.png" alt="Shells: entrades de PelsColor i propietats de color" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-[Obrir la captura a mida completa](assets/demopels-shells-nodes-03.png).
-
-| ID | Node | Configuració |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| Vista | View Direction | Space = Object |
-| Or | Property | Color daurat |
-| Fosc | Property | Color fosc |
-| Ratlles | Property | Ratlles |
-| Llum | Custom Function | File = Pels.hlsl; Name = PelsColor; Precision = Single |
+| `Vista` | View Direction | Space = Object |
+| `Or` | Property | Color daurat |
+| `Fosc` | Property | Color fosc |
+| `Ratlles` | Property | Ratlles |
+| `Llum` | Custom Function | File = Pels.hlsl; Name = PelsColor; Precision = Single |
 
-| Origen | Destinació exacta |
-|---|---|
-| Posicio:Out | Llum:PosOS |
-| Vista:Out | Llum:ViewOS |
-| Capa:Out | Llum:Height |
-| Ratlles:Out | Llum:Stripes |
-| Or:Out | Llum:Gold |
-| Fosc:Out | Llum:Dark |
-| Llum:Color | Fragment / Base Color |
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Posicio` | Out | `Llum` | PosOS |
+| `Vista` | Out | `Llum` | ViewOS |
+| `Capa` | Out | `Llum` | Height |
+| `Ratlles` | Out | `Llum` | Stripes |
+| `Or` | Out | `Llum` | Gold |
+| `Fosc` | Out | `Llum` | Dark |
+| `Llum` | Color | `Fragment / Base Color` | Base Color |
 
 Desa el gràfic.
 
-### Totes les connexions entre grups
-
-<img src="assets/demopels-shells-nodes-04.png" alt="Shells: detall de Base Color, Alpha i Vertex Position al Master Stack" width="600" style="width: 90%; max-width: 600px; height: auto;">
-
-[Obrir la captura a mida completa](assets/demopels-shells-nodes-04.png).
-
-<img src="assets/demopels-shells-nodes-00.png" alt="Vista general real del Shader Graph de shells, amb connexions entre grups i Master Stack" width="600" style="width: 90%; max-width: 600px; height: auto;">
-
-[Obrir la captura a mida completa](assets/demopels-shells-nodes-00.png).
-
-| Origen | Destinació |
-|---|---|
-| 01 · Capa:Out | 02 · Inici:A; Final:A; EsCapa:In |
-| 01 · Capa:Out | 03 · Llum:Height |
-| 01 · Posicio:Out | 03 · Llum:PosOS |
-| 01 · PosicioFinal:Out | Vertex / Position |
-| 02 · Opacitat:Out | Fragment / Alpha |
-| 03 · Llum:Color | Fragment / Base Color |
+**Comprova el resultat:** Comprova el color daurat i les ratlles en la previsualització principal i sobre les capes de l’escena.
 
 ## 6. Shader Graph de POM amb curvatura
 
@@ -355,21 +372,35 @@ Crea aquestes propietats exposades:
 | Color fosc | Color | `_Fosc` | (28,15,6) |
 | Ratlles | Float | `_Ratlles` | 0 |
 
+**Graf complet de POM:** segueix els grups numerats i els cables fins al **Master Stack**. [Obre la captura a mida completa](assets/demopels-pom-graf-complet.png) per llegir els ports i els valors.
+
+<a href="assets/demopels-pom-graf-complet.png"><img src="assets/demopels-pom-graf-complet.png" alt="Graf complet de POM, amb totes les connexions i previsualitzacions" width="1600" style="width: 100%; max-width: 1600px; height: auto;"></a>
+
 ### Pas 1. Crear l’envolupant exterior
 
-<img src="assets/demopels-pom-nodes-01.png" alt="POM: extrusió de tota la malla fins al radi exterior del pelatge" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-[Obrir la captura a mida completa](assets/demopels-pom-nodes-01.png).
-
-| ID | Node | Configuració i entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| Posicio | Position | Space = Object |
-| Normal | Normal Vector | Space = Object |
-| Llargada | Property | Llargada |
-| Extrusio | Multiply | A ← Normal:Out; B ← Llargada:Out |
-| PosicioFinal | Add | A ← Posicio:Out; B ← Extrusio:Out |
+| `Posicio` | Position | Space = Object |
+| `Normal` | Normal Vector | Space = Object |
+| `Llargada` | Property | Llargada |
+| `Extrusio` | Multiply | Valors per defecte |
+| `PosicioFinal` | Add | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Normal` | Out | `Extrusio` | A |
+| `Llargada` | Out | `Extrusio` | B |
+| `Posicio` | Out | `PosicioFinal` | A |
+| `Extrusio` | Out | `PosicioFinal` | B |
+| `PosicioFinal` | Out | `Vertex / Position` | Position |
 
 Connecta **PosicioFinal:Out → Vertex / Position**. Aquí no hi ha Capa ni AlturaCapa: es dibuixa una sola esfera exterior.
+
+**Comprova el resultat:** Comprova l’envolupant en la previsualització principal; ha d’incloure el desplaçament de tota la malla.
 
 ### Pas 2. Recórrer el mapa d’altures
 
@@ -391,80 +422,62 @@ Configura els ports en l’ordre exacte:
 
 Mantén el port Texture2D en el format habitual de Shader Graph, compatible amb `UnityTexture2D`; no activis una opció de textura bare/legacy. No cal un port SamplerState separat.
 
-<img src="assets/demopels-pom-nodes-02.png" alt="POM: ports complets de la Custom Function i connexions de mapa, vista, passos i curvatura" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-[Obrir la captura a mida completa](assets/demopels-pom-nodes-02.png).
-
-| ID | Node | Configuració |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| Mapa | Property | Mapa |
-| Vista | View Direction | Space = Object |
-| Passos | Property | Passos |
-| Curvatura | Property | Curvatura |
-| Recorregut | Custom Function | PelsPOM, File = Pels.hlsl, Single |
-| Llindar | Float | X = 0.5; constant, no propietat del Blackboard |
+| `Mapa` | Property | Mapa |
+| `Vista` | View Direction | Space = Object |
+| `Passos` | Property | Passos |
+| `Curvatura` | Property | Curvatura |
+| `Recorregut` | Custom Function | PelsPOM, File = Pels.hlsl, Single |
+| `Llindar` | Float | X = 0.5; constant, no propietat del Blackboard |
 
-| Origen | Destinació exacta |
-|---|---|
-| Mapa:Out | Recorregut:Map |
-| Posicio:Out | Recorregut:PosOS |
-| Vista:Out | Recorregut:ViewOS |
-| Llargada:Out | Recorregut:Length |
-| Passos:Out | Recorregut:Steps |
-| Curvatura:Out | Recorregut:Curvature |
-| Recorregut:Alpha | Fragment / Alpha |
-| Llindar:Out | Fragment / Alpha Clip Threshold |
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Mapa` | Out | `Recorregut` | Map |
+| `Posicio` | Out | `Recorregut` | PosOS |
+| `Vista` | Out | `Recorregut` | ViewOS |
+| `Llargada` | Out | `Recorregut` | Length |
+| `Passos` | Out | `Recorregut` | Steps |
+| `Curvatura` | Out | `Recorregut` | Curvature |
+| `Recorregut` | Alpha | `Fragment / Alpha` | Alpha |
+| `Llindar` | Out | `Fragment / Alpha Clip Threshold` | Alpha Clip Threshold |
 
 **Posicio és Position en Object**, no la sortida PosicioFinal. En el fragment shader la posició interpolada ja correspon a la malla extrudida; la funció en normalitza la direcció i reconstrueix l’envolupant.
+
+**Comprova el resultat:** Comprova el POM sobre l’esfera de l’escena des de diversos angles. La funció té diverses sortides; valida també Alpha i Alpha Clip Threshold al material.
 
 ### Pas 3. Color del punt trobat
 
 Crea una altra Custom Function **PelsColor**, amb exactament els mateixos sis inputs i la mateixa sortida del pas 5.3. No la connectis a la posició i altura originals: ha d’utilitzar el punt que ha trobat el POM.
 
-| ID | Node | Configuració |
+**Nodes que has de crear i valors que has d’escriure:**
+
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| Or | Property | Color daurat |
-| Fosc | Property | Color fosc |
-| Ratlles | Property | Ratlles |
-| Llum | Custom Function | PelsColor, File = Pels.hlsl, Single |
+| `Or` | Property | Color daurat |
+| `Fosc` | Property | Color fosc |
+| `Ratlles` | Property | Ratlles |
+| `Llum` | Custom Function | PelsColor, File = Pels.hlsl, Single |
 
-<img src="assets/demopels-pom-nodes-03.png" alt="POM: color aplicat al punt d’intersecció trobat pel raig" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Cables: arrossega de la sortida a l’entrada indicada.**
 
-[Obrir la captura a mida completa](assets/demopels-pom-nodes-03.png).
-
-| Origen | Destinació exacta |
-|---|---|
-| Recorregut:HitOS | Llum:PosOS |
-| Vista:Out | Llum:ViewOS |
-| Recorregut:Height | Llum:Height |
-| Ratlles:Out | Llum:Stripes |
-| Or:Out | Llum:Gold |
-| Fosc:Out | Llum:Dark |
-| Llum:Color | Fragment / Base Color |
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Recorregut` | HitOS | `Llum` | PosOS |
+| `Vista` | Out | `Llum` | ViewOS |
+| `Recorregut` | Height | `Llum` | Height |
+| `Ratlles` | Out | `Llum` | Stripes |
+| `Or` | Out | `Llum` | Gold |
+| `Fosc` | Out | `Llum` | Dark |
+| `Llum` | Color | `Fragment / Base Color` | Base Color |
 
 Desa el gràfic.
 
-### Totes les connexions entre grups
-
-<img src="assets/demopels-pom-nodes-04.png" alt="POM: detall de les connexions finals a Alpha, Alpha Clip Threshold, Base Color i Position" width="600" style="width: 90%; max-width: 600px; height: auto;">
-
-[Obrir la captura a mida completa](assets/demopels-pom-nodes-04.png).
-
-<img src="assets/demopels-pom-nodes-00.png" alt="Vista general del POM amb tots els cables entre extrusió, recorregut, color i Master Stack" width="600" style="width: 90%; max-width: 600px; height: auto;">
-
-[Obrir la captura a mida completa](assets/demopels-pom-nodes-00.png).
-
-| Origen | Destinació |
-|---|---|
-| 01 · Posicio:Out | 02 · Recorregut:PosOS |
-| 01 · Llargada:Out | 02 · Recorregut:Length |
-| 01 · PosicioFinal:Out | Vertex / Position |
-| 02 · Vista:Out | 03 · Llum:ViewOS |
-| 02 · Recorregut:HitOS | 03 · Llum:PosOS |
-| 02 · Recorregut:Height | 03 · Llum:Height |
-| 02 · Recorregut:Alpha | Fragment / Alpha |
-| 02 · Llindar:Out | Fragment / Alpha Clip Threshold |
-| 03 · Llum:Color | Fragment / Base Color |
+**Comprova el resultat:** Comprova el color sobre el punt d’intersecció del POM a l’escena; ha de seguir el relleu aparent en moure la càmera.
 
 ## 7. Materials i objectes de l’escena
 
@@ -680,23 +693,15 @@ Desa l’escena. A **File > Build Profiles > Scene List**, afegeix DemoPels amb 
 
 ### Shells de prop
 
-<img src="assets/demopels-shells.png" alt="Pèl fi amb shells: detall de les ratlles i de les puntes" width="600" style="width: 90%; max-width: 600px; height: auto;">
+<a href="assets/demopels-shells.png"><img src="assets/demopels-shells.png" alt="Pèl fi amb shells: detall de les ratlles i de les puntes" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
-[Obrir la captura a mida completa](assets/demopels-shells.png).
-
-<img src="assets/demopels-8capes.png" alt="Comparació amb només vuit shells; el POM conserva els seus paràmetres" width="600" style="width: 90%; max-width: 600px; height: auto;">
-
-[Obrir la captura a mida completa](assets/demopels-8capes.png).
+<a href="assets/demopels-8capes.png"><img src="assets/demopels-8capes.png" alt="Comparació amb només vuit shells; el POM conserva els seus paràmetres" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
 ### POM de prop: curvatura activada i desactivada
 
-<img src="assets/demopels-pom.png" alt="POM esfèric amb retall de silueta i 128 passos" width="600" style="width: 90%; max-width: 600px; height: auto;">
+<a href="assets/demopels-pom.png"><img src="assets/demopels-pom.png" alt="POM esfèric amb retall de silueta i 128 passos" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
-[Obrir la captura a mida completa](assets/demopels-pom.png).
-
-<img src="assets/demopels-pom-sense-curvatura.png" alt="La mateixa càmera amb aproximació plana: el contorn exterior queda emplenat" width="600" style="width: 90%; max-width: 600px; height: auto;">
-
-[Obrir la captura a mida completa](assets/demopels-pom-sense-curvatura.png).
+<a href="assets/demopels-pom-sense-curvatura.png"><img src="assets/demopels-pom-sense-curvatura.png" alt="La mateixa càmera amb aproximació plana: el contorn exterior queda emplenat" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
 ## 11. Límits i errors habituals
 
@@ -711,15 +716,3 @@ Desa l’escena. A **File > Build Profiles > Scene List**, afegeix DemoPels amb 
 - **Distància i rendiment:** el POM força LOD 0 i no inclou antialiàsing temporal ni LOD adaptatiu. Les shells multipliquen la geometria i l’overdraw. Cap de les dues tècniques és gratuïta.
 
 Les **fins** i les **hair cards** del vídeo són altres recursos per millorar siluetes o construir cabell llarg; no formen part d’aquestes dues esferes.
-
-## 12. Referències
-
-- [Vídeo que motiva la demo](https://www.youtube.com/watch?v=SSoedKq6wt0).
-- [NVIDIA: Fur — Shells and Fins](https://developer.download.nvidia.com/SDK/10/direct3d/Source/Fur/doc/FurShellsAndFins.pdf).
-- [Tatarchuk: Practical Parallax Occlusion Mapping](https://advances.realtimerendering.com/s2006/Tatarchuk-POM.pdf), inclosa la discussió de curvatura.
-
-## 13. Comprovació des de zero
-
-El tutorial s’ha reconstruït en un projecte Universal 3D nou: **46 connexions dels grafs**, **181 comprovacions de configuració i escena** i **60 comprovacions en Play**. El ZIP s’ha extret i obert en una altra carpeta, repetint les proves d’escena i Play.
-
-La reconstrucció és automatitzada a partir de les taules i el codi del tutorial; no és una repetició manual de cada clic. [Informe de validació](demos/Validacio-Demo-8-Pels.md).

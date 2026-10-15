@@ -4,7 +4,7 @@ Quan una paret tapa el personatge, mostrarem la seva silueta plana emplenada en 
 
 **Projecte acabat:** [Demo-7-Sombra.zip](demos/Demo-7-Sombra.zip). Descomprimeix-lo i afegeix la carpeta amb Assets, Packages i ProjectSettings a Unity Hub. La primera importació obre automàticament `Assets/Demos/Sombra/Scenes/DemoSombra.unity`. Prem Play i clica Game. Els materials poden trigar una estona a carregar-se.
 
-<img src="assets/demosombra-escena.png" alt="Silueta grisa emplenada del personatge ocult darrere d’una paret opaca" width="600" style="width: 90%; max-width: 600px; height: auto;">
+<a href="assets/demosombra-escena.png"><img src="assets/demosombra-escena.png" alt="Silueta grisa emplenada del personatge ocult darrere d’una paret opaca" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
 ## 1. Partir de Universal 3D
 
@@ -14,27 +14,7 @@ Quan una paret tapa el personatge, mostrarem la seva silueta plana emplenada en 
 4. Obre **Assets/Scenes/SampleScene**. Conserva **Main Camera**, **Directional Light** i **Global Volume**. Amb **File > Save As…**, desa una còpia com a **DemoSombra** dins de Scenes.
 5. A **Project Settings > Quality**, comprova quin URP Asset utilitza el nivell actiu. Selecciona aquest asset al Project i activa **Depth Texture**. A la plantilla per a ordinador és **Assets/Settings/PC_RPAsset**. A Main Camera, activa també **Rendering > Depth Texture** si apareix l’opció específica de càmera; no la deixis desactivada.
 
-## 2. Com funciona
-
-Una segona còpia de la malla del personatge utilitza un material **Unlit**, gris i sense ombres. Aquesta còpia ocupa exactament el mateix lloc i segueix els mateixos pares. Unlit fa que el gris sigui pla: la il·luminació no li dona volum.
-
-El shader compara dues profunditats en les mateixes unitats:
-
-- **Scene Depth, mode Eye:** distància en l’eix de la vista de la superfície opaca dibuixada en aquell píxel.
-- **Position, espai View, component Z negat:** distància en l’eix de la vista del fragment de la còpia del personatge.
-
-```text
-separacio = -PositionView.z - SceneDepthEye
-alpha = Step(Marge, separacio)
-```
-
-Quan la paret és més a prop, separacio és positiva i Alpha val 1: dibuixem gris. Quan el personatge és visible, la textura de profunditat ja conté la seva malla original; la diferència és pràcticament zero i el shader descarta la còpia. El marge petit evita que es pinti gris sobre la seva pròpia superfície.
-
-**Depth Test = Always** permet executar aquest dibuix encara que la paret sigui davant. **Depth Write = Force Disabled** evita que la còpia alteri la profunditat de l’escena. El shader mateix decideix quins píxels conservar amb Alpha Clipping.
-
-El controlador consulta els colliders entre la càmera i el personatge i activa les còpies només quan alguna paret de la llista s’interposa. Consulta el tronc i el centre de les sis peces, per detectar també una oclusió parcial. És una comprovació física aproximada; la màscara del shader acaba de retallar cada píxel.
-
-## 3. Crear el Shader Graph
+## 2. Crear el Shader Graph
 
 A Shaders, utilitza **Create > Shader Graph > URP > Unlit Shader Graph**, amb nom **SSombra**. Obre’l i fixa aquestes opcions a **Graph Inspector > Graph Settings**:
 
@@ -61,66 +41,91 @@ Al Blackboard, crea aquestes propietats amb **Exposed** activat. Els colors són
 
 Arrossega-les al gràfic per crear els nodes Property. El node Llindar del pas 3 és una constant Float, no una tercera propietat del Blackboard.
 
+Segueix els passos en ordre dins del mateix Shader Graph. Prem **Espai** per crear un node del tipus indicat; arrossega les propietats des del Blackboard. Els identificadors de les taules serveixen per distingir nodes repetits: no cal canviar els noms dels nodes. Si ho necessites, posa una **Sticky Note** al costat del node amb l’identificador.
+
+A cada fila de cables, arrossega des del **port de sortida** del node origen fins al **port d’entrada** del node destí. Reutilitza els nodes dels passos anteriors. `Out` indica la sortida principal; als nodes de propietat pot mostrar el nom de la propietat.
+
+Per organitzar el graf com a la captura, selecciona els nodes de cada pas i tria **Group Selection** al menú del botó dret. Mantén els grups a prop i deixa prou espai per veure els cables.
+
+Per veure el resultat d’un node, fes-hi botó dret i tria **View > Expand Preview**; amb **Collapse Preview** el pots plegar.
+
+Escriu els valors de la taula als camps sense cable. Si el camp és vectorial i només s’indica un valor, repeteix-lo a tots els components. Clica les captures per veure-les a mida completa.
+
+**Graf complet de Sombra:** segueix els grups numerats i els cables fins al **Master Stack**. [Obre la captura a mida completa](assets/demosombra-graf-complet.png) per llegir els ports i els valors.
+
+<a href="assets/demosombra-graf-complet.png"><img src="assets/demosombra-graf-complet.png" alt="Graf complet de Sombra, amb totes les connexions i previsualitzacions" width="1600" style="width: 100%; max-width: 1600px; height: auto;"></a>
+
 ### Pas 1. Profunditats
 
-A les taules, `Nom:Out` identifica la sortida principal del node; en un node Property aquesta sortida porta el nom de la propietat. Crea els nodes de la taula. **Split** anomena els components R, G, B i A; el port **B** correspon al component Z de Position.
+Crea els nodes de la taula. **Split** anomena els components R, G, B i A; el port **B** correspon al component Z de Position.
 
-<img src="assets/demosombra-nodes-01.png" alt="Nodes del pas 1: profunditat de l’escena i del personatge" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Configuració i entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
 | `Pantalla` | Screen Position | Mode = Default |
-| `Fons` | Scene Depth | Mode = Eye; UV ← Pantalla:Out |
+| `Fons` | Scene Depth | Mode = Eye |
 | `Vista` | Position | Space = View |
-| `Eixos` | Split | In ← Vista:Out |
-| `Distancia` | Negate | In ← Eixos:B |
+| `Eixos` | Split | Valors per defecte |
+| `Distancia` | Negate | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Pantalla` | Out | `Fons` | UV |
+| `Vista` | Out | `Eixos` | In |
+| `Eixos` | B | `Distancia` | In |
+
+**Comprova el resultat:** La profunditat necessita la càmera i els objectes de l’escena. Les miniatures de Scene Depth no serveixen per comprovar si la paret tapa el personatge.
 
 ### Pas 2. Píxels ocults
 
-<img src="assets/demosombra-nodes-02.png" alt="Nodes del pas 2: restar profunditats i obtenir una màscara binària" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `Separacio` | Subtract | A ← Distancia:Out; B ← Fons:Out |
-| `Marge` | Property: Marge profunditat | Propietat `_Marge` |
-| `Ocult` | Step | Edge ← Marge:Out; In ← Separacio:Out |
+| `Separacio` | Subtract | Valors per defecte |
+| `Marge` | Property: Marge profunditat | Propietat _Marge |
+| `Ocult` | Step | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Distancia` | Out | `Separacio` | A |
+| `Fons` | Out | `Separacio` | B |
+| `Marge` | Out | `Ocult` | Edge |
+| `Separacio` | Out | `Ocult` | In |
 
 No inverteixis A i B: volem un valor positiu quan el fragment del personatge queda darrere de la paret.
 
+**Comprova el resultat:** Comprova **Step** (Ocult) amb l’escena muntada: la silueta s’ha de veure on el personatge queda darrere de la paret.
+
 ### Pas 3. Color i sortides
 
-<img src="assets/demosombra-nodes-03.png" alt="Color gris, constant de retall i connexions al Master Stack" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Configuració |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `Gris` | Property: Color silueta | Propietat `_Color` |
+| `Gris` | Property: Color silueta | Propietat _Color |
 | `Llindar` | Float | X = 0.5 |
 
-Connecta al **Fragment** del Master Stack:
+**Cables: arrossega de la sortida a l’entrada indicada.**
 
-| Sortida del node | Entrada del Fragment |
-|---|---|
-| `Gris:Out` | Base Color |
-| `Ocult:Out` | Alpha |
-| `Llindar:Out` | Alpha Clip Threshold |
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Gris` | Out | `Fragment / Base Color` | Base Color |
+| `Ocult` | Out | `Fragment / Alpha` | Alpha |
+| `Llindar` | Out | `Fragment / Alpha Clip Threshold` | Alpha Clip Threshold |
+
+Les connexions al **Fragment** del Master Stack estan indicades a la taula de cables.
 
 Desa el Shader Graph. Els blocs de Vertex es mantenen amb els seus valors inicials.
 
-### Connexions entre grups
+**Comprova el resultat:** Desa el graf i comprova les còpies de silueta a l’escena: el gris només ha d’aparèixer a les parts ocultes.
 
-<img src="assets/demosombra-nodes-00.png" alt="Vista general amb tots els cables entre els tres grups i el Master Stack" width="600" style="width: 90%; max-width: 600px; height: auto;">
-
-| Origen | Destinació |
-|---|---|
-| 01 · `Distancia:Out` | 02 · `Separacio:A` |
-| 01 · `Fons:Out` | 02 · `Separacio:B` |
-| 02 · `Ocult:Out` | Master Stack · Fragment Alpha |
-| 03 · `Gris:Out` | Master Stack · Fragment Base Color |
-| 03 · `Llindar:Out` | Master Stack · Fragment Alpha Clip Threshold |
-
-Selecciona un grup i prem **F** per enquadrar-lo; **A** enquadra tot el gràfic. Les captures provenen de l’editor de Unity, amb les previsualitzacions plegades per deixar llegir els ports.
-
-## 4. Materials i escenari
+## 3. Materials i escenari
 
 A Materials, utilitza **Create > Rendering > Material** per a cada material:
 
@@ -187,7 +192,7 @@ Personatge
 
 La còpia usa la mateixa malla i transforma les posicions exactament com l’original. Així la forma projectada coincideix des de qualsevol angle.
 
-## 5. Càmera, llum i controls
+## 4. Càmera, llum i controls
 
 Ajusta la **Main Camera existent**:
 
@@ -326,7 +331,7 @@ Crea un objecte buit **ControlSombra**, amb transformació inicial, i afegeix-hi
 
 Per omplir Silhouettes, expandeix les peces de la jerarquia i arrossega **els fills Silueta**, no els originals. Són els renderers que el codi activarà i desactivarà. Desa l’escena.
 
-## 6. Provar el resultat
+## 5. Provar el resultat
 
 1. Prem Play i clica Game. Prem **Espai** per aturar el moviment automàtic.
 2. Amb el personatge darrere de ParetDavant, ha d’aparèixer una figura grisa plana amb cap, braços i cames. La paret manté el color taronja al voltant; ParetDarrera no activa l’efecte quan és darrere del personatge.
@@ -336,14 +341,8 @@ Per omplir Silhouettes, expandeix les peces de la jerarquia i arrossega **els fi
 6. **R** reinicia el moviment i activa l’efecte; **H** amaga el panell.
 7. Atura Play per conservar els canvis que facis al material. Ajusta Color silueta i Marge profunditat a MSilueta. Un marge massa gran elimina parts ocultes molt properes a la paret; un marge zero pot pintar la superfície visible del personatge.
 
-<img src="assets/demosombra-sense.png" alt="Amb F desactivat, la paret tapa completament el personatge" width="600" style="width: 90%; max-width: 600px; height: auto;">
+<a href="assets/demosombra-sense.png"><img src="assets/demosombra-sense.png" alt="Amb F desactivat, la paret tapa completament el personatge" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
-<img src="assets/demosombra-parcial.png" alt="Oclusió parcial: gris a la part oculta i turquesa a la part visible" width="600" style="width: 90%; max-width: 600px; height: auto;">
+<a href="assets/demosombra-parcial.png"><img src="assets/demosombra-parcial.png" alt="Oclusió parcial: gris a la part oculta i turquesa a la part visible" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
-<img src="assets/demosombra-lateral.png" alt="Personatge visible fora de la paret amb el color turquesa original" width="600" style="width: 90%; max-width: 600px; height: auto;">
-
-## 7. Reutilitzar l’efecte
-
-Copia el Shader Graph, MSilueta i els scripts a un altre projecte URP. Activa Depth Texture, crea les còpies de les malles i assigna les referències de càmera, personatge, parets i renderers. Les parets han de ser opaques i tenir Collider a la capa que consulta el controlador.
-
-Aquesta demo usa **Mesh Renderer** amb primitives. Un personatge amb **Skinned Mesh Renderer** necessita una còpia amb la mateixa malla, ossos i Root Bone perquè la silueta segueixi la deformació; duplicar només Mesh Filter no serveix. Les parets transparents no formen part de la textura de profunditat opaca que utilitza aquest shader.
+<a href="assets/demosombra-lateral.png"><img src="assets/demosombra-lateral.png" alt="Personatge visible fora de la paret amb el color turquesa original" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>

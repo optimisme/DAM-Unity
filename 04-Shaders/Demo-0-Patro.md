@@ -1,15 +1,15 @@
 # Demo 0: Patró: línies, quadrícula i quadres
 
-Construirem un material Unlit que mostra tres patrons a partir de les mateixes UV. La primera versió només necessita línies; després hi afegirem la quadrícula i els quadres alternats. No cal haver fet cap altra demo.
+Construirem un material Unlit que mostra tres patrons a partir de les mateixes UV. Seguirem els passos del graf per construir les línies, la quadrícula i els quadres alternats. No cal haver fet cap altra demo.
 
 **Projecte acabat:** [Demo-0-Patro.zip](demos/Demo-0-Patro.zip). Descomprimeix-lo i obre la carpeta amb Assets, Packages i ProjectSettings des de Unity Hub. La primera importació obre automàticament `Assets/Demos/Patro/Scenes/DemoPatro.unity`; prem Play. Els materials poden trigar una estona a carregar-se.
 
-<img src="assets/demopatro-escena.png" alt="Escena de la demo Patro renderitzada a Unity" width="600" style="width: 90%; max-width: 600px; height: auto;">
+<a href="assets/demopatro-escena.png"><img src="assets/demopatro-escena.png" alt="Escena de la demo Patro renderitzada a Unity" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
 ## 1. Partir de Universal 3D
 
 1. Crea un projecte **Universal 3D (URP)**.
-2. A Package Manager, comprova **Universal RP 17.6.0**, **Shader Graph 17.6.0** i **Input System 1.20.0**. Shader Graph arriba com a dependència d’URP.
+2. A Package Manager, comprova **Universal RP**, **Shader Graph** i **Input System**. Shader Graph arriba com a dependència d’URP.
 3. A **Project Settings > Player > Active Input Handling**, selecciona **Input System Package (New)**. Accepta el reinici si Unity el demana.
 4. Crea `Assets/Demos/Patro` amb les carpetes **Shaders**, **Materials**, **Scenes** i **Meshes**. Crea també **Assets/Common** per als scripts.
 5. Obre **Assets/Scenes/SampleScene**, que ja inclou **Main Camera**, **Directional Light** i **Global Volume**. Conserva aquests objectes. Amb **File > Save As…**, desa una còpia com a `DemoPatro` dins de Scenes. Més endavant ajustarem la càmera i la llum existents.
@@ -39,155 +39,175 @@ Afegeix al Blackboard aquestes propietats. Activa **Exposed** i escriu les **Ref
 
 Arrossega les propietats al gràfic per crear els seus nodes. La propietat no es crea escrivint-ne el nom en un node Float: s’ha de crear al Blackboard.
 
-## 3. Entendre l’efecte
+## 3. Connectar els nodes
 
-### Primer només línies
+Segueix els passos en ordre dins del mateix Shader Graph. Prem **Espai** per crear un node del tipus indicat; arrossega les propietats des del Blackboard. Els identificadors de les taules serveixen per distingir nodes repetits: no cal canviar els noms dels nodes. Si ho necessites, posa una **Sticky Note** al costat del node amb l’identificador.
 
-UV0 proporciona U i V. Multiply amb Repeticions divideix el domini en cel·les. Split permet treballar primer només amb U. Fraction repeteix una rampa 0–1 i Step separa la part seleccionada de la resta. One Minus inverteix la selecció.
+A cada fila de cables, arrossega des del **port de sortida** del node origen fins al **port d’entrada** del node destí. Reutilitza els nodes dels passos anteriors. `Out` indica la sortida principal; als nodes de propietat pot mostrar el nom de la propietat.
 
-```text
-liniaU = 1 - Step(Gruix, Fraction(U * Repeticions))
-color = Lerp(ColorA, ColorB, liniaU)
-```
+Per organitzar el graf com a la captura, selecciona els nodes de cada pas i tria **Group Selection** al menú del botó dret. Mantén els grups a prop i deixa prou espai per veure els cables.
 
-Construeix només la branca UV → Escala → Eixos → FaseU → TallU → LiniaU i un Lerp entre ColorA i ColorB. Connecta’l a Base Color i comprova vuit línies abans d’afegir la resta.
+Per veure el resultat d’un node, fes-hi botó dret i tria **View > Expand Preview**; amb **Collapse Preview** el pots plegar.
 
-### Afegir la quadrícula
+Escriu els valors de la taula als camps sense cable. Si el camp és vectorial i només s’indica un valor, repeteix-lo a tots els components. Clica les captures per veure-les a mida completa.
 
-Repeteix la branca amb G de Split, que correspon a V. Maximum entre les dues màscares conserva tant les línies verticals com les horitzontals.
+**Graf complet:** segueix els grups numerats de l’1 al 5 i acaba connectant el color a **Fragment / Base Color**. Les previsualitzacions mostren les rampes, les línies, la quadrícula, els quadres i el color final. [Obre la imatge a mida completa](assets/demopatro-graf-complet.png) per llegir els ports i seguir tots els cables.
 
-### Afegir els quadres
-
-Floor identifica la cel·la. La suma dels índexs, multiplicada per 0.5 i passada per Fraction × 2, alterna entre 0 i 1. La propietat Mode tria línies (0), quadrícula (1) o quadres (2). Els valors intermedis barregen patrons: al material utilitzarem enters.
-
-## 4. Connectar els nodes
-
-Cada fila identifica un node. `Eixos:R` vol dir la sortida **R** del node identificat com Eixos; `Nom:Out` vol dir la seva sortida. Si el nom correspon a una propietat del Blackboard, utilitza el seu node Property. Els números sense `:` són valors literals escrits al port d’entrada. Els àlies Temps, Mode i Centre corresponen a les propietats amb Reference `_Temps`, `_Mode` i `_Centre`, quan existeixen en aquesta demo. En un port vectorial, un literal únic s’ha de repetir a tots els components: per exemple Frequency = 12 vol dir (12,12).
-
-Les captures següents provenen del Shader Graph de Unity. A les captures de cada pas s’han ocultat els cables que només travessen el grup sense connectar-hi; es mantenen les seves entrades i sortides. Alguns camps numèrics es veuen arrodonits per l’amplada del node: utilitza els valors exactes de la taula. Cada grup numerat és un pas del mateix graf final. Segueix l’ordre, afegeix els nodes del pas i connecta’ls com a la captura i a la taula. Les propietats es creen al Blackboard segons l’apartat 2; els nodes Property simplement les llegeixen.
-
-Els cables que entren des de fora del grup provenen de passos anteriors: el nom de la taula identifica l’origen. Al projecte acabat pots seleccionar un grup i prémer **F** per enquadrar-lo. Les previsualitzacions dels nodes estan plegades a les captures per deixar llegir ports i valors; pots desplegar-les per inspeccionar una màscara.
-
-### Connexions entre grups
-
-Aquest mapa mostra com es connecten els grups del graf. Cada fletxa agrupa el nombre de cables indicat; la taula inferior detalla **tots els cables entre grups i cap al Master Stack**, amb els ports exactes. Les captures dels passos següents mostren les connexions interiors.
-
-```mermaid
-flowchart TD
-    G1["01 · UV i repeticio"]
-    G2["02 · Linies i quadricula"]
-    G3["03 · Quadres alterns"]
-    G4["04 · Seleccio del patro"]
-    G5["05 · Color i sortida"]
-    G6["Sortides · Master Stack"]
-    G1 -->|"2 cables"| G2
-    G1 -->|"2 cables"| G3
-    G2 -->|"2 cables"| G4
-    G3 -->|"1 cable"| G4
-    G4 -->|"1 cable"| G5
-    G5 -->|"1 cable"| G6
-```
-
-Llegeix cada fila d’esquerra a dreta: **grup d’origen → node i port de sortida → grup de destinació → node i port d’entrada**. Per exemple, `Eixos:R` és el port R del node Eixos. Un mateix port pot alimentar diversos grups; conserva totes les branques indicades.
-
-| Grup origen | Node:sortida | Grup destinació | Node:entrada |
-|---|---|---|---|
-| 01 | `FaseU:Out` | 02 | `TallU:In` |
-| 01 | `FaseV:Out` | 02 | `TallV:In` |
-| 01 | `Eixos:R` | 03 | `CelU:In` |
-| 01 | `Eixos:G` | 03 | `CelV:In` |
-| 02 | `LiniaU:Out` | 04 | `LiniesGraella:A` |
-| 02 | `Quadricula:Out` | 04 | `LiniesGraella:B` |
-| 03 | `Alternat:Out` | 04 | `Mascara:B` |
-| 04 | `Mascara:Out` | 05 | `ColorFinal:T` |
-| 05 | `ColorFinal:Out` | Master Stack | `Fragment:Base Color` |
-
-A Unity, allunya el zoom per veure dos grups alhora. **F** enquadra la selecció; **A** enquadra tot el graf. Per seguir un cable llarg, identifica primer els dos extrems a la taula i localitza els grups numerats.
+<a href="assets/demopatro-graf-complet.png"><img src="assets/demopatro-graf-complet.png" alt="Graf complet de Patró, amb totes les connexions i les previsualitzacions obertes" width="1600" style="width: 100%; max-width: 1600px; height: auto;"></a>
 
 ### Pas 1. UV i repeticio
 
 Multiply escala les UV. Split separa U i V; Fraction repeteix la rampa de cada cel·la.
 
-<img src="assets/demopatro-nodes-01.jpg" alt="Shader Graph Patro, pas 1: UV i repeticio" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `UV` | UV |   |
-| `Escala` | Multiply | A ← UV:Out; B ← Repeticions:Out |
-| `Eixos` | Split | In ← Escala:Out |
-| `FaseU` | Fraction | In ← Eixos:R |
-| `FaseV` | Fraction | In ← Eixos:G |
+| `UV` | UV | Channel = UV0 |
+| `Escala` | Multiply | Valors per defecte |
+| `Eixos` | Split | Valors per defecte |
+| `FaseU` | Fraction | Valors per defecte |
+| `FaseV` | Fraction | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `UV` | Out | `Escala` | A |
+| `Repeticions` | Out | `Escala` | B |
+| `Escala` | Out | `Eixos` | In |
+| `Eixos` | R | `FaseU` | In |
+| `Eixos` | G | `FaseV` | In |
+
+**Comprova el resultat:** Obre la previsualització dels dos **Fraction**: botó dret al node → **View > Expand Preview**. Un ha de mostrar vuit rampes verticals de negre a blanc i l’altre vuit rampes horitzontals.
 
 ### Pas 2. Linies i quadricula
 
 Step compara la fase amb Gruix. One Minus deixa les línies a 1 (blanc a la previsualització de la màscara) i Maximum uneix els dos eixos.
 
-<img src="assets/demopatro-nodes-02.jpg" alt="Shader Graph Patro, pas 2: Linies i quadricula" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `TallU` | Step | Edge ← Gruix:Out; In ← FaseU:Out |
-| `LiniaU` | One Minus | In ← TallU:Out |
-| `TallV` | Step | Edge ← Gruix:Out; In ← FaseV:Out |
-| `LiniaV` | One Minus | In ← TallV:Out |
-| `Quadricula` | Maximum | A ← LiniaU:Out; B ← LiniaV:Out |
+| `TallU` | Step | Valors per defecte |
+| `LiniaU` | One Minus | Valors per defecte |
+| `TallV` | Step | Valors per defecte |
+| `LiniaV` | One Minus | Valors per defecte |
+| `Quadricula` | Maximum | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Gruix` | Out | `TallU` | Edge |
+| `FaseU` | Out | `TallU` | In |
+| `TallU` | Out | `LiniaU` | In |
+| `Gruix` | Out | `TallV` | Edge |
+| `FaseV` | Out | `TallV` | In |
+| `TallV` | Out | `LiniaV` | In |
+| `LiniaU` | Out | `Quadricula` | A |
+| `LiniaV` | Out | `Quadricula` | B |
+
+**Comprova el resultat:** Desplega els dos **One Minus**: has de veure línies blanques sobre negre, verticals en un i horitzontals en l’altre. Desplega **Maximum**: ha de mostrar les dues direccions juntes, formant una quadrícula.
 
 ### Pas 3. Quadres alterns
 
 Floor identifica la cel·la. La suma, multiplicada per 0.5, crea una paritat; Fraction × 2 produeix els quadres alternats.
 
-<img src="assets/demopatro-nodes-03.jpg" alt="Shader Graph Patro, pas 3: Quadres alterns" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `CelU` | Floor | In ← Eixos:R |
-| `CelV` | Floor | In ← Eixos:G |
-| `SumaCels` | Add | A ← CelU:Out; B ← CelV:Out |
-| `Meitat` | Multiply | A ← SumaCels:Out; B ← 0.5 |
-| `Paritat` | Fraction | In ← Meitat:Out |
-| `Alternat` | Multiply | A ← Paritat:Out; B ← 2 |
+| `CelU` | Floor | Valors per defecte |
+| `CelV` | Floor | Valors per defecte |
+| `SumaCels` | Add | Valors per defecte |
+| `Meitat` | Multiply | B = 0.5 |
+| `Paritat` | Fraction | Valors per defecte |
+| `Alternat` | Multiply | B = 2 |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Eixos` | R | `CelU` | In |
+| `Eixos` | G | `CelV` | In |
+| `CelU` | Out | `SumaCels` | A |
+| `CelV` | Out | `SumaCels` | B |
+| `SumaCels` | Out | `Meitat` | A |
+| `Meitat` | Out | `Paritat` | In |
+| `Paritat` | Out | `Alternat` | A |
+
+**Comprova el resultat:** Desplega **Fraction** (Paritat): ha de mostrar quadres negres i grisos. Desplega el **Multiply** amb B = 2 (Alternat): els quadres han de ser negres i blancs.
 
 ### Pas 4. Seleccio del patro
 
 Els dos Saturate transformen Mode en selectors: 0 = línies, 1 = quadrícula, 2 = quadres.
 
-<img src="assets/demopatro-nodes-04.jpg" alt="Shader Graph Patro, pas 4: Seleccio del patro" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `Graella` | Saturate | In ← Mode:Out |
-| `LiniesGraella` | Lerp | A ← LiniaU:Out; B ← Quadricula:Out; T ← Graella:Out |
-| `MenysUn` | Subtract | A ← Mode:Out; B ← 1 |
-| `Quadres` | Saturate | In ← MenysUn:Out |
-| `Mascara` | Lerp | A ← LiniesGraella:Out; B ← Alternat:Out; T ← Quadres:Out |
+| `Graella` | Saturate | Valors per defecte |
+| `LiniesGraella` | Lerp | Valors per defecte |
+| `MenysUn` | Subtract | B = 1 |
+| `Quadres` | Saturate | Valors per defecte |
+| `Mascara` | Lerp | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Mode` | Out | `Graella` | In |
+| `LiniaU` | Out | `LiniesGraella` | A |
+| `Quadricula` | Out | `LiniesGraella` | B |
+| `Graella` | Out | `LiniesGraella` | T |
+| `Mode` | Out | `MenysUn` | A |
+| `MenysUn` | Out | `Quadres` | In |
+| `LiniesGraella` | Out | `Mascara` | A |
+| `Alternat` | Out | `Mascara` | B |
+| `Quadres` | Out | `Mascara` | T |
+
+**Comprova el resultat:** Desplega l’últim **Lerp** (Mascara). Canvia temporalment el valor inicial de Mode al Blackboard: 0 mostra línies, 1 quadrícula i 2 quadres. Torna a deixar-lo a 0.
 
 ### Pas 5. Color i sortida
 
 Lerp assigna els dos colors a la màscara. Prova primer Mode = 0 abans de comparar els tres patrons.
 
-<img src="assets/demopatro-nodes-05.jpg" alt="Shader Graph Patro, pas 5: Color i sortida" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `ColorFinal` | Lerp | A ← ColorA:Out; B ← ColorB:Out; T ← Mascara:Out |
+| `ColorFinal` | Lerp | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `ColorA` | Out | `ColorFinal` | A |
+| `ColorB` | Out | `ColorFinal` | B |
+| `Mascara` | Out | `ColorFinal` | T |
+
+**Comprova el resultat:** Desplega **Lerp** (ColorFinal): el fons ha de tenir ColorA i les línies ColorB. Amb Mode = 0, Repeticions = 8 i Gruix = 0.12, les línies ocupen una fracció estreta de cada repetició.
 
 ### Pas 6. Master Stack i connexions finals
 
-Connecta les branques als blocs del Master Stack indicats a continuació. Comprova l’espai de les normals i si les sortides són de Vertex o de Fragment. Els blocs sense cable conserven el valor per defecte.
+Connecta les sortides als blocs del Master Stack indicats a la taula de cables. Si hi ha un bloc Normal, configura’l en Tangent. Els blocs sense cable conserven el valor per defecte.
 
-<img src="assets/demopatro-nodes-sortides.jpg" alt="Shader Graph Patro, pas 6: Master Stack i connexions finals" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Cables: arrossega de la sortida a l’entrada indicada.**
 
-| ID | Node | Entrades |
-|---|---|---|
-| Sortida | BaseColor | ColorFinal:Out |
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `ColorFinal` | Out | `Fragment / Base Color` | Base Color |
 
 Els números de les entrades són valors literals. En un vector, repeteix el valor a tots els components quan s’indica un únic nombre. A Combine, tria RG per a Vector2; a Split, R/G/B equivalen a X/Y/Z. Desa el graf abans de crear els materials.
 
-## 5. Crear els materials
+**Comprova el resultat:** Desa el graf. La previsualització principal ha de mostrar el patró amb els dos colors.
+
+## 4. Crear els materials
 
 A la carpeta **Materials**, utilitza **Create > Rendering > Material** per a cada material indicat. A l’Inspector, selecciona **Shader > DAM Shaders > SPatro** (o arrossega SPatro del Project sobre el material). `MPatro0`, `MPatro1` i `MPatro2`: fixa Mode a **0, 1 i 2**, respectivament. Mantén Repeticions = 8 i Gruix = 0.12.
 
-## 6. Construir l’escena
+## 5. Construir l’escena
 
 Les posicions són globals i les escales corresponen a les primitives de Unity. Mantén els objectes a l’arrel, sense un pare escalat. Els elements decoratius i textos es poden ometre: no intervenen en el shader.
 
@@ -211,7 +231,7 @@ Selecciona la **Directional Light** existent, canvia-li el nom a **Key Light** i
 
 Al **Global Volume** existent, duplica el perfil a la carpeta de la demo i assigna-hi la còpia. Conserva només **Bloom** i activa Intensity = **0.35**, Threshold = **1** i Scatter = **0.6**. Mantén **HDR** i **Post Processing** activats a Main Camera.
 
-## 7. Afegir els controls
+## 6. Afegir els controls
 
 ### Càmera orbital i zoom
 
@@ -336,25 +356,21 @@ Crea un objecte buit **Controls** i afegeix-hi DemoControls. A **Surfaces**, ass
 | Maximum | 0.4 |
 | Initial Value | 0.12 |
 
-**Controls:** lliscador per modificar `_Gruix`; Espai pausa el temps; R reinicia temps i paràmetre; H amaga el panell. En moure el lliscador, el valor s’aplica a totes les mostres. Abans de tocar-lo, cada material conserva les variants de l’apartat 5. Els rètols de l’escena identifiquen aquestes variants inicials; el panell mostra el valor actual del control.
+**Controls:** lliscador per modificar `_Gruix`; Espai pausa el temps; R reinicia temps i paràmetre; H amaga el panell. En moure el lliscador, el valor s’aplica a totes les mostres. Abans de tocar-lo, cada material conserva les variants de l’apartat 4. Els rètols de l’escena identifiquen aquestes variants inicials; el panell mostra el valor actual del control.
 
 Els canvis durant Play són temporals. Per canviar els valors inicials de manera permanent, atura Play i edita els assets de material.
 
-## 8. Provar la demo
+## 7. Provar la demo
 
 1. Comprova que les tres mostres mostren línies, quadrícula i quadres, en aquest ordre.
 2. Mou Gruix de 0.02 a 0.4: les línies i juntes s’eixamplen, mentre els quadres alternats mantenen la seva distribució.
 3. Atura Play i canvia Repeticions al material: 4 mostra menys cel·les que 8.
 4. Canvia ColorA i comprova que s’aplica a la zona seleccionada pel Lerp.
 
-<img src="assets/demopatro-variant.png" alt="Variant amb el lliscador al màxim" width="600" style="width: 90%; max-width: 600px; height: auto;">
+<a href="assets/demopatro-variant.png"><img src="assets/demopatro-variant.png" alt="Variant amb el lliscador al màxim" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
 ## Si alguna cosa no funciona
 
 Si els tres patrons són iguals, comprova que hi ha tres materials diferents i els valors de Mode. Si veus línies massa fines, abaixa Repeticions o augmenta Gruix.
 
 Si el material és rosa, comprova URP, la compilació del gràfic i la Console. Si el teclat no respon, comprova Input System, entra a Play i clica Game.
-
-## Ampliació
-
-Afegeix una propietat Vector2 per controlar les repeticions per separat en U i V. Intenta construir línies horitzontals sense duplicar el shader.

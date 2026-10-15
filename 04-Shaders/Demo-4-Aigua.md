@@ -4,14 +4,14 @@ Construirem una piscina estilitzada amb una malla subdividida, moviment de vèrt
 
 **Projecte acabat:** [Demo-4-Aigua.zip](demos/Demo-4-Aigua.zip). Descomprimeix-lo i obre la carpeta amb Assets, Packages i ProjectSettings des de Unity Hub. La primera importació obre automàticament `Assets/Demos/Aigua/Scenes/DemoAigua.unity`; prem Play. Els materials poden trigar una estona a carregar-se.
 
-<img src="assets/demoaigua-escena.png" alt="Escena de la demo Aigua renderitzada a Unity" width="600" style="width: 90%; max-width: 600px; height: auto;">
+<a href="assets/demoaigua-escena.png"><img src="assets/demoaigua-escena.png" alt="Escena de la demo Aigua renderitzada a Unity" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
-El ZIP inclou també **DemoAiguaGalaxy.unity**, una segona escena amb superfície plana, textures animades, distorsió del fons i escuma de contacte. La seva construcció s’explica a l’apartat 9; comparteix projecte i controls amb aquesta primera versió.
+El ZIP inclou també **DemoAiguaGalaxy.unity**, una segona escena amb superfície plana, textures animades, distorsió del fons i escuma de contacte. La seva construcció s’explica a l’apartat 8; comparteix projecte i controls amb aquesta primera versió.
 
 ## 1. Partir de Universal 3D
 
 1. Crea un projecte **Universal 3D (URP)**.
-2. A Package Manager, comprova **Universal RP 17.6.0**, **Shader Graph 17.6.0** i **Input System 1.20.0**. Shader Graph arriba com a dependència d’URP.
+2. A Package Manager, comprova **Universal RP**, **Shader Graph** i **Input System**. Shader Graph arriba com a dependència d’URP.
 3. A **Project Settings > Player > Active Input Handling**, selecciona **Input System Package (New)**. Accepta el reinici si Unity el demana.
 4. Crea `Assets/Demos/Aigua` amb les carpetes **Shaders**, **Materials**, **Scenes** i **Meshes**. Crea també **Assets/Common** per als scripts.
 5. Obre **Assets/Scenes/SampleScene**, que ja inclou **Main Camera**, **Directional Light** i **Global Volume**. Conserva aquests objectes. Amb **File > Save As…**, desa una còpia com a `DemoAigua` dins de Scenes. Més endavant ajustarem la càmera i la llum existents.
@@ -47,142 +47,157 @@ Afegeix al Blackboard aquestes propietats. Activa **Exposed** i escriu les **Ref
 
 Arrossega les propietats al gràfic per crear els seus nodes. La propietat no es crea escrivint-ne el nom en un node Float: s’ha de crear al Blackboard.
 
-## 3. Entendre l’efecte
+## 3. Connectar els nodes
 
-### Ones geomètriques
+Segueix els passos en ordre dins del mateix Shader Graph. Prem **Espai** per crear un node del tipus indicat; arrossega les propietats des del Blackboard. Els identificadors de les taules serveixen per distingir nodes repetits: no cal canviar els noms dels nodes. Si ho necessites, posa una **Sticky Note** al costat del node amb l’identificador.
 
-Position Object proporciona X. El sinus de X × Frequencia + Temps, multiplicat per Amplitud, es suma només a Y. Connecta la posició completa resultant a Vertex / Position. Una malla de dos triangles no pot dibuixar aquesta forma: farem una graella de 80 × 80 cel·les.
+A cada fila de cables, arrossega des del **port de sortida** del node origen fins al **port d’entrada** del node destí. Reutilitza els nodes dels passos anteriors. `Out` indica la sortida principal; als nodes de propietat pot mostrar el nom de la propietat.
 
-### Escuma
+Per organitzar el graf com a la captura, selecciona els nodes de cada pas i tria **Group Selection** al menú del botó dret. Mantén els grups a prop i deixa prou espai per veure els cables.
 
-Scene Depth en mode Eye llegeix la profunditat del fons. La profunditat de la superfície es calcula com −Position View.z. La diferència entra a Smoothstep entre 0 i AmpladaEscuma; One Minus dona blanc quan fons i aigua són propers en profunditat.
+Per veure el resultat d’un node, fes-hi botó dret i tria **View > Expand Preview**; amb **Collapse Preview** el pots plegar.
 
-Aquesta escena té fons opac sota tota l’aigua. El càlcul mesura separació en l’eix de vista, no una col·lisió física. Una profunditat negativa queda a la banda blanca del Smoothstep.
+Escriu els valors de la taula als camps sense cable. Si el camp és vectorial i només s’indica un valor, repeteix-lo a tots els components. Clica les captures per veure-les a mida completa.
 
-### Color i normals
+**Graf complet de Aigua:** segueix els grups numerats i els cables fins al **Master Stack**. [Obre la captura a mida completa](assets/demoaigua-graf-complet.png) per llegir els ports i els valors.
 
-Un soroll barreja dos colors d’aigua. La màscara d’escuma substitueix aquest color per blanc turquesa. Les normals afegeixen detall aparent, mentre que les ones mouen realment els vèrtexs. El collider no es deforma i les normals geomètriques no es recalculen automàticament amb l’ona: l’amplitud és moderada.
-
-## 4. Connectar els nodes
-
-Cada fila identifica un node. `Eixos:R` vol dir la sortida **R** del node identificat com Eixos; `Nom:Out` vol dir la seva sortida. Si el nom correspon a una propietat del Blackboard, utilitza el seu node Property. Els números sense `:` són valors literals escrits al port d’entrada. Els àlies Temps, Mode i Centre corresponen a les propietats amb Reference `_Temps`, `_Mode` i `_Centre`, quan existeixen en aquesta demo. En un port vectorial, un literal únic s’ha de repetir a tots els components: per exemple Frequency = 12 vol dir (12,12).
-
-Les captures següents provenen del Shader Graph de Unity. A les captures de cada pas s’han ocultat els cables que només travessen el grup sense connectar-hi; es mantenen les seves entrades i sortides. Alguns camps numèrics es veuen arrodonits per l’amplada del node: utilitza els valors exactes de la taula. Cada grup numerat és un pas del mateix graf final. Segueix l’ordre, afegeix els nodes del pas i connecta’ls com a la captura i a la taula. Les propietats es creen al Blackboard segons l’apartat 2; els nodes Property simplement les llegeixen.
-
-Els cables que entren des de fora del grup provenen de passos anteriors: el nom de la taula identifica l’origen. Al projecte acabat pots seleccionar un grup i prémer **F** per enquadrar-lo. Les previsualitzacions dels nodes estan plegades a les captures per deixar llegir ports i valors; pots desplegar-les per inspeccionar una màscara.
-
-### Connexions entre grups
-
-Aquest mapa mostra com es connecten els grups del graf. Cada fletxa agrupa el nombre de cables indicat; la taula inferior detalla **tots els cables entre grups i cap al Master Stack**, amb els ports exactes. Les captures dels passos següents mostren les connexions interiors.
-
-```mermaid
-flowchart TD
-    G1["01 · Ona sinusoidal"]
-    G2["02 · Desplacament de vertexs"]
-    G3["03 · Profunditat i escuma"]
-    G4["04 · Color i superficie"]
-    G5["Sortides · Master Stack"]
-    G1 -->|"2 cables"| G2
-    G1 -->|"1 cable"| G4
-    G2 -->|"1 cable"| G5
-    G3 -->|"1 cable"| G4
-    G4 -->|"4 cables"| G5
-```
-
-Llegeix cada fila d’esquerra a dreta: **grup d’origen → node i port de sortida → grup de destinació → node i port d’entrada**. Per exemple, `Eixos:R` és el port R del node Eixos. Un mateix port pot alimentar diversos grups; conserva totes les branques indicades.
-
-| Grup origen | Node:sortida | Grup destinació | Node:entrada |
-|---|---|---|---|
-| 01 | `Ona:Out` | 02 | `Altura:A` |
-| 01 | `Posicio:Out` | 02 | `PosicioFinal:A` |
-| 01 | `UV:Out` | 04 | `Soroll:UV` |
-| 03 | `Escuma:Out` | 04 | `ColorFinal:T` |
-| 02 | `PosicioFinal:Out` | Master Stack | `Vertex:Position` |
-| 04 | `Opacitat:Out` | Master Stack | `Fragment:Alpha` |
-| 04 | `ColorFinal:Out` | Master Stack | `Fragment:Base Color` |
-| 04 | `Normals:Out` | Master Stack | `Fragment:Normal (Tangent Space)` |
-| 04 | `Brillantor:Out` | Master Stack | `Fragment:Smoothness` |
-
-A Unity, allunya el zoom per veure dos grups alhora. **F** enquadra la selecció; **A** enquadra tot el graf. Per seguir un cable llarg, identifica primer els dos extrems a la taula i localitza els grups numerats.
+<a href="assets/demoaigua-graf-complet.png"><img src="assets/demoaigua-graf-complet.png" alt="Graf complet de Aigua, amb totes les connexions i previsualitzacions" width="1600" style="width: 100%; max-width: 1600px; height: auto;"></a>
 
 ### Pas 1. Ona sinusoidal
 
 Construeix la fase amb Position Object.x, Frequencia i Temps; Sine produeix l’ona.
 
-<img src="assets/demoaigua-nodes-01.jpg" alt="Shader Graph Aigua, pas 1: Ona sinusoidal" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `UV` | UV |   |
+| `UV` | UV | Channel = UV0 |
 | `Posicio` | Position | Space: Object |
-| `Eixos` | Split | In ← Posicio:Out |
-| `FreqX` | Multiply | A ← Eixos:R; B ← Frequencia:Out |
-| `Fase` | Add | A ← FreqX:Out; B ← Temps:Out |
-| `Ona` | Sine | In ← Fase:Out |
+| `Eixos` | Split | Valors per defecte |
+| `FreqX` | Multiply | Valors per defecte |
+| `Fase` | Add | Valors per defecte |
+| `Ona` | Sine | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Posicio` | Out | `Eixos` | In |
+| `Eixos` | R | `FreqX` | A |
+| `Frequencia` | Out | `FreqX` | B |
+| `FreqX` | Out | `Fase` | A |
+| `Temps` | Out | `Fase` | B |
+| `Fase` | Out | `Ona` | In |
+
+**Comprova el resultat:** Desplega **Sine** (Ona): mostra la variació de gris de l’ona sobre la malla de previsualització. Canvia temporalment Temps al Blackboard per veure com es desplacen; torna’l a 0.
 
 ### Pas 2. Desplacament de vertexs
 
 Multiplica l’ona per Amplitud i suma-la només a Y. Aquesta sortida va a Vertex / Position.
 
-<img src="assets/demoaigua-nodes-02.jpg" alt="Shader Graph Aigua, pas 2: Desplacament de vertexs" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `Altura` | Multiply | A ← Ona:Out; B ← Amplitud:Out |
-| `Offset` | Vector 3 | X ← 0; Y ← Altura:Out; Z ← 0 |
-| `PosicioFinal` | Add | A ← Posicio:Out; B ← Offset:Out |
+| `Altura` | Multiply | Valors per defecte |
+| `Offset` | Vector 3 | X = 0; Z = 0 |
+| `PosicioFinal` | Add | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Ona` | Out | `Altura` | A |
+| `Amplitud` | Out | `Altura` | B |
+| `Altura` | Out | `Offset` | Y |
+| `Posicio` | Out | `PosicioFinal` | A |
+| `Offset` | Out | `PosicioFinal` | B |
+
+**Comprova el resultat:** Connecta PosicioFinal al bloc **Vertex / Position** al pas de sortides. Comprova l’ona sobre la malla subdividida de l’escena; un pla sense subdivisions no permet veure’n bé la forma.
 
 ### Pas 3. Profunditat i escuma
 
 Scene Depth i Position View han d’utilitzar la mateixa profunditat lineal: Eye i −Z, respectivament.
 
-<img src="assets/demoaigua-nodes-03.jpg" alt="Shader Graph Aigua, pas 3: Profunditat i escuma" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `Pantalla` | Screen Position |   |
-| `Fons` | Scene Depth | Sampling: Eye; UV ← Pantalla:Out |
+| `Pantalla` | Screen Position | Mode = Default |
+| `Fons` | Scene Depth | Sampling: Eye |
 | `Vista` | Position | Space: View |
-| `VistaXYZ` | Split | In ← Vista:Out |
-| `ProfunditatAigua` | Multiply | A ← VistaXYZ:B; B ← -1 |
-| `Separacio` | Subtract | A ← Fons:Out; B ← ProfunditatAigua:Out |
-| `Vora` | Smoothstep | Edge1 ← 0; Edge2 ← AmpladaEscuma:Out; In ← Separacio:Out |
-| `Escuma` | One Minus | In ← Vora:Out |
+| `VistaXYZ` | Split | Valors per defecte |
+| `ProfunditatAigua` | Multiply | B = -1 |
+| `Separacio` | Subtract | Valors per defecte |
+| `Vora` | Smoothstep | Edge1 = 0 |
+| `Escuma` | One Minus | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Pantalla` | Out | `Fons` | UV |
+| `Vista` | Out | `VistaXYZ` | In |
+| `VistaXYZ` | B | `ProfunditatAigua` | A |
+| `Fons` | Out | `Separacio` | A |
+| `ProfunditatAigua` | Out | `Separacio` | B |
+| `AmpladaEscuma` | Out | `Vora` | Edge2 |
+| `Separacio` | Out | `Vora` | In |
+| `Vora` | Out | `Escuma` | In |
+
+**Comprova el resultat:** Aquesta branca necessita la profunditat de l’escena. Comprova l’escuma al contacte amb les roques després de muntar l’escena i activar Depth Texture; la miniatura del node no valida aquest contacte.
 
 ### Pas 4. Color i superficie
 
 El soroll barreja els dos blaus; l’escuma força el color clar. Alpha i Smoothness són propietats independents.
 
-<img src="assets/demoaigua-nodes-04.jpg" alt="Shader Graph Aigua, pas 4: Color i superficie" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `Soroll` | Simple Noise | UV ← UV:Out; Scale ← 24 |
-| `Blau` | Lerp | A ← Profund:Out; B ← Superficie:Out; T ← Soroll:Out |
-| `ColorFinal` | Lerp | A ← Blau:Out; B ← Blanc:Out; T ← Escuma:Out |
-| `Normals` | Normal From Height | In ← Soroll:Out; Strength ← 0.003 |
+| `Soroll` | Simple Noise | Scale = 24 |
+| `Blau` | Lerp | Valors per defecte |
+| `ColorFinal` | Lerp | Valors per defecte |
+| `Normals` | Normal From Height | Strength = 0.003 |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `UV` | Out | `Soroll` | UV |
+| `Profund` | Out | `Blau` | A |
+| `Superficie` | Out | `Blau` | B |
+| `Soroll` | Out | `Blau` | T |
+| `Blau` | Out | `ColorFinal` | A |
+| `Blanc` | Out | `ColorFinal` | B |
+| `Escuma` | Out | `ColorFinal` | T |
+| `Soroll` | Out | `Normals` | In |
+
+**Comprova el resultat:** Desplega **Simple Noise** (Soroll) i **Lerp** (Blau) per veure com el soroll es converteix en variacions de blau. El color d’escuma es comprova a l’escena.
 
 ### Pas 5. Master Stack i connexions finals
 
-Connecta les branques als blocs del Master Stack indicats a continuació. Comprova l’espai de les normals i si les sortides són de Vertex o de Fragment. Els blocs sense cable conserven el valor per defecte.
+Connecta les sortides als blocs del Master Stack indicats a la taula de cables. Si hi ha un bloc Normal, configura’l en Tangent. Els blocs sense cable conserven el valor per defecte.
 
-<img src="assets/demoaigua-nodes-sortides.jpg" alt="Shader Graph Aigua, pas 5: Master Stack i connexions finals" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Cables: arrossega de la sortida a l’entrada indicada.**
 
-| ID | Node | Entrades |
-|---|---|---|
-| Sortida | Position | PosicioFinal:Out |
-| Sortida | BaseColor | ColorFinal:Out |
-| Sortida | Alpha | Opacitat:Out |
-| Sortida | Smoothness | Brillantor:Out |
-| Sortida | Normal (Tangent) | Normals:Out |
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `PosicioFinal` | Out | `Vertex / Position` | Position |
+| `ColorFinal` | Out | `Fragment / Base Color` | Base Color |
+| `Opacitat` | Out | `Fragment / Alpha` | Alpha |
+| `Brillantor` | Out | `Fragment / Smoothness` | Smoothness |
+| `Normals` | Out | `Fragment / Normal (Tangent)` | Normal (Tangent) |
 
 Els números de les entrades són valors literals. En un vector, repeteix el valor a tots els components quan s’indica un únic nombre. A Combine, tria RG per a Vector2; a Split, R/G/B equivalen a X/Y/Z. Desa el graf abans de crear els materials.
 
-## 5. Crear els materials
+**Comprova el resultat:** Desa el graf i comprova el moviment, la transparència i l’escuma amb el material aplicat a l’aigua de l’escena.
+
+## 4. Crear els materials
 
 A la carpeta **Materials**, utilitza **Create > Rendering > Material** per a cada material indicat. A l’Inspector, selecciona **Shader > DAM Shaders > SAigua** (o arrossega SAigua del Project sobre el material). Crea un material `MAigua` amb els valors inicials. Assigna’l al Mesh Renderer de l’objecte Aigua. Els materials de les roques de la riba són **Universal Render Pipeline/Lit**, RGB (64,77,79), Smoothness 0.25. Crea el material **Riba** amb **Create > Rendering > Material** i assigna’l a les tres ribes i a les cinc roques.
 
-## 6. Construir l’escena
+## 5. Construir l’escena
 
 Les posicions són globals i les escales corresponen a les primitives de Unity. Mantén els objectes a l’arrel, sense un pare escalat. Els elements decoratius i textos es poden ometre: no intervenen en el shader.
 
@@ -308,7 +323,7 @@ A l’URP Asset actiu, activa **Depth Texture** i comprova que la càmera no ho 
 
 Al **Global Volume** existent, duplica el perfil a la carpeta de la demo i assigna-hi la còpia. Conserva només **Bloom** i activa Intensity = **0.35**, Threshold = **1** i Scatter = **0.6**. Mantén **HDR** i **Post Processing** activats a Main Camera.
 
-## 7. Afegir els controls
+## 6. Afegir els controls
 
 ### Càmera orbital i zoom
 
@@ -435,11 +450,11 @@ Crea un objecte buit **Controls** i afegeix-hi DemoControls. A **Surfaces**, ass
 | Maximum | 0.35 |
 | Initial Value | 0.12 |
 
-**Controls:** lliscador per modificar `_Amplitud`; Espai pausa el temps; R reinicia temps i paràmetre; H amaga el panell. En moure el lliscador, el valor s’aplica a totes les mostres. Abans de tocar-lo, cada material conserva les variants de l’apartat 5. Els rètols de l’escena identifiquen aquestes variants inicials; el panell mostra el valor actual del control.
+**Controls:** lliscador per modificar `_Amplitud`; Espai pausa el temps; R reinicia temps i paràmetre; H amaga el panell. En moure el lliscador, el valor s’aplica a totes les mostres. Abans de tocar-lo, cada material conserva les variants de l’apartat 4. Els rètols de l’escena identifiquen aquestes variants inicials; el panell mostra el valor actual del control.
 
 Els canvis durant Play són temporals. Per canviar els valors inicials de manera permanent, atura Play i edita els assets de material.
 
-## 8. Provar la demo
+## 7. Provar la demo
 
 1. Prem Play i observa que es mou la silueta de l’aigua.
 2. Mou Amplitud a 0: desapareix el desplaçament de vèrtexs.
@@ -447,9 +462,9 @@ Els canvis durant Play són temporals. Per canviar els valors inicials de manera
 4. Atura Play i desactiva Depth Texture: observa per què la profunditat és un requisit; torna-la a activar.
 5. Canvia AmpladaEscuma al material i compara la mida de la franja.
 
-<img src="assets/demoaigua-variant.png" alt="Variant amb el lliscador al màxim" width="600" style="width: 90%; max-width: 600px; height: auto;">
+<a href="assets/demoaigua-variant.png"><img src="assets/demoaigua-variant.png" alt="Variant amb el lliscador al màxim" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
-<img src="assets/demoaigua-animacio.png" alt="Animació en un altre instant, amb el paràmetre inicial" width="600" style="width: 90%; max-width: 600px; height: auto;">
+<a href="assets/demoaigua-animacio.png"><img src="assets/demoaigua-animacio.png" alt="Animació en un altre instant, amb el paràmetre inicial" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
 ## Si alguna cosa no funciona
 
@@ -457,19 +472,15 @@ Si tota la superfície és blanca, revisa Depth Texture, el mode Eye de Scene De
 
 Si el material és rosa, comprova URP, la compilació del gràfic i la Console. Si el teclat no respon, comprova Input System, entra a Play i clica Game.
 
-## Ampliació
-
-Afegeix una segona ona perpendicular amb menys amplitud. Després investiga com calcular normals coherents amb el desplaçament.
-
-## 9. Variant inspirada en Super Mario Galaxy
+## 8. Variant inspirada en Super Mario Galaxy
 
 Aquesta recreació didàctica pren com a referència visual els reflexos i el fons de la [recreació d’Eyan Martucci](https://eyanmartucci.com/stylized-water-shader/). No és el shader original de Nintendo ni una reproducció exacta del joc. Utilitzem textures pròpies incloses al ZIP.
 
 L’efecte separa una superfície plana que retalla taques blanques i un fons amb textura distorsionada, càustiques i tint segons profunditat. Hi afegim escuma de contacte amb Scene Depth per detectar les roques; l’escuma de vores UV de l’article, per si sola, no les detecta.
 
-<img src="assets/demoaigua-galaxy.png" alt="Variant d’aigua amb textures animades" width="600" style="width: 90%; max-width: 600px; height: auto;">
+<a href="assets/demoaigua-galaxy.png"><img src="assets/demoaigua-galaxy.png" alt="Variant d’aigua amb textures animades" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
-### 9.1. Textures i importació
+### 8.1. Textures i importació
 
 Copia la carpeta `Assets/Demos/Aigua/Textures` del projecte descarregat al teu projecte de pràctiques. No cal descarregar cap textura externa.
 
@@ -482,7 +493,7 @@ Copia la carpeta `Assets/Demos/Aigua/Textures` del projecte descarregat al teu p
 
 Les quatre imatges són de 512 × 512. Mantén Generate Mip Maps activat i Compression = None en aquesta pràctica. Una Texture2D al Blackboard no substitueix Sample Texture 2D: connecta la propietat al port Texture i les coordenades al port UV del mostrejador.
 
-### 9.2. Shader del fons
+### 8.2. Shader del fons
 
 Amb **Create > Shader Graph > URP > Unlit Shader Graph**, crea **SGalaxyFons**: Surface **Opaque**, Alpha Clipping desactivat, Render Face **Front**, Cast Shadows desactivat. Deixa Vertex / Position sense connectar. El fons està il·luminat artísticament pel mateix color i les càustiques.
 
@@ -497,144 +508,189 @@ Amb **Create > Shader Graph > URP > Unlit Shader Graph**, crea **SGalaxyFons**: 
 | PocFons | Color | `_PocFons` | RGB (179, 235, 255) |
 | MoltFons | Color | `_MoltFons` | RGB (31, 107, 191) |
 
-### Connexions entre grups
+**Graf complet de GalaxyFons:** segueix els grups numerats i els cables fins al **Master Stack**. [Obre la captura a mida completa](assets/demoaigua-galaxy-fons-graf-complet.png) per llegir els ports i els valors.
 
-Aquest mapa mostra com es connecten els grups del graf. Cada fletxa agrupa el nombre de cables indicat; la taula inferior detalla **tots els cables entre grups i cap al Master Stack**, amb els ports exactes. Les captures dels passos següents mostren les connexions interiors.
-
-```mermaid
-flowchart TD
-    G1["01 · Mostra de distorsio"]
-    G2["02 · Refraccio del fons"]
-    G3["03 · Caustiques capa A"]
-    G4["04 · Caustiques capa B"]
-    G5["05 · Profunditat"]
-    G6["06 · Color de laigua"]
-    G7["Sortides · Master Stack"]
-    G1 -->|"3 cables"| G2
-    G1 -->|"1 cable"| G3
-    G1 -->|"1 cable"| G4
-    G2 -->|"1 cable"| G3
-    G2 -->|"2 cables"| G4
-    G3 -->|"2 cables"| G4
-    G4 -->|"1 cable"| G6
-    G5 -->|"1 cable"| G6
-    G6 -->|"1 cable"| G7
-```
-
-Llegeix cada fila d’esquerra a dreta: **grup d’origen → node i port de sortida → grup de destinació → node i port d’entrada**. Per exemple, `Eixos:R` és el port R del node Eixos. Un mateix port pot alimentar diversos grups; conserva totes les branques indicades.
-
-| Grup origen | Node:sortida | Grup destinació | Node:entrada |
-|---|---|---|---|
-| 01 | `UV:Out` | 02 | `UVRefractada:A` |
-| 01 | `MostraDistorsio:G` | 02 | `VectorRG:G` |
-| 01 | `MostraDistorsio:R` | 02 | `VectorRG:R` |
-| 01 | `Temps:Out` | 03 | `CausticaAOffset:A` |
-| 02 | `UVRefractada:Out` | 03 | `CausticaAUV:UV` |
-| 01 | `Temps:Out` | 04 | `CausticaBOffset:A` |
-| 02 | `UVRefractada:Out` | 04 | `CausticaBUV:UV` |
-| 02 | `MostraPedres:RGBA` | 04 | `FonsIlluminat:A` |
-| 03 | `MostraCausticaA:R` | 04 | `LlumCaustica:A` |
-| 03 | `TexturaCaustiques:Out` | 04 | `MostraCausticaB:Texture` |
-| 04 | `FonsIlluminat:Out` | 06 | `ColorFinal:A` |
-| 05 | `Absorcio:Out` | 06 | `ColorAigua:T` |
-| 06 | `ColorFinal:Out` | Master Stack | `Fragment:Base Color` |
-
-A Unity, allunya el zoom per veure dos grups alhora. **F** enquadra la selecció; **A** enquadra tot el graf. Per seguir un cable llarg, identifica primer els dos extrems a la taula i localitza els grups numerats.
+<a href="assets/demoaigua-galaxy-fons-graf-complet.png"><img src="assets/demoaigua-galaxy-fons-graf-complet.png" alt="Graf complet de GalaxyFons, amb totes les connexions i previsualitzacions" width="1600" style="width: 100%; max-width: 1600px; height: auto;"></a>
 
 ### Pas 1. Mostra de distorsio
 
 Llegeix Distorsio com a dades lineals. No configuris aquesta textura com a normal map: farem servir els seus canals R i G directament.
 
-<img src="assets/demoaigua-galaxy-fons-nodes-01.jpg" alt="Shader Graph GalaxyFons, pas 1: Mostra de distorsio" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `UV` | UV |   |
-| `DistorsioDireccio` | DistorsioDireccio / Vector 2 | X ← 0.035; Y ← -0.019 |
-| `DistorsioOffset` | DistorsioOffset / Multiply | A ← Temps:Out; B ← DistorsioDireccio:Out |
-| `DistorsioUV` | DistorsioUV / Tiling And Offset | UV ← UV:Out; Tiling ← 1; Offset ← DistorsioOffset:Out |
-| `MostraDistorsio` | MostraDistorsio / Sample Texture 2D | Texture ← Distorsio:Out; UV ← DistorsioUV:Out |
+| `UV` | UV | Channel = UV0 |
+| `DistorsioDireccio` | Vector 2 | X = 0.035; Y = -0.019 |
+| `DistorsioOffset` | Multiply | Valors per defecte |
+| `DistorsioUV` | Tiling And Offset | Tiling = 1 |
+| `MostraDistorsio` | Sample Texture 2D | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Temps` | Out | `DistorsioOffset` | A |
+| `DistorsioDireccio` | Out | `DistorsioOffset` | B |
+| `UV` | Out | `DistorsioUV` | UV |
+| `DistorsioOffset` | Out | `DistorsioUV` | Offset |
+| `Distorsio` | Out | `MostraDistorsio` | Texture |
+| `DistorsioUV` | Out | `MostraDistorsio` | UV |
+
+**Comprova el resultat:** Desplega **Sample Texture 2D** (MostraDistorsio): ha de mostrar la textura Distorsio assignada al Blackboard.
 
 ### Pas 2. Refraccio del fons
 
 Combine recupera RG; Subtract 0.5 centra el vector i Multiply n’ajusta la força. Les UV resultants distorsionen el dibuix de les pedres.
 
-<img src="assets/demoaigua-galaxy-fons-nodes-02.jpg" alt="Shader Graph GalaxyFons, pas 2: Refraccio del fons" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `VectorRG` | VectorRG / Combine | R ← MostraDistorsio:R; G ← MostraDistorsio:G |
-| `VectorCentrat` | VectorCentrat / Subtract | A ← VectorRG:RG; B ← 0.5 |
-| `Desviacio` | Desviacio / Multiply | A ← VectorCentrat:Out; B ← Refraccio:Out |
-| `UVRefractada` | UVRefractada / Add | A ← UV:Out; B ← Desviacio:Out |
-| `MostraPedres` | MostraPedres / Sample Texture 2D | Texture ← Pedres:Out; UV ← UVRefractada:Out |
+| `VectorRG` | Combine | Valors per defecte |
+| `VectorCentrat` | Subtract | B = 0.5 |
+| `Desviacio` | Multiply | Valors per defecte |
+| `UVRefractada` | Add | Valors per defecte |
+| `MostraPedres` | Sample Texture 2D | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `MostraDistorsio` | R | `VectorRG` | R |
+| `MostraDistorsio` | G | `VectorRG` | G |
+| `VectorRG` | RG | `VectorCentrat` | A |
+| `VectorCentrat` | Out | `Desviacio` | A |
+| `Refraccio` | Out | `Desviacio` | B |
+| `UV` | Out | `UVRefractada` | A |
+| `Desviacio` | Out | `UVRefractada` | B |
+| `Pedres` | Out | `MostraPedres` | Texture |
+| `UVRefractada` | Out | `MostraPedres` | UV |
+
+**Comprova el resultat:** Desplega **Sample Texture 2D** (MostraPedres): ha de mostrar les pedres amb les UV desviades. Canvia temporalment Forca distorsio a 0 per comparar i restaura el valor inicial.
 
 ### Pas 3. Caustiques capa A
 
 Les càustiques fan servir les UV ja distorsionades. Aquesta és la primera mostra animada.
 
-<img src="assets/demoaigua-galaxy-fons-nodes-03.jpg" alt="Shader Graph GalaxyFons, pas 3: Caustiques capa A" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `CausticaADireccio` | CausticaADireccio / Vector 2 | X ← 0.013; Y ← 0.007 |
-| `CausticaAOffset` | CausticaAOffset / Multiply | A ← Temps:Out; B ← CausticaADireccio:Out |
-| `CausticaAUV` | CausticaAUV / Tiling And Offset | UV ← UVRefractada:Out; Tiling ← 1.5; Offset ← CausticaAOffset:Out |
-| `MostraCausticaA` | MostraCausticaA / Sample Texture 2D | Texture ← TexturaCaustiques:Out; UV ← CausticaAUV:Out |
+| `CausticaADireccio` | Vector 2 | X = 0.013; Y = 0.007 |
+| `CausticaAOffset` | Multiply | Valors per defecte |
+| `CausticaAUV` | Tiling And Offset | Tiling = 1.5 |
+| `MostraCausticaA` | Sample Texture 2D | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Temps` | Out | `CausticaAOffset` | A |
+| `CausticaADireccio` | Out | `CausticaAOffset` | B |
+| `UVRefractada` | Out | `CausticaAUV` | UV |
+| `CausticaAOffset` | Out | `CausticaAUV` | Offset |
+| `TexturaCaustiques` | Out | `MostraCausticaA` | Texture |
+| `CausticaAUV` | Out | `MostraCausticaA` | UV |
+
+**Comprova el resultat:** Desplega **Sample Texture 2D** (MostraCausticaA): ha de mostrar la primera capa de càustiques.
 
 ### Pas 4. Caustiques capa B
 
 Una segona mostra es mou en una altra direcció. Minimum selecciona coincidències suaus; Multiply amb 0.22 regula la llum que se suma al fons.
 
-<img src="assets/demoaigua-galaxy-fons-nodes-04.jpg" alt="Shader Graph GalaxyFons, pas 4: Caustiques capa B" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `CausticaBDireccio` | CausticaBDireccio / Vector 2 | X ← -0.01; Y ← 0.011 |
-| `CausticaBOffset` | CausticaBOffset / Multiply | A ← Temps:Out; B ← CausticaBDireccio:Out |
-| `CausticaBUV` | CausticaBUV / Tiling And Offset | UV ← UVRefractada:Out; Tiling ← 1.8; Offset ← CausticaBOffset:Out |
-| `MostraCausticaB` | MostraCausticaB / Sample Texture 2D | Texture ← TexturaCaustiques:Out; UV ← CausticaBUV:Out |
-| `LlumCaustica` | LlumCaustica / Minimum | A ← MostraCausticaA:R; B ← MostraCausticaB:R |
-| `Caustiques` | Caustiques / Multiply | A ← LlumCaustica:Out; B ← 0.22 |
-| `FonsIlluminat` | FonsIlluminat / Add | A ← MostraPedres:RGBA; B ← Caustiques:Out |
+| `CausticaBDireccio` | Vector 2 | X = -0.01; Y = 0.011 |
+| `CausticaBOffset` | Multiply | Valors per defecte |
+| `CausticaBUV` | Tiling And Offset | Tiling = 1.8 |
+| `MostraCausticaB` | Sample Texture 2D | Valors per defecte |
+| `LlumCaustica` | Minimum | Valors per defecte |
+| `Caustiques` | Multiply | B = 0.22 |
+| `FonsIlluminat` | Add | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Temps` | Out | `CausticaBOffset` | A |
+| `CausticaBDireccio` | Out | `CausticaBOffset` | B |
+| `UVRefractada` | Out | `CausticaBUV` | UV |
+| `CausticaBOffset` | Out | `CausticaBUV` | Offset |
+| `TexturaCaustiques` | Out | `MostraCausticaB` | Texture |
+| `CausticaBUV` | Out | `MostraCausticaB` | UV |
+| `MostraCausticaA` | R | `LlumCaustica` | A |
+| `MostraCausticaB` | R | `LlumCaustica` | B |
+| `LlumCaustica` | Out | `Caustiques` | A |
+| `MostraPedres` | RGBA | `FonsIlluminat` | A |
+| `Caustiques` | Out | `FonsIlluminat` | B |
+
+**Comprova el resultat:** Desplega **Minimum** i **Add** (FonsIlluminat): comprova primer la combinació de càustiques i després les pedres amb aquesta llum afegida.
 
 ### Pas 5. Profunditat
 
 La profunditat és vertical en espai de món: NivellAigua − Position World.y. Divide i Saturate la normalitzen.
 
-<img src="assets/demoaigua-galaxy-fons-nodes-05.jpg" alt="Shader Graph GalaxyFons, pas 5: Profunditat" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
 | `PosicioMon` | Position | Space: World |
-| `Eixos` | Eixos / Split | In ← PosicioMon:Out |
-| `Profunditat` | Profunditat / Subtract | A ← NivellAigua:Out; B ← Eixos:G |
-| `EscalaProfunditat` | EscalaProfunditat / Divide | A ← Profunditat:Out; B ← 1.6 |
-| `Absorcio` | Absorcio / Saturate | In ← EscalaProfunditat:Out |
+| `Eixos` | Split | Valors per defecte |
+| `Profunditat` | Subtract | Valors per defecte |
+| `EscalaProfunditat` | Divide | B = 1.6 |
+| `Absorcio` | Saturate | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `PosicioMon` | Out | `Eixos` | In |
+| `NivellAigua` | Out | `Profunditat` | A |
+| `Eixos` | G | `Profunditat` | B |
+| `Profunditat` | Out | `EscalaProfunditat` | A |
+| `EscalaProfunditat` | Out | `Absorcio` | In |
+
+**Comprova el resultat:** La profunditat depèn de la posició World del fons. Comprova’n la distribució sobre la malla del fons quan muntis l’escena.
 
 ### Pas 6. Color de laigua
 
 Lerp calcula el tint segons profunditat i Multiply el combina amb el fons il·luminat. No modifiquis Vertex / Position.
 
-<img src="assets/demoaigua-galaxy-fons-nodes-06.jpg" alt="Shader Graph GalaxyFons, pas 6: Color de laigua" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `ColorAigua` | ColorAigua / Lerp | A ← PocFons:Out; B ← MoltFons:Out; T ← Absorcio:Out |
-| `ColorFinal` | ColorFinal / Multiply | A ← FonsIlluminat:Out; B ← ColorAigua:Out |
+| `ColorAigua` | Lerp | Valors per defecte |
+| `ColorFinal` | Multiply | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `PocFons` | Out | `ColorAigua` | A |
+| `MoltFons` | Out | `ColorAigua` | B |
+| `Absorcio` | Out | `ColorAigua` | T |
+| `FonsIlluminat` | Out | `ColorFinal` | A |
+| `ColorAigua` | Out | `ColorFinal` | B |
+
+**Comprova el resultat:** Desplega **Multiply** (ColorFinal): comprova el fons amb el color de l’aigua aplicat.
 
 ### Pas 7. Master Stack i connexions finals
 
-Connecta les branques als blocs del Master Stack indicats a continuació. Comprova l’espai de les normals i si les sortides són de Vertex o de Fragment. Els blocs sense cable conserven el valor per defecte.
+Connecta les sortides als blocs del Master Stack indicats a la taula de cables. Si hi ha un bloc Normal, configura’l en Tangent. Els blocs sense cable conserven el valor per defecte.
 
-<img src="assets/demoaigua-galaxy-fons-nodes-sortides.jpg" alt="Shader Graph GalaxyFons, pas 7: Master Stack i connexions finals" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Cables: arrossega de la sortida a l’entrada indicada.**
 
-| ID | Node | Entrades |
-|---|---|---|
-| Sortida | BaseColor | ColorFinal:Out |
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `ColorFinal` | Out | `Fragment / Base Color` | Base Color |
 
+**Comprova el resultat:** Desa el graf del fons abans de crear el material.
 
-### 9.3. Shader de la superfície
+### 8.3. Shader de la superfície
 
 Amb **Create > Shader Graph > URP > Unlit Shader Graph**, crea **SGalaxySuperficie**: Surface **Transparent**, Blending **Alpha**, **Alpha Clipping activat**, Render Face **Front**, Cast Shadows desactivat. Afegeix Alpha Clip Threshold al Master Stack. Deixa Vertex / Position sense connectar: no hi ha ones geomètriques.
 
@@ -645,151 +701,197 @@ Amb **Create > Shader Graph > URP > Unlit Shader Graph**, crea **SGalaxySuperfic
 | Llindar reflexos | Float | `_Llindar` | 0.42 |
 | BlancEscuma | Color | `_BlancEscuma` | RGB (217, 247, 255) |
 
-### Connexions entre grups
+**Graf complet de GalaxySuperficie:** segueix els grups numerats i els cables fins al **Master Stack**. [Obre la captura a mida completa](assets/demoaigua-galaxy-superficie-graf-complet.png) per llegir els ports i els valors.
 
-Aquest mapa mostra com es connecten els grups del graf. Cada fletxa agrupa el nombre de cables indicat; la taula inferior detalla **tots els cables entre grups i cap al Master Stack**, amb els ports exactes. Les captures dels passos següents mostren les connexions interiors.
-
-```mermaid
-flowchart TD
-    G1["01 · Primera capa UV"]
-    G2["02 · Segona capa i reflexos"]
-    G3["03 · Distancia a les vores UV"]
-    G4["04 · Escuma vores UV"]
-    G5["05 · Contacte amb les roques"]
-    G6["06 · Escuma i sortida"]
-    G7["Sortides · Master Stack"]
-    G1 -->|"4 cables"| G2
-    G1 -->|"1 cable"| G3
-    G1 -->|"1 cable"| G4
-    G2 -->|"2 cables"| G6
-    G3 -->|"1 cable"| G4
-    G4 -->|"1 cable"| G6
-    G5 -->|"1 cable"| G6
-    G6 -->|"3 cables"| G7
-```
-
-Llegeix cada fila d’esquerra a dreta: **grup d’origen → node i port de sortida → grup de destinació → node i port d’entrada**. Per exemple, `Eixos:R` és el port R del node Eixos. Un mateix port pot alimentar diversos grups; conserva totes les branques indicades.
-
-| Grup origen | Node:sortida | Grup destinació | Node:entrada |
-|---|---|---|---|
-| 01 | `Temps:Out` | 02 | `CapaBOffset:A` |
-| 01 | `UV:Out` | 02 | `CapaBUV:UV` |
-| 01 | `MostraA:R` | 02 | `Interferencia:A` |
-| 01 | `Ripples:Out` | 02 | `MostraB:Texture` |
-| 01 | `UV:Out` | 03 | `Eixos:In` |
-| 01 | `MostraA:R` | 04 | `Amplada:T` |
-| 03 | `DistanciaVora:Out` | 04 | `Interior:In` |
-| 02 | `MostraB:R` | 06 | `AmpladaContacte:T` |
-| 02 | `Reflexos:Out` | 06 | `Mascara:A` |
-| 04 | `Escuma:Out` | 06 | `EscumaCompleta:A` |
-| 05 | `SeparacioRoques:Out` | 06 | `VoraContacte:In` |
-| 06 | `Alpha:Out` | Master Stack | `Fragment:Alpha` |
-| 06 | `Retall:Out` | Master Stack | `Fragment:Alpha Clip Threshold` |
-| 06 | `BlancEscuma:Out` | Master Stack | `Fragment:Base Color` |
-
-A Unity, allunya el zoom per veure dos grups alhora. **F** enquadra la selecció; **A** enquadra tot el graf. Per seguir un cable llarg, identifica primer els dos extrems a la taula i localitza els grups numerats.
+<a href="assets/demoaigua-galaxy-superficie-graf-complet.png"><img src="assets/demoaigua-galaxy-superficie-graf-complet.png" alt="Graf complet de GalaxySuperficie, amb totes les connexions i previsualitzacions" width="1600" style="width: 100%; max-width: 1600px; height: auto;"></a>
 
 ### Pas 1. Primera capa UV
 
 Mostreja Ripples amb les UV de la primera capa. La textura es repeteix i es desplaça lentament en dos eixos.
 
-<img src="assets/demoaigua-galaxy-superficie-nodes-01.jpg" alt="Shader Graph GalaxySuperficie, pas 1: Primera capa UV" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `UV` | UV |   |
-| `CapaADireccio` | CapaADireccio / Vector 2 | X ← 0.018; Y ← 0.011 |
-| `CapaAOffset` | CapaAOffset / Multiply | A ← Temps:Out; B ← CapaADireccio:Out |
-| `CapaAUV` | CapaAUV / Tiling And Offset | UV ← UV:Out; Tiling ← 1.4; Offset ← CapaAOffset:Out |
-| `MostraA` | MostraA / Sample Texture 2D | Texture ← Ripples:Out; UV ← CapaAUV:Out |
+| `UV` | UV | Channel = UV0 |
+| `CapaADireccio` | Vector 2 | X = 0.018; Y = 0.011 |
+| `CapaAOffset` | Multiply | Valors per defecte |
+| `CapaAUV` | Tiling And Offset | Tiling = 1.4 |
+| `MostraA` | Sample Texture 2D | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Temps` | Out | `CapaAOffset` | A |
+| `CapaADireccio` | Out | `CapaAOffset` | B |
+| `UV` | Out | `CapaAUV` | UV |
+| `CapaAOffset` | Out | `CapaAUV` | Offset |
+| `Ripples` | Out | `MostraA` | Texture |
+| `CapaAUV` | Out | `MostraA` | UV |
+
+**Comprova el resultat:** Desplega **Sample Texture 2D** (MostraA): ha de mostrar la textura Ripples.
 
 ### Pas 2. Segona capa i reflexos
 
 Mostreja la mateixa textura amb una altra escala i direcció. Multiply i Step retenen només les taques brillants que superen Llindar.
 
-<img src="assets/demoaigua-galaxy-superficie-nodes-02.jpg" alt="Shader Graph GalaxySuperficie, pas 2: Segona capa i reflexos" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `CapaBDireccio` | CapaBDireccio / Vector 2 | X ← -0.012; Y ← 0.016 |
-| `CapaBOffset` | CapaBOffset / Multiply | A ← Temps:Out; B ← CapaBDireccio:Out |
-| `CapaBUV` | CapaBUV / Tiling And Offset | UV ← UV:Out; Tiling ← 1.9; Offset ← CapaBOffset:Out |
-| `MostraB` | MostraB / Sample Texture 2D | Texture ← Ripples:Out; UV ← CapaBUV:Out |
-| `Interferencia` | Interferencia / Multiply | A ← MostraA:R; B ← MostraB:R |
-| `Reflexos` | Reflexos / Step | Edge ← Llindar:Out; In ← Interferencia:Out |
+| `CapaBDireccio` | Vector 2 | X = -0.012; Y = 0.016 |
+| `CapaBOffset` | Multiply | Valors per defecte |
+| `CapaBUV` | Tiling And Offset | Tiling = 1.9 |
+| `MostraB` | Sample Texture 2D | Valors per defecte |
+| `Interferencia` | Multiply | Valors per defecte |
+| `Reflexos` | Step | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Temps` | Out | `CapaBOffset` | A |
+| `CapaBDireccio` | Out | `CapaBOffset` | B |
+| `UV` | Out | `CapaBUV` | UV |
+| `CapaBOffset` | Out | `CapaBUV` | Offset |
+| `Ripples` | Out | `MostraB` | Texture |
+| `CapaBUV` | Out | `MostraB` | UV |
+| `MostraA` | R | `Interferencia` | A |
+| `MostraB` | R | `Interferencia` | B |
+| `Llindar` | Out | `Reflexos` | Edge |
+| `Interferencia` | Out | `Reflexos` | In |
+
+**Comprova el resultat:** Desplega **Multiply** (Interferencia) i **Step** (Reflexos): el primer mostra grisos i el segon els converteix en una màscara negra i blanca.
 
 ### Pas 3. Distancia a les vores UV
 
 Minimum entre U, 1−U, V i 1−V mesura la proximitat al contorn del pla; encara no detecta cap roca.
 
-<img src="assets/demoaigua-galaxy-superficie-nodes-03.jpg" alt="Shader Graph GalaxySuperficie, pas 3: Distancia a les vores UV" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `Eixos` | Eixos / Split | In ← UV:Out |
-| `UInvers` | UInvers / One Minus | In ← Eixos:R |
-| `VoraU` | VoraU / Minimum | A ← Eixos:R; B ← UInvers:Out |
-| `VInvers` | VInvers / One Minus | In ← Eixos:G |
-| `VoraV` | VoraV / Minimum | A ← Eixos:G; B ← VInvers:Out |
-| `DistanciaVora` | DistanciaVora / Minimum | A ← VoraU:Out; B ← VoraV:Out |
+| `Eixos` | Split | Valors per defecte |
+| `UInvers` | One Minus | Valors per defecte |
+| `VoraU` | Minimum | Valors per defecte |
+| `VInvers` | One Minus | Valors per defecte |
+| `VoraV` | Minimum | Valors per defecte |
+| `DistanciaVora` | Minimum | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `UV` | Out | `Eixos` | In |
+| `Eixos` | R | `UInvers` | In |
+| `Eixos` | R | `VoraU` | A |
+| `UInvers` | Out | `VoraU` | B |
+| `Eixos` | G | `VInvers` | In |
+| `Eixos` | G | `VoraV` | A |
+| `VInvers` | Out | `VoraV` | B |
+| `VoraU` | Out | `DistanciaVora` | A |
+| `VoraV` | Out | `DistanciaVora` | B |
+
+**Comprova el resultat:** Desplega l’últim **Minimum** (DistanciaVora): les vores de les UV han de ser negres i l’interior més clar.
 
 ### Pas 4. Escuma vores UV
 
 La textura anima l’amplada de la vora. One Minus deixa escuma blanca a l’exterior de la franja interior.
 
-<img src="assets/demoaigua-galaxy-superficie-nodes-04.jpg" alt="Shader Graph GalaxySuperficie, pas 4: Escuma vores UV" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `Amplada` | Amplada / Lerp | A ← 0.008; B ← 0.045; T ← MostraA:R |
-| `Interior` | Interior / Step | Edge ← Amplada:Out; In ← DistanciaVora:Out |
-| `Escuma` | Escuma / One Minus | In ← Interior:Out |
+| `Amplada` | Lerp | A = 0.008; B = 0.045 |
+| `Interior` | Step | Valors per defecte |
+| `Escuma` | One Minus | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `MostraA` | R | `Amplada` | T |
+| `Amplada` | Out | `Interior` | Edge |
+| `DistanciaVora` | Out | `Interior` | In |
+| `Interior` | Out | `Escuma` | In |
+
+**Comprova el resultat:** Desplega **One Minus** (Escuma): ha de mostrar una franja blanca al voltant de les vores UV.
 
 ### Pas 5. Contacte amb les roques
 
 Scene Depth Eye menys −Position View.z dona la separació visual entre superfície i geometria opaca. El cable Pantalla → ProfunditatEscena ha d’entrar a UV.
 
-<img src="assets/demoaigua-galaxy-superficie-nodes-05.jpg" alt="Shader Graph GalaxySuperficie, pas 5: Contacte amb les roques" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `Pantalla` | ScreenPosition |   |
-| `ProfunditatEscena` | SceneDepth | Sampling: Eye; UV ← Pantalla:Out |
+| `Pantalla` | Screen Position | Mode = Default |
+| `ProfunditatEscena` | Scene Depth | Sampling: Eye |
 | `PosicioVista` | Position | Space: View |
-| `VistaXYZ` | VistaXYZ / Split | In ← PosicioVista:Out |
-| `ProfunditatSuperficie` | ProfunditatSuperficie / Negate | In ← VistaXYZ:B |
-| `SeparacioRoques` | SeparacioRoques / Subtract | A ← ProfunditatEscena:Out; B ← ProfunditatSuperficie:Out |
+| `VistaXYZ` | Split | Valors per defecte |
+| `ProfunditatSuperficie` | Negate | Valors per defecte |
+| `SeparacioRoques` | Subtract | Valors per defecte |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `Pantalla` | Out | `ProfunditatEscena` | UV |
+| `PosicioVista` | Out | `VistaXYZ` | In |
+| `VistaXYZ` | B | `ProfunditatSuperficie` | In |
+| `ProfunditatEscena` | Out | `SeparacioRoques` | A |
+| `ProfunditatSuperficie` | Out | `SeparacioRoques` | B |
+
+**Comprova el resultat:** Comprova aquesta branca a l’escena amb les roques i Depth Texture activada; la previsualització del graf no conté la profunditat d’aquests objectes.
 
 ### Pas 6. Escuma i sortida
 
 La segona textura varia l’amplada de contacte entre 0.12 i 0.65. Maximum uneix l’escuma de contacte, les vores UV i els reflexos. Alpha Clipping retalla la resta.
 
-<img src="assets/demoaigua-galaxy-superficie-nodes-06.jpg" alt="Shader Graph GalaxySuperficie, pas 6: Escuma i sortida" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Nodes que has de crear i valors que has d’escriure:**
 
-| ID | Node | Entrades |
+| Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `AmpladaContacte` | AmpladaContacte / Lerp | A ← 0.12; B ← 0.65; T ← MostraB:R |
-| `VoraContacte` | VoraContacte / Smoothstep | Edge1 ← 0.035; Edge2 ← AmpladaContacte:Out; In ← SeparacioRoques:Out |
-| `EscumaRoques` | EscumaRoques / One Minus | In ← VoraContacte:Out |
-| `EscumaCompleta` | EscumaCompleta / Maximum | A ← Escuma:Out; B ← EscumaRoques:Out |
-| `Mascara` | Mascara / Maximum | A ← Reflexos:Out; B ← EscumaCompleta:Out |
-| `Alpha` | Alpha / Multiply | A ← Mascara:Out; B ← 0.95 |
-| `Retall` | Retall / Float | X ← 0.5 |
+| `AmpladaContacte` | Lerp | A = 0.12; B = 0.65 |
+| `VoraContacte` | Smoothstep | Edge1 = 0.035 |
+| `EscumaRoques` | One Minus | Valors per defecte |
+| `EscumaCompleta` | Maximum | Valors per defecte |
+| `Mascara` | Maximum | Valors per defecte |
+| `Alpha` | Multiply | B = 0.95 |
+| `Retall` | Float | X = 0.5 |
+
+**Cables: arrossega de la sortida a l’entrada indicada.**
+
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `MostraB` | R | `AmpladaContacte` | T |
+| `AmpladaContacte` | Out | `VoraContacte` | Edge2 |
+| `SeparacioRoques` | Out | `VoraContacte` | In |
+| `VoraContacte` | Out | `EscumaRoques` | In |
+| `Escuma` | Out | `EscumaCompleta` | A |
+| `EscumaRoques` | Out | `EscumaCompleta` | B |
+| `Reflexos` | Out | `Mascara` | A |
+| `EscumaCompleta` | Out | `Mascara` | B |
+| `Mascara` | Out | `Alpha` | A |
+
+**Comprova el resultat:** Desplega **Maximum** (Mascara) per inspeccionar la màscara combinada; comprova l’escuma de contacte a l’escena.
 
 ### Pas 7. Master Stack i connexions finals
 
-Connecta les branques als blocs del Master Stack indicats a continuació. Comprova l’espai de les normals i si les sortides són de Vertex o de Fragment. Els blocs sense cable conserven el valor per defecte.
+Connecta les sortides als blocs del Master Stack indicats a la taula de cables. Si hi ha un bloc Normal, configura’l en Tangent. Els blocs sense cable conserven el valor per defecte.
 
-<img src="assets/demoaigua-galaxy-superficie-nodes-sortides.jpg" alt="Shader Graph GalaxySuperficie, pas 7: Master Stack i connexions finals" width="600" style="width: 90%; max-width: 600px; height: auto;">
+**Cables: arrossega de la sortida a l’entrada indicada.**
 
-| ID | Node | Entrades |
-|---|---|---|
-| Sortida | BaseColor | BlancEscuma:Out |
-| Sortida | Alpha | Alpha:Out |
-| Sortida | Alpha Clip Threshold | Retall:Out |
+| Node origen | Port de sortida | Node destí | Port d’entrada |
+|---|---|---|---|
+| `BlancEscuma` | Out | `Fragment / Base Color` | Base Color |
+| `Alpha` | Out | `Fragment / Alpha` | Alpha |
+| `Retall` | Out | `Fragment / Alpha Clip Threshold` | Alpha Clip Threshold |
 
+**Comprova el resultat:** Desa el graf de superfície. Comprova la transparència i el retall amb el material assignat a l’aigua.
 
-### 9.4. Muntar la segona escena
+### 8.4. Muntar la segona escena
 
 1. Duplica DemoAigua i desa-la com **DemoAiguaGalaxy**. No sobreescriguis l’escena amb ones.
 2. Amb **Create > Rendering > Material**, crea **MGalaxyFons** i **MGalaxySuperficie**. Assigna’ls **DAM Shaders > SGalaxyFons** i **DAM Shaders > SGalaxySuperficie**, respectivament. Assigna les quatre textures a les propietats corresponents dels materials.
@@ -835,28 +937,20 @@ public static class GenerarFonsGalaxy
 
 ```
 
-### 9.5. Comprovar el resultat per capes
+### 8.5. Comprovar el resultat per capes
 
 Comença amb el Renderer de la superfície desactivat. El fons ha de conservar la textura de pedra, una deformació suau i il·luminació que canvia amb el temps. `_Refraccio = 0` elimina el desplaçament UV; les càustiques continuen animades.
 
-<img src="assets/demoaigua-galaxy-fons.png" alt="Fons sense la capa de reflexos" width="600" style="width: 90%; max-width: 600px; height: auto;">
+<a href="assets/demoaigua-galaxy-fons.png"><img src="assets/demoaigua-galaxy-fons.png" alt="Fons sense la capa de reflexos" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
 Activa la superfície. Han d’aparèixer taques blanques irregulars, una vora d’escuma i franges de contacte al voltant de les roques. El contorn de contacte prové de Scene Depth, no de les UV de la roca.
 
-<img src="assets/demoaigua-galaxy-contacte.png" alt="Detall de l’escuma en contacte amb les roques" width="600" style="width: 90%; max-width: 600px; height: auto;">
+<a href="assets/demoaigua-galaxy-contacte.png"><img src="assets/demoaigua-galaxy-contacte.png" alt="Detall de l’escuma en contacte amb les roques" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
 Prem Espai per pausar. La geometria no ha canviat d’alçada; només s’han animat les mostres de textura. Torna a activar el temps per comparar un altre instant:
 
-<img src="assets/demoaigua-galaxy-animacio.png" alt="La mateixa escena en un altre instant" width="600" style="width: 90%; max-width: 600px; height: auto;">
+<a href="assets/demoaigua-galaxy-animacio.png"><img src="assets/demoaigua-galaxy-animacio.png" alt="La mateixa escena en un altre instant" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
 Augmenta `_Llindar` cap a 0.65: desapareixen molts reflexos, però es conserva l’escuma. Si desapareix també el contorn de les roques, revisa Maximum entre EscumaCompleta i Reflexos.
 
-<img src="assets/demoaigua-galaxy-llindar.png" alt="Llindar alt: menys reflexos de superfície" width="600" style="width: 90%; max-width: 600px; height: auto;">
-
-### 9.6. Límits d’aquesta aproximació
-
-- La distorsió afecta la textura del fons, no tota la imatge de la càmera; no deforma automàticament les roques ni altres objectes submergits.
-- El tint de profunditat es calcula al shader del fons. Un objecte submergit amb un altre material no rep automàticament aquest tint.
-- L’escuma de contacte depèn de l’angle de vista i de la profunditat opaca disponible. No és una simulació física.
-- El contorn UV segueix el rectangle del pla. En un llac de forma irregular caldria una màscara de riba diferent.
-- Alpha Clipping crea vores dures, adequades per a l’estil de la referència. No hi ha reflexions de l’escena ni simulació de fluids.
+<a href="assets/demoaigua-galaxy-llindar.png"><img src="assets/demoaigua-galaxy-llindar.png" alt="Llindar alt: menys reflexos de superfície" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
