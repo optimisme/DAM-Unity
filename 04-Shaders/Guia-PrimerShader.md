@@ -69,6 +69,8 @@ Desa el shader amb el botó del **disquet** per aplicar els canvis a l’escena.
 </center>
 <br/>
 
+Crea un nou material i anomena'l "MColor", **arrossega el shader a sobre del material**.
+
 Crea un nou objecte tipus *3D Object > Cube* a l'escena:
 
 - Posa'l a la posició X:0, Y:0, Z:0
