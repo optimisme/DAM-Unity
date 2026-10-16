@@ -1,6 +1,6 @@
 # Plataformes
 
-En aquest tema construirem un joc de plataformes 2D. Treballarem amb **Unity 6.6**, el nou **Input System** i la UI de Canvas (uGUI). Procediments verificats amb **Unity 6000.6.3f1** i **Input System 1.20.0**. Algunes captures antigues dels recursos poden tenir menús lleugerament diferents.
+En aquest tema construirem un joc de plataformes 2D. Treballarem amb **Unity 6.6**, el nou **Input System** i la UI de Canvas (uGUI). Algunes captures antigues dels recursos poden tenir menús lleugerament diferents.
 
 ## Ordre de treball
 
