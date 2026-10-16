@@ -4,8 +4,6 @@ Crea un patró de cel·les amb **color editable** i **velocitat independent en X
 
 **Projecte acabat:** [Descarrega la Demo 0](demos/Demo-0-Voronoi.zip). Descomprimeix el ZIP i afegeix a Unity Hub la carpeta que conté **Assets**, **Packages** i **ProjectSettings**. La primera obertura carrega **Assets/Scenes/SegonShader.unity**; també la pots obrir amb doble clic a Project o amb **Demo > Obrir escena principal**. Prem **Play** i selecciona **Assets/Materials/MVoronoiAnimat** per canviar Color i Velocitat a l’Inspector.
 
-<a href="assets/demovoronoi-cub.png"><img src="assets/demovoronoi-cub.png" alt="Cub amb el shader Voronoi animat en execució a Unity, amb cel·les blaves de vores definides" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
-
 ## 1. Preparar el projecte i el shader
 
 1. Crea un projecte **Universal 3D (URP)** i obre **Assets/Scenes/SampleScene**. També pots continuar al projecte de la [guia del primer shader](Guia-PrimerShader.md).
@@ -117,3 +115,9 @@ Canvia **Color** i comprova que totes les cel·les adopten diferents intensitats
 Si no apareixen els controls al material, revisa **Show In Inspector** (o **Exposed**), desa el shader i comprova el camp **Shader** del material. Si el cub no canvia, revisa el material assignat a **Mesh Renderer > Materials**.
 
 Si els previews es tornen quadriculats després de tenir Unity obert molta estona, desa el shader i reinicia l’editor abans de tornar a comprovar-los.
+
+## Resultat final
+
+<video src="assets/demovoronoi-cub.mov" poster="assets/demovoronoi-cub.png" width="586" controls loop playsinline></video>
+
+[Obre el vídeo del cub animat](assets/demovoronoi-cub.mov).
