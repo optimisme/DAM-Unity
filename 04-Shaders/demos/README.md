@@ -15,7 +15,7 @@ Cada ZIP conté un **projecte Unity independent** amb escenes acabades, Shader G
 3. Selecciona la carpeta que conté directament **Assets**, **Packages** i **ProjectSettings**.
 4. Obre-la amb **Unity** i espera que acabi la importació.
 5. En acabar la primera importació, s’obre automàticament l’escena principal de la demo. Els materials poden trigar una estona a carregar-se. Aigua també inclou una segona escena, `DemoAiguaGalaxy`, que pots obrir des de `Assets/Demos/Aigua/Scenes/`.
-6. Prem **Play** i clica la vista **Game**. El panell mostra els controls.
+6. Prem **Play** i clica la vista **Game**. A **Demo 0: Voronoi animat**, selecciona **MVoronoiAnimat** a Project per canviar **Color** i **Velocitat X/Y** a l’Inspector. A les altres demos, el panell mostra els controls.
 7. Atura Play abans d’editar valors que vulguis conservar als materials.
 
 El menú **Demo > Obrir escena principal** permet tornar a la demo. L’obertura automàtica només actua el primer cop; després es respecten les escenes amb què estiguis treballant.
@@ -26,7 +26,7 @@ Les mides són MB decimals aproximats. La mida descomprimida no inclou la memòr
 
 | Projecte | Escena | ZIP | Descomprimit | Tutorial |
 |---|---|---:|---:|---|
-| [Demo-0-Patro](Demo-0-Patro.zip) | `DemoPatro.unity` | 0.08 MB | 0.34 MB | [Tutorial](../Demo-0-Patro.md) |
+| [Demo 0: Voronoi animat](Demo-0-Voronoi.zip) | `SegonShader.unity` | 0.06 MB | 0.21 MB | [Tutorial](../Demo-0-Voronoi.md) |
 | [Demo-1-Rajoles](Demo-1-Rajoles.zip) | `DemoRajoles.unity` | 0.08 MB | 0.35 MB | [Tutorial](../Demo-1-Rajoles.md) |
 | [Demo-2-Roca](Demo-2-Roca.zip) | `DemoRoca.unity` | 0.23 MB | 0.69 MB | [Tutorial](../Demo-2-Roca.md) |
 | [Demo-3-Lava](Demo-3-Lava.zip) | `DemoLava.unity` | 0.08 MB | 0.34 MB | [Tutorial](../Demo-3-Lava.md) |
@@ -48,14 +48,15 @@ La variant **DemoAiguaGalaxy** mostra reflexos retallats, un fons de pedra amb d
 
 | Demos | Controls |
 |---|---|
-| Patró, Rajoles, Roca, Lava, Aigua, Holograma | Lliscador del paràmetre, Espai pausa el temps, R reinicia, H amaga el panell |
+| Voronoi animat (Demo 0) | Color i Velocitat X/Y al material MVoronoiAnimat; (0, 0) atura el patró |
+| Rajoles, Roca, Lava, Aigua, Holograma | Lliscador del paràmetre, Espai pausa el temps, R reinicia, H amaga el panell |
 | Forat | A/D mouen el personatge, Espai alterna automàtic/manual, F activa el retall, R reinicia, H amaga el panell; lliscador de radi; obertura i tancament progressius (0.35 s per defecte) |
 | Sombra | A/D mouen el personatge, Espai alterna automàtic/manual, F activa la silueta, R reinicia, H amaga el panell; el gris omple només les parts ocultes |
 | Pèls | Lliscador de llargada; botons de capes i passos POM; C activa la curvatura, R reinicia, H amaga el panell |
 
-Els shaders són a **Assets/Demos/<nom>/Shaders** i els materials a **Materials**. Obre el Shader Graph amb doble clic i selecciona un grup numerat i prem F per comparar-lo amb la captura del pas corresponent. Els scripts són a **Assets/Common**; Pèls inclou també **Assets/Demos/Pels/Scripts** i dues Custom Functions al fitxer **Shaders/Pels.hlsl**. Roca i Aigua inclouen també la utilitat **GenerarMalles** al menú **Demos**.
+A la Demo 0, el shader és a **Assets/Shaders**, el material a **Assets/Materials** i l’escena a **Assets/Scenes**. A les altres demos, els shaders són a **Assets/Demos/<nom>/Shaders** i els materials a **Materials**. Obre el Shader Graph amb doble clic. Quan contingui grups numerats, selecciona un grup i prem F per enquadrar-lo; els tutorials també inclouen una captura del graf complet. Els scripts són a **Assets/Common**; Pèls inclou també **Assets/Demos/Pels/Scripts** i dues Custom Functions al fitxer **Shaders/Pels.hlsl**. Roca i Aigua inclouen també la utilitat **GenerarMalles** al menú **Demos**.
 
-Totes les escenes inclouen **DemoOrbitCamera** a Main Camera: **botó dret + arrossegar** per orbitar al voltant del centre de la demo, **roda** per fer zoom i **Home** per recuperar la vista inicial. No actua sobre el panell de controls. El component permet ajustar centre, sensibilitat i límits de distància i inclinació. [Codi del controlador](DemoOrbitCamera.cs).
+Les demos 1–8 inclouen **DemoOrbitCamera** a Main Camera: **botó dret + arrossegar** per orbitar al voltant del centre de la demo, **roda** per fer zoom i **Home** per recuperar la vista inicial. No actua sobre el panell de controls. El component permet ajustar centre, sensibilitat i límits de distància i inclinació. [Codi del controlador](DemoOrbitCamera.cs).
 
 ## Contingut dels ZIP
 
@@ -67,6 +68,8 @@ Totes les escenes inclouen **DemoOrbitCamera** a Main Camera: **botó dret + arr
 No s’inclouen **Library**, **Temp**, **Logs** ni les eines internes utilitzades per preparar les captures. No moguis només l’escena fora del projecte: depèn dels materials, els gràfics i la configuració d’URP.
 
 ## Comprovació dels projectes
+
+Aquest registre correspon a les demos anteriors a la substitució de la Demo 0 per Voronoi animat. Les comprovacions de Patró no descriuen el nou projecte.
 
 Revisió del **9 d’octubre de 2026**, sobre els fitxers de la branca **main**:
 
