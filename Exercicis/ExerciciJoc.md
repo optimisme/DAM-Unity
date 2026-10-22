@@ -24,3 +24,4 @@ No és opcional:
 - Que tingui plataformes mòbils
 - Que impliqui agafar algun tipus d'objecte
 - Que mostri dades tipus HUD (vida, items, mapa, pistes, ...)
+- NO pot ser un "endless runner" ni pot tenir components generats aleatòriament/dinàmicament
