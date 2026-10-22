@@ -14,9 +14,13 @@ Opcional:
 
 - Grups de 1 o 2 persones
 - Que sigui en 2D o en 3D
-- Que sigui offline (o online websockets)
+- Que sigui offline (o online websockets+proxmox)
 - Que NO sigui una còpia d'un joc ja existent
 
 No és opcional:
 
 - Que sigui jugable
+- Que hi hagi un shader (en 2D també s'hi poden posar)
+- Que tingui plataformes mòbils
+- Que impliqui agafar algun tipus d'objecte
+- Que mostri dades tipus HUD (vida, items, mapa, pistes, ...)
