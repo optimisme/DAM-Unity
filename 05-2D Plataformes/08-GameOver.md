@@ -81,7 +81,6 @@ Abans de carregar l'escena restablim el temps a `1`. El HUD i la vida es reinici
 1. Desa Nivell01 amb **Ctrl+S / Cmd+S**.
 2. Obre **File > Build Profiles** i entra a **Scene List**.
 3. Fes **Add Open Scenes** i comprova que **Assets/Scenes/Nivell01.unity** està inclosa i marcada a la llista efectiva del perfil actiu. Si el perfil substitueix la llista global, afegeix-la també a la seva llista.
-4. En versions antigues de Unity, aquesta configuració era a **File > Build Settings > Scenes In Build**.
 
 El reinici carrega l'escena pel seu índex de compilació; una escena que no està inclosa no té un índex vàlid.
 

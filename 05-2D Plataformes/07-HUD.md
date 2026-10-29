@@ -6,7 +6,7 @@
 
 ## Canvas que s'adapta a la pantalla
 
-1. Fes **GameObject > UI (Canvas) > Canvas**. En versions anteriors, el menú es diu UI.
+1. Fes **GameObject > UI (Canvas) > Canvas**.
 2. Posa **Render Mode = Screen Space - Overlay**.
 3. A **Canvas Scaler**, posa **UI Scale Mode = Scale With Screen Size**, **Reference Resolution = 1280 × 720**, **Screen Match Mode = Match Width Or Height** i **Match = 0.5**.
 4. Conserva **Graphic Raycaster** i **EventSystem**.

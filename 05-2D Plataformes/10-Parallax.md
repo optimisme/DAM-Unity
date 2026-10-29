@@ -15,7 +15,7 @@ En aquest tutorial, **el cel, les muntanyes, els núvols, el bosc i la vegetaci�
 
 Descarrega [ParallaxTiles.zip](./ParallaxTiles.zip), descomprimeix-lo i arrossega la carpeta **ParallaxTiles** directament a **Assets**. La ruta ha de ser **Assets/ParallaxTiles**, sense una altra carpeta intermèdia.
 
-**Només les imatges:** [BackgroundImages.zip](./BackgroundImages.zip) conté els quatre PNG nous; els fons antics ja no formen part d'aquest arxiu. Per seguir tots els passos, fes servir ParallaxTiles.zip, que inclou també els scripts. No cal importar tots dos ZIP.
+**Només les imatges:** [BackgroundImages.zip](./BackgroundImages.zip) conté només els quatre PNG. Per seguir tots els passos, fes servir ParallaxTiles.zip, que inclou també els scripts. No cal importar tots dos ZIP.
 
 El pack conté:
 
@@ -27,7 +27,7 @@ El pack conté:
 
 Espera que Unity compili. Si el menú del pas següent no apareix, mira Console i corregeix primer els errors vermells. Necessites **Universal 2D**, **2D Sprite** i **2D Tilemap Editor**, com als primers capítols.
 
-Els nous gràfics comparteixen tons verds i blavosos: clars al fons, més foscos al davant. Els fulls són de **2172 × 724 píxels**, excepte Nuvols, de **2171 × 724**: l'eina compensa aquest píxel transparent de la vora sense estirar el dibuix. Cada bloc cobreix 24 unitats horitzontals amb diversos grups de vegetació i muntanyes per espaiar les repeticions. Muntanyes inclou el cel del seu full; Nuvols, Bosc i PrimerPla tenen transparència per deixar veure les capes del darrere. Conservem les il·lustracions completes i les dividim en peces; les peces no es poden barrejar a l'atzar sense trencar el dibuix.
+Els gràfics comparteixen tons verds i blavosos: clars al fons, més foscos al davant. Els fulls són de **2172 × 724 píxels**, excepte Nuvols, de **2171 × 724**: l'eina compensa aquest píxel transparent de la vora sense estirar el dibuix. Cada bloc cobreix 24 unitats horitzontals amb diversos grups de vegetació i muntanyes per espaiar les repeticions. Muntanyes inclou el cel del seu full; Nuvols, Bosc i PrimerPla tenen transparència per deixar veure les capes del darrere. Conservem les il·lustracions completes i les dividim en peces; les peces no es poden barrejar a l'atzar sense trencar el dibuix.
 
 ## 2. Preparar els tiles
 
@@ -59,12 +59,11 @@ Per editar el dibuix amb el pinzell, crea una **Tile Palette** com al capítol 0
 
 ## 3. Posar les capes a l'escena
 
-1. Si havies seguit la versió antiga, desactiva **ParallaxRoot** i el seu script. No deixis dos sistemes movent els mateixos fons.
-2. Arrossega **Generated/Parallax.prefab** a Hierarchy, al nivell principal de l'escena. No el posis dins de Player ni de Main Camera.
-3. Deixa el pare **Parallax** a Position `(0, 0, 0)`, Rotation `(0, 0, 0)` i Scale `(1, 1, 1)`.
-4. Desplega'l. Cada capa té un **Grid** i un fill **Tiles**, amb **Tilemap** i **Tilemap Renderer**.
-5. A cada capa, assigna **Main Camera** al camp **Target Camera**. Si el deixes buit, l'script busca la càmera amb el tag MainCamera.
-6. Comprova que **Source** apunta al fill Tiles d'aquella capa, i no al terreny del joc.
+1. Arrossega **Generated/Parallax.prefab** a Hierarchy, al nivell principal de l'escena. No el posis dins de Player ni de Main Camera.
+2. Deixa el pare **Parallax** a Position `(0, 0, 0)`, Rotation `(0, 0, 0)` i Scale `(1, 1, 1)`.
+3. Desplega'l. Cada capa té un **Grid** i un fill **Tiles**, amb **Tilemap** i **Tilemap Renderer**.
+4. A cada capa, assigna **Main Camera** al camp **Target Camera**. Si el deixes buit, l'script busca la càmera amb el tag MainCamera.
+5. Comprova que **Source** apunta al fill Tiles d'aquella capa, i no al terreny del joc.
 
 ```text
 Parallax
@@ -129,9 +128,9 @@ Si la càmera avança cap a la dreta, aquests elements passen cap a l'esquerra a
 
 **BaseBosc** és un Tilemap fill de Tiles amb un color verd fosc i Order **-41**. Omple la part inferior del decorat, darrere de la il·lustració, perquè als forats del terreny no es vegi una franja de cel sota el bosc. Es repeteix amb el mateix bloc.
 
-Amb el nou cel clar, selecciona **Canvas > CoinsNumber** i canvia el color del text a **172B4D**, A **255**, perquè el comptador sigui llegible.
+Amb el cel clar, selecciona **Canvas > CoinsNumber** i canvia el color del text a **172B4D**, A **255**, perquè el comptador sigui llegible.
 
-**Els núvols tenen alçades diferents dins del mateix Tilemap**: els més alts queden sobre els cims i els més baixos se superposen a les muntanyes. Order -60 els dibuixa davant de les muntanyes (-80) però darrere del bosc (-40). El Tilemap dels núvols té **Color = D4F2E8** i **A = 140** per suavitzar-los i no competir amb el personatge. La seva mida reduïda i Depth **0.3**, entre muntanyes (**0.2**) i bosc (**0.55**), els situen a una distància intermèdia. En aquesta primera versió els mou la càmera; no hi afegim vent independent.
+**Els núvols tenen alçades diferents dins del mateix Tilemap**: els més alts queden sobre els cims i els més baixos se superposen a les muntanyes. Order -60 els dibuixa davant de les muntanyes (-80) però darrere del bosc (-40). El Tilemap dels núvols té **Color = D4F2E8** i **A = 140** per suavitzar-los i no competir amb el personatge. La seva mida reduïda i Depth **0.3**, entre muntanyes (**0.2**) i bosc (**0.55**), els situen a una distància intermèdia. Els mou només la càmera; no hi afegim vent independent.
 
 El primer pla té herbes i falgueres altes, amb espais transparents entre les fulles. La base queda per sota de la pantalla per evitar una franja rectangular; les puntes emmarquen el joc. Si tapa els peus del personatge o impedeix veure una trampa, baixa la seva Y. **No hi afegeixis colliders:** veure herba davant no significa que sigui un obstacle.
 

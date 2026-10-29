@@ -191,7 +191,7 @@ public class PlayerJump : MonoBehaviour
 
 `jumpConsumed` impedeix tornar a saltar fins a aterrar. `DefaultExecutionOrder(-100)` fa que aquesta comprovació s'executi abans del moviment normal del jugador. No cal canviar l'ordre a Project Settings.
 
-**Amb aquests valors, el salt puja aproximadament 2,45 unitats.** Les dues primeres pujades del nivell de comprovació són de 2 unitats; deixa marge, no col·loquis les plataformes just a l'altura màxima. La velocitat inicial 10, amb massa 1, conserva l'impuls de 10 de l'exemple original. Mantén Espai als salts llargs quan activem l'altura variable al capítol 11.
+**Amb aquests valors, el salt puja aproximadament 2,45 unitats.** Les dues primeres pujades del nivell de comprovació són de 2 unitats; deixa marge, no col·loquis les plataformes just a l'altura màxima. Mantén Espai als salts llargs quan activem l'altura variable al capítol 11.
 
 Aquest és un **salt bàsic d'altura fixa**: una pulsació, un salt. Les ajudes per saltar una mica tard o abans d'aterrar s'explicaran al final del bloc.
 

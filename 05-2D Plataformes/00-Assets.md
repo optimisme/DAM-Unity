@@ -1,6 +1,6 @@
 # Plataformes
 
-En aquest tema construirem un joc de plataformes 2D. Treballarem amb **Unity 6.6**, el nou **Input System** i la UI de Canvas (uGUI). Algunes captures antigues dels recursos poden tenir menús lleugerament diferents.
+En aquest tema construirem un joc de plataformes 2D. Treballarem amb **Unity 6.6**, el nou **Input System** i la UI de Canvas (uGUI).
 
 ## Ordre de treball
 
@@ -34,7 +34,7 @@ Les captures del nivell fan servir els sprites originals de **Simple 2D Platform
 
 Crea un nou projecte Unity "Universal 2D" anomenat "Platform".
 
-Si aquesta versió de la plantilla mostra un avís sobre **In App Purchasing 4**, obre Package Manager, selecciona aquest paquet i fes **Manage > Remove**. Aquest joc no utilitza compres integrades. No cal actualitzar tots els paquets per resoldre aquest avís.
+Si la plantilla mostra un avís sobre **In App Purchasing 4**, obre Package Manager, selecciona aquest paquet i fes **Manage > Remove**. Aquest joc no utilitza compres integrades. No cal actualitzar tots els paquets per resoldre aquest avís.
 
 ## Carpetes
 
@@ -49,7 +49,7 @@ Crea aquestes carpetes als **"Assets"**
 
 ## Decorat de profunditat
 
-Al [capítol 10](./10-Parallax.md) importarem **ParallaxTiles.zip**, amb els nous fons i l'eina per convertir-los en Tilemaps. [BackgroundImages.zip](./BackgroundImages.zip) conté només les imatges noves, per si les vols consultar; no cal importar-lo ara ni duplicar-lo amb el pack complet.
+Al [capítol 10](./10-Parallax.md) importarem **ParallaxTiles.zip**, amb els fons i l'eina per convertir-los en Tilemaps. [BackgroundImages.zip](./BackgroundImages.zip) conté només les imatges, per si les vols consultar; no cal importar-lo.
 
 ## Unity Asset Store
 
