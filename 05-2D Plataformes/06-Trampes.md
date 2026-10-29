@@ -8,16 +8,16 @@ Les trampes poden produir dany al personatge.
 
 Als *"Assets"*, des de la carpeta:
 
-*Assets > Simple 2d Platformer BE2 > Sprites*
+*Assets > Simple 2D Platformer BE2 > Sprites*
 
-Desplega **"Objects"** i arrosega **"Spike"** cap a l'escena.
+Desplega **Objects** i arrossega **Spike** cap a l'escena.
 
 <center>
 <img src="./assets/traps-add.png" style="width: 90%; max-width: 600px">
 </center>
 <br/>
 
-Afegeix el component **"Polygon Colider 2D"**, que genera un contorn a partir de la forma física del sprite. No és una còpia exacta de cada píxel. Prem **Edit Collider**, revisa els punts i simplifica les arestes massa petites. Una punta exageradament precisa pot ser menys agradable de jugar que una forma simple.
+Afegeix el component **Polygon Collider 2D**, que genera un contorn a partir de la forma física del sprite. No és una còpia exacta de cada píxel. Prem **Edit Collider**, revisa els punts i simplifica les arestes massa petites. Una punta exageradament precisa pot ser menys agradable de jugar que una forma simple.
 
 Deixa **Is Trigger desactivat**: en aquest exemple la trampa és sòlida i utilitzem OnCollision. Una zona de dany que es pugui travessar requeriria Is Trigger i callbacks OnTrigger. Assigna també la Layer **Jumpable** si vols que el jugador pugui saltar des de la trampa.
 
@@ -30,21 +30,21 @@ Per al nivell de comprovació, posa tres Spike a **(12.5, -1.5)**, **(13.5, -1.5
 
 ## Etiquetar objectes com a trampes
 
-Necessitem *etiquetar* els objectes que produeixen mal amb un **Tag**, escull l'objecte **"Spike"** i al seu inspector la opció d'afegir un **Tag** (etiqueta).
+Necessitem *etiquetar* els objectes que fan mal amb un **Tag**. Selecciona **Spike** i, a l'Inspector, obre el desplegable **Tag > Add Tag...**.
 
 <center>
 <img src="./assets/traps-addtag.png" style="width: 90%; max-width: 600px">
 </center>
 <br/>
 
-Com a nom de l'etiqueta defineix **"Damage"**
+Prem **+** a la llista **Tags** i escriu **Damage**. Prem **Save**.
 
 <center>
 <img src="./assets/traps-tagname.png" style="width: 90%; max-width: 600px">
 </center>
 <br/>
 
-Finalment, etiqueta l'objecte **"Spike"** amb el tag **"Damage"**
+Torna a seleccionar **Spike** i escull **Tag = Damage**.
 
 <center>
 <img src="./assets/traps-damagetag.png" style="width: 90%; max-width: 600px">

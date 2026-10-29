@@ -6,14 +6,14 @@
 
 ## Canvas que s'adapta a la pantalla
 
-1. Fes **GameObject > UI (Canvas) > Canvas**.
+1. A Hierarchy, fes clic dret > **UI (Canvas) > Canvas**. Unity crea també un **EventSystem**.
 2. Posa **Render Mode = Screen Space - Overlay**.
 3. A **Canvas Scaler**, posa **UI Scale Mode = Scale With Screen Size**, **Reference Resolution = 1280 × 720**, **Screen Match Mode = Match Width Or Height** i **Match = 0.5**.
 4. Conserva **Graphic Raycaster** i **EventSystem**.
 
 ## Barra de vida de vores netes
 
-1. A Project, selecciona Assets i fes **Create > 2D > Sprites > Square**. El quadrat blanc servirà de sprite rectangular.
+1. A Project, dins d'Assets/Sprites, fes clic dret > **Create > 2D > Sprites > Square**. El quadrat blanc servirà de sprite rectangular.
 2. Selecciona Canvas i crea **UI (Canvas) > Image**, anomenada **HealthBar**.
 3. A Rect Transform, obre **Anchor Presets** i, mantenint **Alt+Shift** (Windows) o **Option+Shift** (macOS), escull **top / left**. Les tecles també ajusten el pivot i la posició inicial.
 4. Posa **Pos X = 24**, **Pos Y = -24**, **Width = 300**, **Height = 32** i **Scale = (1, 1, 1)**.

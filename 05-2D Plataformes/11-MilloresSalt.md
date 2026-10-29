@@ -9,7 +9,7 @@
 | Altura variable | Un toc curt fa un salt més baix que mantenir la tecla |
 
 <center>
-<img src="./assets/salt-parallax-escena.png" alt="Prova de salt al nivell amb el nou decorat de profunditat" style="width: 95%; max-width: 1000px">
+<img src="./assets/salt-parallax-escena.png" alt="Prova de salt al nivell amb el decorat de profunditat" style="width: 95%; max-width: 1000px">
 </center>
 <br/>
 

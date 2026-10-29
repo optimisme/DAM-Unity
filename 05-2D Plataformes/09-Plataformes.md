@@ -19,7 +19,7 @@ Des dels *"Assets"*:
 
 *Assets > Simple 2D Platformer BE2 > Sprites*
 
-Desplega l'objecte **"Platforms"**
+Desplega el full **"Platforms"** amb la fletxa per veure'n els sprites.
 
 <center>
 <img src="./assets/plataformes-showplatforms.png" style="width: 90%; max-width: 400px">
@@ -51,27 +51,26 @@ De manera que quedin de costat.
 </center>
 <br/>
 
-Fes que l'objecte **"Sprites"** sigui 'Jumpable'.
+Selecciona l'objecte **"Sprites"** i, a dalt de l'Inspector, posa **Layer = Jumpable** (la Layer que has creat al capítol del jugador).
 
-**Important!** Et demanarà si vols fer els objectes fills també 'Jumpable'. No cal, es pot dir que **NO**.
+**Important!** Unity pregunta si també vols canviar la Layer dels fills. No cal: tria **No, this object only**. El collider serà a Sprites, no als fills.
 
 <center>
 <img src="./assets/plataformes-jumpable.png" style="width: 90%; max-width: 400px">
 </center>
 <br/>
 
-Afegeix un component **BoxCollider2D** a l'objecte **"Sprites"**. I adapta la mida de la caixa al tamany dels sprites amb el botó **Edit Collider**.
+Afegeix un component **Box Collider 2D** a l'objecte **"Sprites"**. Posa **Size = (3, 1)** i **Offset = (0, 0)**, o ajusta la caixa a la mida dels sprites amb el botó **Edit Collider**. Deixa **Is Trigger** desactivat.
 
 <center>
 <img src="./assets/plataformes-editcollider.png" style="width: 90%; max-width: 400px">
 </center>
 <br/>
 
-Afegeix un component **Rigidbody2D** a l'objecte **"Sprites"**. I posa:
+Afegeix un component **Rigidbody 2D** a l'objecte **"Sprites"**. I posa:
 
 - **Body Type**: Kinematic
 - **Interpolate**: Interpolate
-- Al BoxCollider2D, **Is Trigger desactivat**
 
 <center>
 <img src="./assets/plataformes-kinematic.png" style="width: 90%; max-width: 400px">

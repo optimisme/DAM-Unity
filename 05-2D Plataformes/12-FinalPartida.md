@@ -4,18 +4,17 @@
 
 ## 1. Construir una meta visible
 
-1. Amb Play aturat, crea un objecte buit **Meta** a Position **(28, -1, 0)**, Rotation zero i Scale u.
-2. Afegeix **Box Collider 2D**, amb **Size = (1, 2)**, Offset zero i **Is Trigger activat**. No hi afegeixis Rigidbody2D: el jugador ja en porta un.
-3. Afegeix dos fills amb **GameObject > 2D Object > Sprites > Square**, anomenats **Pal** i **Bandera**. Conserva els sprites sense colliders. Si Unity afegeix un collider, elimina'l d'aquests dos fills.
-4. Posa Pal a **Local Position = (0, 0, 0)**, **Scale = (0.08, 2, 1)**, color **172B4D**. Posa Bandera a **Local Position = (0.4, 0.6, 0)**, **Scale = (0.8, 0.5, 1)**, color **FFC857**. En tots dos Sprite Renderer posa **Order in Layer = 30**. Square ocupa una unitat abans d'aplicar aquesta escala.
+1. Amb Play aturat, a **Assets > Simple 2D Platformer BE2 > Sprites**, desplega **Objects** i arrossega el sprite **Finish** (la bandera) a l'escena.
+2. Anomena'l **Meta**. Posa **Position = (28, -1.5, 0)**, Rotation zero i Scale u. A Sprite Renderer, posa **Order in Layer = 30**.
+3. Afegeix **Box Collider 2D**, amb **Size = (1, 2)**, **Offset = (0, 0.5)** i **Is Trigger activat**. No hi afegeixis Rigidbody2D: el jugador ja en porta un.
 
-El trigger ocupa el tram de terra entre Y = -2 i Y = 0. La bandera no bloqueja el pas. La moneda de X = 24 s'ha de recollir abans d'arribar-hi.
+La bandera fa una unitat i té la base a Y = -2. El trigger és més alt, del Y = -2 al Y = 0, perquè el jugador l'activi encara que hi arribi saltant. La bandera no bloqueja el pas. La moneda de X = 24 s'ha de recollir abans d'arribar-hi.
 
 ## 2. Objectiu i pantalla de victòria
 
 1. Dins de Canvas, crea **Text - TextMeshPro** anomenat **ObjectiveText**. Escull el preset **top / center** amb Alt+Shift / Option+Shift. Posa **Pos X = 0**, **Pos Y = -88**, **Width = 900**, **Height = 48**, **Font Size = 24**, color **172B4D**, alineació centrada i Raycast Target desactivat. El codi n'actualitzarà el text.
 2. Duplica el panell **GameOver** i anomena la còpia **LevelCompleted**. Deixa'l com a últim fill del Canvas.
-3. Canvia el text del seu títol a **Nivell completat!** i posa **Font Size = 48**. El botó continua dient **Tornar a jugar**.
+3. Canvia el nom del fill GameOverText a **LevelCompletedText**, el seu text a **Nivell completat!** i posa **Font Size = 48**. El botó continua dient **Tornar a jugar**.
 4. Al botó de la còpia, elimina l'entrada heretada d'**On Click ()**. La connectarem al nou controlador. No canviïs el botó del panell GameOver original.
 5. Deixa LevelCompleted desactivat quan acabis d'editar-lo. El codi també l'amaga a Awake.
 
@@ -92,7 +91,7 @@ El trigger comprova el jugador, la vida i el comptador. Entrar-hi abans de tenir
 
 ## Errors habituals
 
-- Si la bandera és una paret, activa Is Trigger a Meta i treu els colliders dels sprites fills.
+- Si la bandera és una paret, activa **Is Trigger** al Box Collider 2D de Meta.
 - Si mai guanyes, comprova les referències de Meta i que el nombre de monedes coincideixi amb Required Coins.
 - Si el botó no funciona, comprova On Click, EventSystem, Graphic Raycaster i la llista d'escenes.
 - No posis LevelFinish dins de LevelCompleted: un panell desactivat no rep els callbacks de la meta.

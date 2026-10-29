@@ -271,7 +271,7 @@ Al capítol següent comprovarem les pujades de 2 unitats i els forats de 2 cel�
 
 El Tilemap Collider genera les peces i el Composite les uneix. Això redueix les juntes on el jugador pot enganxar-se i simplifica les formes de col·lisió. No s'aconsegueix només arrodonint el collider del jugador.
 
-[Referència de Tilemap Collider 2D](https://docs.unity3d.com/6000.0/Documentation/Manual/tilemaps/work-with-tilemaps/tilemap-collider-2d-reference.html).
+[Referència de Tilemap Collider 2D](https://docs.unity.com/en-us/engine/6000.6/manual/unity2d/tilemaps/tilemap-collider-2d/reference).
 
 ## Evitar línies entre les imatges de les rajoles
 
@@ -286,7 +286,7 @@ Un **Sprite Atlas** és un recurs que Unity prepara agrupant sprites i reservant
 5. Prem **Pack Preview**. Quan entrem a Play, Unity utilitzarà els sprites de l'atles automàticament; no cal tornar a pintar el Tilemap.
 6. Als capítols de jugador i càmera, comprova les unions mentre camines. Mantén **Cell Gap = (0, 0, 0)** i **Scale = (1, 1, 1)**: no facis les rajoles més grosses ni les superposis per tapar les ratlles.
 
-Aquesta configuració ha eliminat les línies del terreny en el projecte de comprovació. [Referència de les propietats de Sprite Atlas](https://docs.unity.com/en-us/engine/6000.3/manual/unity2d/sprite/atlas/sprite-atlas-reference).
+[Referència de les propietats de Sprite Atlas](https://docs.unity.com/en-us/engine/6000.6/manual/unity2d/sprite/atlas/sprite-atlas-reference).
 
 ## Separar terreny i decoració
 

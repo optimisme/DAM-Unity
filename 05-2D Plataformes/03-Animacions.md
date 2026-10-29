@@ -8,7 +8,7 @@ Es canvia d'animació, segons l'estat del personatge (quiet, caminant, saltant..
 
 ## Animació per defecte (PlayerIdle)
 
-Obra la finestra d'animacions:
+Obre la finestra d'animacions:
 
 *Window > Animation > Animation*
 
@@ -17,14 +17,12 @@ Obra la finestra d'animacions:
 </center>
 <br/>
 
-Arrossega la pestanya **"animation"** a l'editor de Unity, per tenir-la a mà.
+Arrossega la pestanya **Animation** dins de l'editor per tenir-la a mà.
 
 <center>
 <img src="./assets/animations-dragwindow.png" style="width: 90%; max-width: 400px">
 </center>
 <br/>
-
-A **"Assets"**, crea una carpeta nova anomenada **"Animations"**.
 
 Selecciona el personatge "Player" i apreta el botó **"Create"** de la finestra d'animacions.
 
@@ -33,27 +31,27 @@ Selecciona el personatge "Player" i apreta el botó **"Create"** de la finestra 
 </center>
 <br/>
 
-Guarda l'animació a la nova carpeta **"Animations"** amb el nom **"PlayerIdle"**.
+Desa l'animació a la carpeta **Animations** amb el nom **PlayerIdle**.
 
 <center>
 <img src="./assets/animations-save.png" style="width: 90%; max-width: 400px">
 </center>
 <br/>
 
-Arrosega els sprites:
+Abans de col·locar fotogrames, obre el menú **⋮** de la finestra Animation, activa **Show Sample Rate** i comprova **Samples = 60**. Després arrossega els sprites:
 
 - "Idle 0" a la posició 0:00
 - "Idle 1" a la posició 0:20
 - "Idle 0" a la posició 0:40
 
-Assegura't que el "check" de animator està activat.
+Comprova que el component **Animator** de Player està activat (casella marcada).
 
 <center>
 <img src="./assets/animations-check.png" style="width: 90%; max-width: 400px">
 </center>
 <br/>
 
-Si proves el joc, veuràs que el personatge es mou.
+Si proves el joc, veuràs que el personatge ja s'anima.
 
 ## Definir més animacions
 
@@ -68,7 +66,7 @@ A la secció d'animacions, crea un nou clip anomenat **"PlayerJump"**.
 </center>
 <br/>
 
-Guarda'l a la carpeta **"Animations"**.
+Desa'l a la carpeta **Animations**.
 
 <center>
 <img src="./assets/animations-playerjump.png" style="width: 90%; max-width: 400px">
@@ -84,7 +82,7 @@ Desactiva **Loop Time** al clip PlayerJump. En acabar, conserva l’última post
 
 ### PlayerFall
 
-A la secció d'animacions, crea un nou clip anomenat **"PlayerFall"**. Guarda'l a la carpeta **"Animations"**.
+A la secció d'animacions, crea un nou clip anomenat **"PlayerFall"**. Desa'l a la carpeta **Animations**.
 
 Posa-hi el següent sprite:
 
@@ -92,7 +90,7 @@ Posa-hi el següent sprite:
 
 ### PlayerRun
 
-A la secció d'animacions, crea un nou clip anomenat **"PlayerRun"**. Guarda'l a la carpeta **"Animations"**.
+A la secció d'animacions, crea un nou clip anomenat **"PlayerRun"**. Desa'l a la carpeta **Animations**.
 
 Posa-hi els següents sprites:
 
@@ -102,7 +100,7 @@ Posa-hi els següents sprites:
 - "Run 3" a la posició 0:22
 - "Run 3" a la posició 0:30
 
-Aparta la pestanya d'animacions amb els *"tabs"* de projecte i consola, o tancal-la.
+Acobla la pestanya Animation al costat de Project i Console, o tanca-la.
 
 <center>
 <img src="./assets/animations-hidetab.png" style="width: 90%; max-width: 400px">
@@ -111,7 +109,7 @@ Aparta la pestanya d'animacions amb els *"tabs"* de projecte i consola, o tancal
 
 ## Entendre el temps dels clips
 
-A Animation, obre el menú de la finestra i activa **Show Sample Rate** si no veus **Samples**. Posa **Samples = 60** als clips d'aquest exemple. `0:20` significa segon zero, fotograma vint; no són vint segons. Les posicions anteriors només tenen el mateix ritme si fem servir el mateix nombre de fotogrames per segon.
+Tots els clips d'aquest exemple fan servir **Samples = 60**. `0:20` significa segon zero, fotograma vint; no són vint segons. Les posicions anteriors només tenen el mateix ritme si fem servir el mateix nombre de fotogrames per segon.
 
 Selecciona cada clip a Project i configura **Loop Time**:
 

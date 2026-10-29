@@ -46,7 +46,7 @@ Consulta l'[ordre de treball](./00-Assets.md) per seguir els tutorials. Tots con
 6. Prova el joc a dues proporcions de pantalla.
 7. Mor per dany, reinicia i després mor per caiguda.
 8. Travessa unions dels fons i comprova que la vegetació del davant no amaga obstacles.
-9. Completa el recorregut de comprovació: recull les cinc monedes, arriba al terra dret (X = 28) amb vida i puja i baixa de la plataforma mòbil. Acaba a la bandera: ha d’aparèixer Nivell completat i s’ha de poder tornar a jugar, tal com explica [Final de partida](./12-FinalPartida.md).
-10. Si has fet l'ampliació, comprova coyote time, buffer i altura variable sense dobles salts.
+9. Completa el recorregut de comprovació: recull les cinc monedes, arriba al terra dret (X = 28) amb vida i puja i baixa de la plataforma mòbil. Acaba a la meta: ha d’aparèixer Nivell completat i s’ha de poder tornar a jugar, tal com explica [Final de partida](./12-FinalPartida.md).
+10. Comprova coyote time, buffer i altura variable sense dobles salts (capítol 11).
 
 Si una prova falla, torna al tutorial del component corresponent i revisa primer les referències de l'Inspector i els errors de Console.

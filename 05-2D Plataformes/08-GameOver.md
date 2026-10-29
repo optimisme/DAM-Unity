@@ -64,7 +64,7 @@ public class GameOverController : MonoBehaviour
 1. Assigna **Player** i **Player Damage** amb l'objecte Player, i **Game Over UI** amb el panell GameOver.
 2. Posa **Game Over Height = -25**. Si el nivell és més baix, adapta aquest límit: és una coordenada del món, no de pantalla.
 3. Selecciona ResetButton. A **Button > On Click ()**, prem **+**, arrossega **GameManager** al camp de l'objecte i escull **GameOverController > ResetScene()**.
-4. Selecciona EventSystem: amb Input System, utilitza **Input System UI Input Module**. Si apareix **Replace with InputSystemUIInputModule**, prem-lo. Si falten les accions i apareix **Assign Default Actions**, prem-lo.
+4. Selecciona EventSystem i comprova que té el component **Input System UI Input Module** amb **Actions Asset = DefaultInputActions**. Unity el crea així en fer el Canvas.
 5. Aquest EventSystem ha de conservar les seves accions de UI independents de Controls/Gameplay. No assignis el seu mòdul al camp UI Input Module de PlayerInput en aquest exemple: volem desactivar només els controls del jugador.
 
 <center>

@@ -53,7 +53,7 @@ La caixa visible i el collider no han de coincidir exactament. Ajusta el collide
 
 ## Evitar que quedi enganxat als laterals
 
-1. A Assets, fes **Create > 2D > Physics Material 2D** i anomena'l **PlayerSenseFriccio**.
+1. A Assets, fes clic dret > **Create > 2D > Physics Material 2D** i anomena'l **PlayerSenseFriccio**.
 2. Posa **Friction = 0** i **Bounciness = 0**.
 3. Assigna'l al camp **Material** del BoxCollider2D de Player.
 
@@ -62,9 +62,9 @@ La caixa visible i el collider no han de coincidir exactament. Ajusta el collide
 ## Configurar Input System
 
 1. Obre **Window > Package Management > Package Manager** i comprova que hi ha **Input System**. A **Edit > Project Settings > Player > Other Settings > Active Input Handling**, utilitza **Input System Package (New)**. Si has de canviar-ho i Unity demana reiniciar, desa abans.
-2. A **Assets**, fes **Create > Input Actions** i anomena el recurs **Controls**. Obre'l amb doble clic.
+2. A **Assets**, fes clic dret > **Create > Input Actions** i anomena el recurs **Controls**. No facis servir l'arxiu InputSystem_Actions que porta la plantilla: crearem el nostre. Obre'l amb doble clic.
 3. Crea un **Action Map** anomenat **Gameplay**.
-4. Dins seu, crea **Move**, amb **Action Type = Value** i **Control Type = Vector2**. Afegeix un **2D Vector Composite**: Up `W`, Down `S`, Left `A`, Right `D`. Afegeix un segon composite per a les quatre fletxes.
+4. Dins seu, crea **Move**, amb **Action Type = Value** i **Control Type = Vector2**. Prem el **+** de l'acció i escull **Add Up\Down\Left\Right Composite**: Up `W`, Down `S`, Left `A`, Right `D`. Afegeix un segon composite igual per a les quatre fletxes.
 5. Crea **Jump**, amb **Action Type = Button**, i un binding **Space**. A **Interactions**, afegeix **Press** i posa **Trigger Behavior = Press And Release**. Amb **Send Messages**, aquesta opció fa arribar tant la pulsació com l'alliberament; el salt bàsic ignora l'alliberament i el capítol 11 el farà servir per al salt curt. Desa l'asset amb **Save Asset**.
 6. Selecciona Player i afegeix **Player Input**. Arrossega Controls al camp **Actions**, escull **Default Map = Gameplay** i **Behavior = Send Messages**. Per a aquest primer exemple de teclat no cal crear Control Schemes.
 
@@ -83,7 +83,7 @@ La caixa visible i el collider no han de coincidir exactament. Ajusta el collide
 
 ## Moviment horitzontal
 
-Crea **Assets/Scripts/Player.cs**, substitueix-ne el contingut pel codi complet i afegeix-lo a Player. El nom del fitxer i el de la classe han de coincidir.
+A **Assets/Scripts**, fes clic dret > **Create > MonoBehaviour Script** i anomena'l **Player**. Obre'l, substitueix-ne el contingut pel codi complet i arrossega l'script a l'objecte Player. El nom del fitxer i el de la classe han de coincidir. Tots els scripts del tutorial es creen així, dins d'Assets/Scripts.
 
 ```csharp
 using UnityEngine;
@@ -195,7 +195,7 @@ public class PlayerJump : MonoBehaviour
 
 Aquest és un **salt bàsic d'altura fixa**: una pulsació, un salt. Les ajudes per saltar una mica tard o abans d'aterrar s'explicaran al final del bloc.
 
-[Referència de PlayerInput](https://docs.unity3d.com/Packages/com.unity.inputsystem@1.11/manual/PlayerInput.html).
+[Referència de PlayerInput](https://docs.unity3d.com/Packages/com.unity.inputsystem@1.19/manual/PlayerInput.html).
 
 ## Comprovar el resultat
 

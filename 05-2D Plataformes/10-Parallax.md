@@ -89,7 +89,7 @@ Canvas
 </center>
 <br/>
 
-El prefab utilitza una càmera ortogràfica amb **Size = 5** i posició inicial aproximada `(0, 1, -10)`. Si el teu nivell comença en un altre lloc, mou les capes per emmarcar-lo **amb Play aturat**. L'script conserva aquestes posicions inicials.
+El prefab està pensat per a la càmera del capítol 00: ortogràfica, **Size = 5** i posició inicial `(0, 0, -10)`. Si el teu nivell comença en un altre lloc, mou les capes per emmarcar-lo **amb Play aturat**. L'script conserva aquestes posicions inicials.
 
 Els Grid tenen **Cell Size = (2, 2, 0)**, **Cell Gap = (0, 0, 0)** i escala u. El fill Tiles té posició zero, rotació zero i escala u. No estiris els fons amb Scale: ajusta la posició vertical de la capa.
 
@@ -269,4 +269,4 @@ L'script guarda les posicions inicials. A cada fotograma calcula quant s'ha mogu
 - **El decorat tremola:** CameraFollow ha d'acabar abans del LateUpdate del parallax.
 - **El cel deixa un buit a dalt o a baix:** el prefab cobreix 24 unitats verticals; augmenta les files del cel si augmentes molt l'Orthographic Size.
 
-[Retall de sprites a Unity](https://docs.unity3d.com/6000.0/Documentation/Manual/sprite/sprite-editor/automatic-slicing.html) · [Crear tiles amb la paleta](https://docs.unity.com/en-us/engine/6000.0/manual/unity2d/tilemaps/create-tile-palette/assets).
+[Sprite Editor a Unity](https://docs.unity.com/en-us/engine/6000.6/manual/unity2d/sprite/use-editor) · [Crear tiles amb la paleta](https://docs.unity.com/en-us/engine/6000.6/manual/unity2d/tilemaps/create-tile-palette/assets).
