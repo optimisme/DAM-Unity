@@ -35,10 +35,10 @@ Els gràfics comparteixen tons verds i blavosos: clars al fons, més foscos al d
 2. Obre **Assets/ParallaxTiles/Generated**.
 3. Hi trobaràs les carpetes **Muntanyes**, **Nuvols**, **Bosc** i **PrimerPla**, amb **48 tiles cadascuna**; també el tile de cel i el prefab **Parallax**.
 4. Selecciona **Textures/Muntanyes.png**. A l'Inspector comprova **Sprite Mode = Multiple**, **Pixels Per Unit = 90.5**, **Filter Mode = Point**, **Compression = None**, **Max Size = 4096** i mipmaps desactivats. No redueixis Max Size a 2048: canviaria la resolució importada del full.
-5. Prem **Sprite Editor** per veure el retall en **12 columnes × 4 files**, amb peces de **181 × 181 píxels**.
+5. Prem **Open Sprite Editor** per veure el retall en **12 columnes × 4 files**, amb peces de **181 × 181 píxels**.
 
 <center>
-<!-- Captura pendent: ./assets/parallax-tiles-retall.png -->
+<img src="./assets/parallax-tiles-retall.png" alt="Sprite Editor amb Muntanyes.png retallat en 12 × 4 peces de 181 × 181 píxels" style="width: 95%; max-width: 1000px">
 </center>
 <br/>
 
@@ -49,7 +49,7 @@ L'eina fa el mateix retall que **Sprite Editor > Slice > Grid by Cell Size = 181
 Cada recurs Tile apunta a un d'aquests sprites i té **Collider Type = None**. El PNG original es conserva; retallar-lo dins de Unity no el divideix en 48 fitxers PNG.
 
 <center>
-<!-- Captura pendent: ./assets/parallax-tiles-recursos.png -->
+<img src="./assets/parallax-tiles-recursos.png" alt="Carpeta Generated/Muntanyes amb els tiles i un tile amb Collider Type = None" style="width: 95%; max-width: 1000px">
 </center>
 <br/>
 
@@ -85,7 +85,7 @@ Canvas
 ```
 
 <center>
-<!-- Captura pendent: ./assets/parallax-tiles-capes.png -->
+<img src="./assets/parallax-tiles-capes.png" alt="Hierarchy amb el prefab Parallax i les seves capes a sobre del nivell" style="width: 95%; max-width: 1000px">
 </center>
 <br/>
 
@@ -120,7 +120,7 @@ Les cinc capes decoratives comencen a **X = -12**, **Z = 0**. Els seus Tilemap R
 Si la càmera avança cap a la dreta, aquests elements passen cap a l'esquerra a la pantalla, a velocitats diferents. Parlem del moviment que veu el jugador, no de la coordenada que escriu l'script.
 
 <center>
-<!-- Captura pendent: ./assets/parallax-tiles-inspector.png -->
+<img src="./assets/parallax-tiles-inspector.png" alt="Capa Bosc amb Grid de cel·les 2 × 2 i Parallax Tilemap Layer amb Depth 0.55" style="width: 90%; max-width: 600px">
 </center>
 <br/>
 
@@ -149,7 +149,7 @@ A cada unió es troben dues còpies de **la mateixa vora**. No hi ha un salt de 
 En prémer Play, l'script crea prou còpies per cobrir l'amplada de la càmera, amb marge als costats. Si la finestra s'eixampla, afegeix les còpies necessàries. No pressuposa que amb tres sempre n'hi haurà prou.
 
 <center>
-<!-- Captura pendent: ./assets/parallax-tiles-unions.png -->
+<img src="./assets/parallax-tiles-unions.png" alt="Unió entre un bloc normal i un bloc en mirall durant Play" style="width: 95%; max-width: 1000px">
 </center>
 <br/>
 

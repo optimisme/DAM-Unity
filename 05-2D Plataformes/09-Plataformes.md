@@ -83,6 +83,8 @@ Els waypoints són els punts per on es mourà la plataforma.
 
 Defineix tres elements buits *(Create Empty)* dins de l'objecte **Waypoints**. I anomena'ls **"Point0", "Point1", "Point2"**.
 
+Un objecte buit no es veu a Scene. Per localitzar els punts, selecciona'ls i, a l'Inspector, fes clic a la icona del cub que hi ha a l'esquerra del nom i tria una etiqueta de color. És només una ajuda de l'editor: no apareix en el joc.
+
 <center>
 <img src="./assets/plataformes-pointshierarchy.png" style="width: 90%; max-width: 400px">
 </center>
@@ -102,7 +104,7 @@ Al nivell de comprovació:
 - Point2 Y: 0.5
 
 <center>
-<!-- Captura pendent: ./assets/revisio-plataforma-mobil.png -->
+<img src="./assets/revisio-plataforma-mobil.png" alt="Platform amb Sprites, Waypoints i els tres punts assignats al component Platform" style="width: 95%; max-width: 1000px">
 </center>
 <br/>
 

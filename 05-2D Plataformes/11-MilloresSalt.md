@@ -125,7 +125,7 @@ El codi guarda quan hem tocat terra i quan hem premut salt. Només accepta una p
 Les pulsacions es recullen al callback d'entrada; els canvis de velocitat es fan a FixedUpdate. Si deixem anar salt mentre pugem, reduïm la velocitat vertical una sola vegada. Una pulsació guardada que ja s'ha alliberat produeix un salt curt.
 
 <center>
-<!-- Captura pendent: ./assets/salt-parallax-inspector.png -->
+<img src="./assets/salt-parallax-inspector.png" alt="Player Jump amb Coyote Time, Jump Buffer Time i Variable Jump Height" style="width: 90%; max-width: 600px">
 </center>
 <br/>
 
