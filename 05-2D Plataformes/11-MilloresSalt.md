@@ -1,6 +1,6 @@
 # Millores del salt
 
-**Punt de partida:** el joc de Nivell01 complet, incloses les plataformes mòbils i el decorat amb parallax. Ja tenim un salt bàsic que impedeix dobles salts. Ara afegirem tres ajudes, una per una.
+**Punt de partida:** el joc de Level01 complet, incloses les plataformes mòbils i el decorat amb parallax. Ja tenim un salt bàsic que impedeix dobles salts. Ara afegirem tres ajudes, una per una.
 
 | Millora | Què nota el jugador? |
 |---|---|

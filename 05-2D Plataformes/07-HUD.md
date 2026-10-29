@@ -1,6 +1,6 @@
 # Connectar el HUD amb la vida i les monedes
 
-**Punt de partida:** Nivell01 amb Player, Coin i PlayerDamage. Aplicarem els conceptes de [02-HUD](../02-HUD/01-Canvas.md) a les dades reals del joc.
+**Punt de partida:** Level01 amb Player, Coin i PlayerDamage. Aplicarem els conceptes de [02-HUD](../02-HUD/01-Canvas.md) a les dades reals del joc.
 
 **HUD** vol dir **Head-Up Display**: informació que consultem mentre juguem. Aquí mostrarem vida i monedes. La UI presenta les dades; no decideix quan es rep dany.
 

@@ -1,6 +1,6 @@
 # Càmera ortogràfica i límits del nivell
 
-**Punt de partida:** jugador animat dins de Nivell01. Farem que la càmera el segueixi sense ensenyar fora del rectangle del nivell.
+**Punt de partida:** jugador animat dins de Level01. Farem que la càmera el segueixi sense ensenyar fora del rectangle del nivell.
 
 1. Selecciona **Main Camera**. Posa **Projection = Orthographic**, **Size = 5**, **Rotation = (0, 0, 0)** i **Position Z = -10**.
 2. Crea **CameraFollow.cs**, copia el codi complet i afegeix-lo a Main Camera.

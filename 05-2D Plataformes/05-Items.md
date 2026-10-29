@@ -1,6 +1,6 @@
 # Monedes i prefabs
 
-**Punt de partida:** Nivell01 amb el jugador i la càmera configurats.
+**Punt de partida:** Level01 amb el jugador i la càmera configurats.
 
 Els items són objectes que el jugador pot recollir, com monedes o power-ups.
 

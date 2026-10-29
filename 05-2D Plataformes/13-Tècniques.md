@@ -1,6 +1,6 @@
 # Resum de tècniques del joc de plataformes
 
-Consulta l'[ordre de treball](./00-Assets.md) per seguir els tutorials. Tots construeixen la mateixa escena Nivell01. El decorat del capítol 10 també forma part de la mateixa escena.
+Consulta l'[ordre de treball](./00-Assets.md) per seguir els tutorials. Tots construeixen la mateixa escena Level01. El decorat del capítol 10 també forma part de la mateixa escena.
 
 | Component o recurs | Responsabilitat |
 |---|---|

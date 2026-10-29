@@ -4,7 +4,7 @@ En aquest tema construirem un joc de plataformes 2D. Treballarem amb **Unity 6.6
 
 ## Ordre de treball
 
-Aquest bloc construeix **un únic joc de manera progressiva**, dins de l'escena **Nivell01**. Segueix els capítols en ordre: primer les bases, després la partida completa i finalment les plataformes mòbils, el decorat i les ajudes de salt.
+Aquest bloc construeix **un únic joc de manera progressiva**, dins de l'escena **Level01**. Segueix els capítols en ordre: primer les bases, després la partida completa i finalment les plataformes mòbils, el decorat i les ajudes de salt.
 
 | Capítol | Tutorial | Resultat |
 |---|---|---|
@@ -104,7 +104,7 @@ Ara ja hi ha els assets dins el projecte i els podem utilitzar.
 
 ## Preparar l'escena i els sprites
 
-1. La plantilla obre l'escena **SampleScene**. A Project, ves a **Assets/Scenes**, fes clic dret a SampleScene > **Rename** i anomena-la **Nivell01**.
+1. La plantilla obre l'escena **SampleScene**. A Project, ves a **Assets/Scenes**, fes clic dret a SampleScene > **Rename** i anomena-la **Level01**.
 2. Selecciona **Main Camera**. Comprova **Projection = Orthographic**, **Size = 5**, **Position = (0, 0, -10)** i **Rotation = (0, 0, 0)**. Orthographic fa que la mida dels sprites no depengui de la distància a la càmera.
 3. Si utilitzes materials **Sprite-Lit-Default** de Universal 2D, conserva la **Global Light 2D**. Sense llum, aquests sprites poden quedar foscos. Els materials Sprite-Unlit no necessiten aquesta llum.
 Els fulls de sprites del paquet (Player, Platforms, Coins, Objects i Enemy) ja vénen preparats per a pixel art:

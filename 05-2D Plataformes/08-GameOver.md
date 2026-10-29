@@ -1,6 +1,6 @@
 # Game Over i reinici
 
-**Punt de partida:** Nivell01 amb el HUD connectat. Acabarem la partida quan la vida arribi a zero o el jugador caigui per sota de **Y = -25**.
+**Punt de partida:** Level01 amb el HUD connectat. Acabarem la partida quan la vida arribi a zero o el jugador caigui per sota de **Y = -25**.
 
 ## Crear la pantalla de derrota
 
@@ -74,13 +74,13 @@ public class GameOverController : MonoBehaviour
 
 `Time.timeScale = 0` atura el temps de joc i la simulació física normal, però **Update continua executant-se**. Per això també desactivem l'entrada de Player i fem servir `gameOver` per executar la derrota només una vegada. L'EventSystem continua permetent prémer el botó.
 
-Abans de carregar l'escena restablim el temps a `1`. El HUD i la vida es reinicien perquè els objectes de Nivell01 es creen de nou.
+Abans de carregar l'escena restablim el temps a `1`. El HUD i la vida es reinicien perquè els objectes de Level01 es creen de nou.
 
 ## Incloure l'escena a la compilació
 
-1. Desa Nivell01 amb **Ctrl+S / Cmd+S**.
+1. Desa Level01 amb **Ctrl+S / Cmd+S**.
 2. Obre **File > Build Profiles** i entra a **Scene List**.
-3. Fes **Add Open Scenes** i comprova que **Assets/Scenes/Nivell01.unity** està inclosa i marcada a la llista efectiva del perfil actiu. Si el perfil substitueix la llista global, afegeix-la també a la seva llista.
+3. Fes **Add Open Scenes** i comprova que **Assets/Scenes/Level01.unity** està inclosa i marcada a la llista efectiva del perfil actiu. Si el perfil substitueix la llista global, afegeix-la també a la seva llista.
 
 El reinici carrega l'escena pel seu índex de compilació; una escena que no està inclosa no té un índex vàlid.
 

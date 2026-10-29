@@ -1,6 +1,6 @@
 # Trampes i vida
 
-**Punt de partida:** Nivell01 amb un jugador que ja recull monedes.
+**Punt de partida:** Level01 amb un jugador que ja recull monedes.
 
 Les trampes poden produir dany al personatge.
 

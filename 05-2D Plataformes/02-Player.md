@@ -1,6 +1,6 @@
 # Entrada, moviment i salt bàsic
 
-**Punt de partida:** Nivell01 amb el Tilemap Ground.
+**Punt de partida:** Level01 amb el Tilemap Ground.
 
 Afegirem un personatge animat al joc, a partir d'imatges d'sprite.
 
@@ -53,7 +53,7 @@ La caixa visible i el collider no han de coincidir exactament. Ajusta el collide
 
 ## Evitar que quedi enganxat als laterals
 
-1. A Assets, fes clic dret > **Create > 2D > Physics Material 2D** i anomena'l **PlayerSenseFriccio**.
+1. A Assets, fes clic dret > **Create > 2D > Physics Material 2D** i anomena'l **PlayerNoFriction**.
 2. Posa **Friction = 0** i **Bounciness = 0**.
 3. Assigna'l al camp **Material** del BoxCollider2D de Player.
 
@@ -211,4 +211,4 @@ El jugador cau sobre el terra, camina i salta amb Espai.
 - Sense moviment: comprova Actions, Default Map i Send Messages.
 - Sense salt: revisa Jumpable a Ground i Jumpable Layers al component.
 - Si travessa el terra, comprova que tots els components de física siguin **2D** i Is Trigger estigui desactivat.
-- Si s’enganxa a les parets, comprova que PlayerSenseFriccio està assignat al collider del jugador.
+- Si s’enganxa a les parets, comprova que PlayerNoFriction està assignat al collider del jugador.

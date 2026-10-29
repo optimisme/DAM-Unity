@@ -1,6 +1,6 @@
 # Construir el nivell amb Tilemaps
 
-**Punt de partida:** projecte i escena Nivell01 de [Assets](./00-Assets.md). Pintarem el terra on després caminarà el jugador.
+**Punt de partida:** projecte i escena Level01 de [Assets](./00-Assets.md). Pintarem el terra on després caminarà el jugador.
 
 ## Què és cada cosa?
 
@@ -47,10 +47,10 @@ Platforms.png          el tileset: un full d'imatges (ja el tenim)
 Sprites                Single Left, Top, Middle...  (ja retallats al paquet)
    │  arrossegar a la paleta
    ▼
-Tiles (.asset)         un fitxer per rajola, a Assets/Tiles/Terreny
+Tiles (.asset)         un fitxer per rajola, a Assets/Tiles/Terrain
    │  es col·loquen a
    ▼
-Paleta Terreny         la "caixa de pintures" (Assets/Tiles/Terreny.prefab)
+Paleta Terrain         la "caixa de pintures" (Assets/Tiles/Terrain.prefab)
    │  pintar amb el pinzell
    ▼
 Grid > Ground          el nivell de l'escena (Tilemap)
@@ -73,7 +73,7 @@ Primer creem el lloc on pintarem. Així, quan obrim la paleta, ja tindrà on pin
 3. Selecciona **Grid** i comprova **Cell Size = (1, 1, 0)**. Deixa Grid i Ground amb Position `(0, 0, 0)`, Rotation `(0, 0, 0)` i Scale `(1, 1, 1)`.
 
 ```text
-Nivell01
+Level01
     Main Camera
     Global Light 2D
     Grid
@@ -114,14 +114,14 @@ Com que ja existeix Ground, el desplegable **Active Tilemap** ja el mostra. La z
 </center>
 <br/>
 
-2. Omple el formulari: **Name = Terreny**, **Grid = Rectangle**, **Cell Size = Automatic**. Prem **Create**.
+2. Omple el formulari: **Name = Terrain**, **Grid = Rectangle**, **Cell Size = Automatic**. Prem **Create**.
 
 <center>
 <img src="./assets/tilemap-tilepalette-name.png" alt="Formulari Create New Palette" style="width: 90%; max-width: 400px">
 </center>
 <br/>
 
-3. Unity demana una carpeta: escull **Assets/Tiles** i prem **Choose**. Unity hi desa la paleta com a **Terreny.prefab**.
+3. Unity demana una carpeta: escull **Assets/Tiles** i prem **Choose**. Unity hi desa la paleta com a **Terrain.prefab**.
 
 <center>
 <img src="./assets/tilemap-tilepalette-folder.png" alt="Diàleg Create palette into folder amb la carpeta Assets/Tiles seleccionada" style="width: 90%; max-width: 700px">
@@ -138,10 +138,10 @@ Com que ja existeix Ground, el desplegable **Active Tilemap** ja el mostra. La z
 </center>
 <br/>
 
-3. Unity obre el diàleg **Generate tiles into folder**. Entra a **Assets/Tiles**, prem **New Folder**, escriu **Terreny**, prem **Create** i després **Choose**.
+3. Unity obre el diàleg **Generate tiles into folder**. Entra a **Assets/Tiles**, prem **New Folder**, escriu **Terrain**, prem **Create** i després **Choose**.
 
 <center>
-<img src="./assets/tilemap-tiles-newfolder.png" alt="Diàleg Generate tiles into folder creant la carpeta Terreny dins de Tiles" style="width: 90%; max-width: 700px">
+<img src="./assets/tilemap-tiles-newfolder.png" alt="Diàleg Generate tiles into folder creant la carpeta Terrain dins de Tiles" style="width: 90%; max-width: 700px">
 </center>
 <br/>
 
@@ -149,8 +149,8 @@ Com que ja existeix Ground, el desplegable **Active Tilemap** ja el mostra. La z
 
 ```text
 Assets/Tiles
-    Terreny.prefab          la paleta
-    Terreny/                un recurs Tile per cada sprite
+    Terrain.prefab          la paleta
+    Terrain/                un recurs Tile per cada sprite
         Bottom.asset
         Middle.asset
         Top Left.asset
@@ -158,12 +158,12 @@ Assets/Tiles
 ```
 
 <center>
-<img src="./assets/tilemap-tilepalette-plena.png" alt="Tile Palette Terreny amb les rajoles de Platforms" style="width: 90%; max-width: 450px">
+<img src="./assets/tilemap-tilepalette-plena.png" alt="Tile Palette Terrain amb les rajoles de Platforms" style="width: 90%; max-width: 450px">
 </center>
 <br/>
 
 <center>
-<img src="./assets/tilemap-tiles-assets.png" alt="Carpeta Assets/Tiles/Terreny amb els 16 recursos Tile" style="width: 90%; max-width: 700px">
+<img src="./assets/tilemap-tiles-assets.png" alt="Carpeta Assets/Tiles/Terrain amb els 16 recursos Tile" style="width: 90%; max-width: 700px">
 </center>
 <br/>
 
@@ -261,7 +261,7 @@ Al capítol següent comprovarem les pujades de 2 unitats i els forats de 2 cel�
 3. Afegeix **Composite Collider 2D** al mateix Ground.
 4. Al **Tilemap Collider 2D**, posa **Composite Operation = Merge**.
 5. Al **Composite Collider 2D**, deixa **Is Trigger desactivat** i escull **Geometry Type = Polygons** per a terra sòlid.
-6. Selecciona un recurs **Tile** d'Assets/Tiles/Terreny. Per defecte té **Collider Type = Sprite**. **Grid** omple la cel·la; **Sprite** utilitza la forma física del sprite i **None** no genera col·lisió. Per al terra rectangular, selecciona tots els tiles de la carpeta (Ctrl+A / Cmd+A) i posa **Collider Type = Grid**. Les pendents (Slope) necessiten **Sprite**.
+6. Selecciona un recurs **Tile** d'Assets/Tiles/Terrain. Per defecte té **Collider Type = Sprite**. **Grid** omple la cel·la; **Sprite** utilitza la forma física del sprite i **None** no genera col·lisió. Per al terra rectangular, selecciona tots els tiles de la carpeta (Ctrl+A / Cmd+A) i posa **Collider Type = Grid**. Les pendents (Slope) necessiten **Sprite**.
 7. A Scene, activa **Gizmos** i selecciona Ground: comprova que el contorn del terra queda unit, sense vores interiors entre les rajoles adjacents.
 
 <center>
@@ -279,7 +279,7 @@ Encara que les cel·les encaixin, poden aparèixer ratlles molt fines quan es mo
 
 Un **Sprite Atlas** és un recurs que Unity prepara agrupant sprites i reservant un marge entre ells. Les rajoles continuen fent servir els mateixos sprites.
 
-1. A Project, fes **Assets > Create > 2D > Sprite Atlas** i anomena'l **TerrenyAtlas**. Desa'l a Assets/Tiles. No el diguis només Terreny: aquest nom ja és el de la paleta.
+1. A Project, fes **Assets > Create > 2D > Sprite Atlas** i anomena'l **TerrainAtlas**. Desa'l a Assets/Tiles. No el diguis només Terrain: aquest nom ja és el de la paleta.
 2. A l'Inspector de l'atles, desactiva **Allow Rotation** i **Tight Packing**. Posa **Padding = 4**.
 3. Posa **Filter Mode = Point (no filter)**, desactiva **Generate Mip Maps** i posa **Compression = None** a la configuració de textura de l'atles. Deixa **Include in Build** activat.
 4. A **Objects for Packing**, afegeix el full **Platforms.png** del paquet original. No cal arrossegar-hi cada rajola per separat.
@@ -290,9 +290,9 @@ Un **Sprite Atlas** és un recurs que Unity prepara agrupant sprites i reservant
 
 ## Separar terreny i decoració
 
-1. Crea un altre Tilemap rectangular i anomena'l **Decoracio**. Si Unity crea un altre Grid, pots moure Decoracio sota el Grid existent i deixar el seu Transform a posició zero, rotació zero i escala u.
-2. Deixa Decoracio **sense colliders**. Pinta-hi elements que no han de bloquejar el jugador.
-3. A **Tilemap Renderer > Additional Settings**, posa Ground amb **Order in Layer = 0** i Decoracio amb **Order in Layer = -10**, deixant tots dos a **Sorting Layer = Default**.
+1. Crea un altre Tilemap rectangular i anomena'l **Decoration**. Si Unity crea un altre Grid, pots moure Decoration sota el Grid existent i deixar el seu Transform a posició zero, rotació zero i escala u.
+2. Deixa Decoration **sense colliders**. Pinta-hi elements que no han de bloquejar el jugador.
+3. A **Tilemap Renderer > Additional Settings**, posa Ground amb **Order in Layer = 0** i Decoration amb **Order in Layer = -10**, deixant tots dos a **Sorting Layer = Default**.
 4. Abans de pintar, comprova sempre **Active Tilemap**. El jugador farà servir Order `10` i les monedes `20`.
 
 Una **Sorting Layer** controla el dibuix. La **Layer** de la part superior de l'Inspector controla, entre altres coses, consultes i col·lisions. No són la mateixa propietat.
@@ -306,8 +306,8 @@ Quan ja sàpigues pintar, pots automatitzar l'elecció de cantonades i vores amb
 A Scene es veu un nivell pintat, amb un contorn de col·lisió continu només al terra.
 
 1. Esborra una rajola de Ground i comprova que canvia el contorn.
-2. Pinta a Decoracio i comprova que no apareix col·lisió.
-3. Desa Nivell01. Al següent apartat provarem el terra amb un jugador.
+2. Pinta a Decoration i comprova que no apareix col·lisió.
+3. Desa Level01. Al següent apartat provarem el terra amb un jugador.
 
 ## Errors habituals
 

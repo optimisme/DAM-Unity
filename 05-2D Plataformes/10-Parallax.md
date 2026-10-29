@@ -1,6 +1,6 @@
 # Parallax amb Tilemaps
 
-**Punt de partida:** l'escena **Nivell01**, amb el personatge, el terreny i la càmera dels tutorials anteriors. Farem servir els mateixos sprites del joc i afegirem un decorat nou. Desa l'escena i atura Play abans de començar.
+**Punt de partida:** l'escena **Level01**, amb el personatge, el terreny i la càmera dels tutorials anteriors. Farem servir els mateixos sprites del joc i afegirem un decorat nou. Desa l'escena i atura Play abans de començar.
 
 Quan mires per la finestra d'un tren, els arbres propers passen ràpid i les muntanyes llunyanes semblen moure's molt poc. **Parallax** és reproduir aquest efecte amb diverses capes de dibuix.
 
@@ -21,24 +21,24 @@ El pack conté:
 
 | Carpeta | Contingut |
 |---|---|
-| Textures | Muntanyes.png, Nuvols.png, Bosc.png i PrimerPla.png, (núvols, bosc i primer pla amb transparència) |
+| Textures | Mountains.png, Clouds.png, Forest.png i Foreground.png, (núvols, bosc i primer pla amb transparència) |
 | Scripts | ParallaxTilemapLayer.cs, que mou i repeteix les capes |
 | Editor | ParallaxTilesBuilder.cs, que prepara els sprites, tiles i prefab |
 
 Espera que Unity compili. Si el menú del pas següent no apareix, mira Console i corregeix primer els errors vermells. Necessites **Universal 2D**, **2D Sprite** i **2D Tilemap Editor**, com als primers capítols.
 
-Els gràfics comparteixen tons verds i blavosos: clars al fons, més foscos al davant. Els fulls són de **2172 × 724 píxels**, excepte Nuvols, de **2171 × 724**: l'eina compensa aquest píxel transparent de la vora sense estirar el dibuix. Cada bloc cobreix 24 unitats horitzontals amb diversos grups de vegetació i muntanyes per espaiar les repeticions. Muntanyes inclou el cel del seu full; Nuvols, Bosc i PrimerPla tenen transparència per deixar veure les capes del darrere. Conservem les il·lustracions completes i les dividim en peces; les peces no es poden barrejar a l'atzar sense trencar el dibuix.
+Els gràfics comparteixen tons verds i blavosos: clars al fons, més foscos al davant. Els fulls són de **2172 × 724 píxels**, excepte Clouds, de **2171 × 724**: l'eina compensa aquest píxel transparent de la vora sense estirar el dibuix. Cada bloc cobreix 24 unitats horitzontals amb diversos grups de vegetació i muntanyes per espaiar les repeticions. Mountains inclou el cel del seu full; Clouds, Forest i Foreground tenen transparència per deixar veure les capes del darrere. Conservem les il·lustracions completes i les dividim en peces; les peces no es poden barrejar a l'atzar sense trencar el dibuix.
 
 ## 2. Preparar els tiles
 
-1. Executa **Tools > Parallax > Preparar tiles i prefab** una vegada.
+1. Executa **Tools > Parallax > Build Tiles and Prefab** una vegada.
 2. Obre **Assets/ParallaxTiles/Generated**.
-3. Hi trobaràs les carpetes **Muntanyes**, **Nuvols**, **Bosc** i **PrimerPla**, amb **48 tiles cadascuna**; també el tile de cel i el prefab **Parallax**.
-4. Selecciona **Textures/Muntanyes.png**. A l'Inspector comprova **Sprite Mode = Multiple**, **Pixels Per Unit = 90.5**, **Filter Mode = Point**, **Compression = None**, **Max Size = 4096** i mipmaps desactivats. No redueixis Max Size a 2048: canviaria la resolució importada del full.
+3. Hi trobaràs les carpetes **Mountains**, **Clouds**, **Forest** i **Foreground**, amb **48 tiles cadascuna**; també el tile de cel i el prefab **Parallax**.
+4. Selecciona **Textures/Mountains.png**. A l'Inspector comprova **Sprite Mode = Multiple**, **Pixels Per Unit = 90.5**, **Filter Mode = Point**, **Compression = None**, **Max Size = 4096** i mipmaps desactivats. No redueixis Max Size a 2048: canviaria la resolució importada del full.
 5. Prem **Open Sprite Editor** per veure el retall en **12 columnes × 4 files**, amb peces de **181 × 181 píxels**.
 
 <center>
-<img src="./assets/parallax-tiles-retall.png" alt="Sprite Editor amb Muntanyes.png retallat en 12 × 4 peces de 181 × 181 píxels" style="width: 95%; max-width: 1000px">
+<img src="./assets/parallax-tiles-retall.png" alt="Sprite Editor amb Mountains.png retallat en 12 × 4 peces de 181 × 181 píxels" style="width: 95%; max-width: 1000px">
 </center>
 <br/>
 
@@ -49,7 +49,7 @@ L'eina fa el mateix retall que **Sprite Editor > Slice > Grid by Cell Size = 181
 Cada recurs Tile apunta a un d'aquests sprites i té **Collider Type = None**. El PNG original es conserva; retallar-lo dins de Unity no el divideix en 48 fitxers PNG.
 
 <center>
-<img src="./assets/parallax-tiles-recursos.png" alt="Carpeta Generated/Muntanyes amb els tiles i un tile amb Collider Type = None" style="width: 95%; max-width: 1000px">
+<img src="./assets/parallax-tiles-recursos.png" alt="Carpeta Generated/Mountains amb els tiles i un tile amb Collider Type = None" style="width: 95%; max-width: 1000px">
 </center>
 <br/>
 
@@ -67,16 +67,16 @@ Per editar el dibuix amb el pinzell, crea una **Tile Palette** com al capítol 0
 
 ```text
 Parallax
-    Cel                 Grid + ParallaxTilemapLayer
+    Sky                 Grid + ParallaxTilemapLayer
         Tiles           Tilemap + Tilemap Renderer
-    Muntanyes           Grid + ParallaxTilemapLayer
+    Mountains           Grid + ParallaxTilemapLayer
         Tiles
-    Nuvols              Grid + ParallaxTilemapLayer
+    Clouds              Grid + ParallaxTilemapLayer
         Tiles
-    Bosc                Grid + ParallaxTilemapLayer
+    Forest              Grid + ParallaxTilemapLayer
         Tiles
-            BaseBosc    Tilemap que allarga el color cap avall
-    PrimerPla           Grid + ParallaxTilemapLayer
+            ForestBase  Tilemap que allarga el color cap avall
+    Foreground          Grid + ParallaxTilemapLayer
         Tiles
 Grid                    El terreny anterior, amb colliders
 Player
@@ -101,14 +101,14 @@ Tots aquests renderers utilitzen la Sorting Layer **Default**:
 
 | Capa | Order in Layer | Depth | Posició Y inicial |
 |---|---:|---:|---:|
-| Cel | -100 | 0 | -5 |
-| Muntanyes | -80 | 0.2 | -1 |
+| Sky | -100 | 0 | -5 |
+| Mountains | -80 | 0.2 | -1 |
 | Núvols | -60 | 0.3 | -1.6 |
-| Bosc | -40 | 0.55 | -3.7 |
+| Forest | -40 | 0.55 | -3.7 |
 | Terreny del joc | 0 | Sense script | La del nivell |
 | Personatge | 10 | Sense script | La del jugador |
 | Monedes | 20 | Sense script | La de cada moneda |
-| PrimerPla | 40 | 1.2 | -4.9 |
+| Foreground | 40 | 1.2 | -4.9 |
 
 Les cinc capes decoratives comencen a **X = -12**, **Z = 0**. Els seus Tilemap Renderer utilitzen el material **ParallaxUnlit**, generat pel pack: els colors no depenen de les llums 2D de l'escena.
 
@@ -120,13 +120,13 @@ Les cinc capes decoratives comencen a **X = -12**, **Z = 0**. Els seus Tilemap R
 Si la càmera avança cap a la dreta, aquests elements passen cap a l'esquerra a la pantalla, a velocitats diferents. Parlem del moviment que veu el jugador, no de la coordenada que escriu l'script.
 
 <center>
-<img src="./assets/parallax-tiles-inspector.png" alt="Capa Bosc amb Grid de cel·les 2 × 2 i Parallax Tilemap Layer amb Depth 0.55" style="width: 90%; max-width: 600px">
+<img src="./assets/parallax-tiles-inspector.png" alt="Capa Forest amb Grid de cel·les 2 × 2 i Parallax Tilemap Layer amb Depth 0.55" style="width: 90%; max-width: 600px">
 </center>
 <br/>
 
 **Follow Camera Y** activat manté l'altura del decorat respecte a la pantalla quan la càmera puja. En aquest exemple ens centrem en el parallax horitzontal. No és un sistema de fons infinit vertical: si vols un nivell de pujada, cal preparar més decorat vertical i revisar aquesta opció.
 
-**BaseBosc** és un Tilemap fill de Tiles amb un color verd fosc i Order **-41**. Omple la part inferior del decorat, darrere de la il·lustració, perquè als forats del terreny no es vegi una franja de cel sota el bosc. Es repeteix amb el mateix bloc.
+**ForestBase** és un Tilemap fill de Tiles amb un color verd fosc i Order **-41**. Omple la part inferior del decorat, darrere de la il·lustració, perquè als forats del terreny no es vegi una franja de cel sota el bosc. Es repeteix amb el mateix bloc.
 
 Amb el cel clar, selecciona **Canvas > CoinsNumber** i canvia el color del text a **172B4D**, A **255**, perquè el comptador sigui llegible.
 

@@ -1,6 +1,6 @@
 # Plataformes mòbils
 
-**Punt de partida:** completa abans el jugador, les animacions, la càmera, les monedes, les trampes, el HUD i Game Over. Tornem ara a la mateixa escena Nivell01.
+**Punt de partida:** completa abans el jugador, les animacions, la càmera, les monedes, les trampes, el HUD i Game Over. Tornem ara a la mateixa escena Level01.
 
 Una plataforma mòbil és una superfície que es desplaça entre punts del món. El terreny fix continua sent un Tilemap. Per a una plataforma rectangular petita, tres sprites i un sol BoxCollider2D són suficients; no cal convertir totes les peces del joc en Tilemaps.
 
