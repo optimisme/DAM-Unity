@@ -121,10 +121,10 @@ Com que ja existeix Ground, el desplegable **Active Tilemap** ja el mostra. La z
 </center>
 <br/>
 
-3. Unity demana una carpeta: escull **Assets/Tiles** i prem **Choose**. Unity hi desa la paleta com a **Terrain.prefab**.
+3. Unity demana una carpeta: escull **Assets/Tiles** i prem **Choose**. Unity hi desa la paleta com a **Terrain.prefab**: ho pots comprovar a la finestra Project.
 
 <center>
-<img src="./assets/tilemap-tilepalette-folder.png" alt="Diàleg Create palette into folder amb la carpeta Assets/Tiles seleccionada" style="width: 90%; max-width: 700px">
+<img src="./assets/tilemap-tilepalette-folder.png" alt="Finestra Project amb la paleta Terrain a Assets/Tiles" style="width: 90%; max-width: 450px">
 </center>
 <br/>
 
@@ -138,10 +138,10 @@ Com que ja existeix Ground, el desplegable **Active Tilemap** ja el mostra. La z
 </center>
 <br/>
 
-3. Unity obre el diàleg **Generate tiles into folder**. Entra a **Assets/Tiles**, prem **New Folder**, escriu **Terrain**, prem **Create** i després **Choose**.
+3. Unity obre el diàleg **Generate tiles into folder**. Entra a **Assets/Tiles**, prem **New Folder**, escriu **Terrain**, prem **Create** i després **Choose**. A Project, Assets/Tiles conté ara la carpeta **Terrain** i la paleta **Terrain**.
 
 <center>
-<img src="./assets/tilemap-tiles-newfolder.png" alt="Diàleg Generate tiles into folder creant la carpeta Terrain dins de Tiles" style="width: 90%; max-width: 700px">
+<img src="./assets/tilemap-tiles-newfolder.png" alt="Finestra Project amb la carpeta Terrain i la paleta Terrain a Assets/Tiles" style="width: 90%; max-width: 450px">
 </center>
 <br/>
 

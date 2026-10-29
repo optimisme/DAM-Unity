@@ -31,10 +31,10 @@ Selecciona el personatge "Player" i apreta el botó **"Create"** de la finestra 
 </center>
 <br/>
 
-Desa l'animació a la carpeta **Animations** amb el nom **PlayerIdle**.
+Desa l'animació a la carpeta **Animations** amb el nom **PlayerIdle**. A Project, Assets/Animations conté el clip **PlayerIdle** i el controlador **Player**, que Unity crea i assigna al component Animator.
 
 <center>
-<img src="./assets/animations-save.png" style="width: 90%; max-width: 400px">
+<img src="./assets/animations-save.png" alt="Finestra Project amb el controlador Player i el clip PlayerIdle a Assets/Animations" style="width: 90%; max-width: 450px">
 </center>
 <br/>
 
@@ -66,10 +66,10 @@ A la secció d'animacions, crea un nou clip anomenat **"PlayerJump"**.
 </center>
 <br/>
 
-Desa'l a la carpeta **Animations**.
+Desa'l a la carpeta **Animations**. El clip apareix al costat de PlayerIdle.
 
 <center>
-<img src="./assets/animations-playerjump.png" style="width: 90%; max-width: 400px">
+<img src="./assets/animations-playerjump.png" alt="Finestra Project amb el clip PlayerJump a Assets/Animations" style="width: 90%; max-width: 450px">
 </center>
 
 Posa-hi els següents sprites:
@@ -82,7 +82,7 @@ Desactiva **Loop Time** al clip PlayerJump. En acabar, conserva l’última post
 
 ### PlayerFall
 
-A la secció d'animacions, crea un nou clip anomenat **"PlayerFall"**. Desa'l a la carpeta **Animations**.
+A la secció d'animacions, crea un nou clip anomenat **"PlayerFall"**. Desa'l a la carpeta **Animations**. El clip apareix al costat de PlayerIdle.
 
 Posa-hi el següent sprite:
 
@@ -90,7 +90,7 @@ Posa-hi el següent sprite:
 
 ### PlayerRun
 
-A la secció d'animacions, crea un nou clip anomenat **"PlayerRun"**. Desa'l a la carpeta **Animations**.
+A la secció d'animacions, crea un nou clip anomenat **"PlayerRun"**. Desa'l a la carpeta **Animations**. El clip apareix al costat de PlayerIdle.
 
 Posa-hi els següents sprites:
 
