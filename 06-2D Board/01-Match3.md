@@ -68,8 +68,14 @@ Match3Model no és un component: **no s’arrossega a cap objecte**. Match3Skin 
 1. Comprova que la imatge importada és a **Assets/Match3/Textures/Gemmes.png**. Ja està inclosa en el mateix paquet que els scripts.
 2. Espera que Unity acabi d’importar i compilar els scripts. Executa **Tools > Match3 > Preparar sprites i animacions** una vegada.
 3. L’eina configura el PNG com a **Sprite (2D and UI)**, **Sprite Mode = Multiple**, **Filter Mode = Bilinear**, **Compression = None**, **Max Size = 2048**, **Generate Mip Maps desactivat**, **Alpha Is Transparency activat** i **Pixels Per Unit = 256**.
+
+   ![Gemmes.png a la carpeta Textures i la seva configuració d’importació a l’Inspector](./assets/match3-importacio.png)
+
 4. A Project, desplega Gemmes.png amb la fletxa de la icona. Hi ha **20 sprites Gemma_0_0 … Gemma_4_3** i **4 sprites Burst_0 … Burst_3**.
 5. A Assets/Match3 també apareix **GemmesSkin.asset**. Aquest recurs el genera l’eina; no l’has de descarregar ni crear a mà. Selecciona’l: **Gem Frames** té 20 entrades, **Burst Frames** en té 4 i **Frames Per Second = 6**. L’eina ja ha assignat cada referència.
+
+   ![Carpeta Assets/Match3 a la finestra Project amb GemmesSkin seleccionat](./assets/match3-projecte.png)
+
 6. Si vols inspeccionar els rectangles, selecciona Gemmes.png i prem **Open Sprite Editor** a l’Inspector. **No facis Slice amb una graella de 256 × 256:** el full és il·lustrat i les formes no estan centrades en una graella exacta. L’eina usa rectangles ajustats, amb marge transparent i la mateixa mida als quatre fotogrames de cada tipus. Això evita tallar les puntes de l’ametista o fer saltar la imatge entre fotogrames.
 
 | Tipus / número | Forma i color | Fotogrames |
