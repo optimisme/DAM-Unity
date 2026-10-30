@@ -19,7 +19,7 @@ Un arrossegament llarg no permet saltar caselles. Si el gest és diagonal, es tr
 
 ## 1. Crear el projecte i l'escena
 
-1. A Unity Hub, fes **New project > Universal 2D**. Anomena el projecte **BoardMatch3** i crea'l. Les comprovacions d'aquest material es fan amb Unity **6000.6.3f1**.
+1. A Unity Hub, fes **New project > Universal 2D**. Anomena el projecte **BoardMatch3** i crea'l. Aquest material s'ha preparat amb Unity **6.6**.
 2. Desa l'escena amb **File > Save As**, crea la carpeta **Assets/Scenes** i posa-li **Match3**.
 3. Conserva Main Camera. No afegirem Rigidbody2D, colliders ni Tilemaps: tot el tauler és una interfície **uGUI**, com els botons d'un menú.
 4. A **Window > Package Management > Package Manager**, comprova que tens **Unity UI**, **Input System** i **2D Sprite** instal·lats. El paquet 2D Sprite proporciona les eines que utilitzarem per retallar el full de gemmes. A **Edit > Project Settings > Player > Other Settings > Configuration**, posa **Active Input Handling = Input System Package (New)**. Accepta el reinici de l'editor si el demana.
@@ -59,7 +59,7 @@ Conserva **Editor** amb aquest nom: el seu codi només ha de compilar dins de Un
 | `Match3Effects.cs` | Reproduir l’overlay d’eliminació i netejar-lo en reiniciar |
 | `Match3ArtBuilder.cs` | Retallar el full i preparar GemmesSkin des d’un menú de l’editor |
 
-Espera que Unity compili. **Console no ha de mostrar errors vermells.** Els noms dels fitxers han de coincidir exactament amb els de les classes. No enganxis els scripts dins d’un mateix fitxer.
+No canviïs el nom dels fitxers: han de coincidir exactament amb els de les classes.
 
 Match3Model no és un component: **no s’arrossega a cap objecte**. Match3Skin és un **ScriptableObject**, un recurs de dades que compartiran les peces. Match3ArtBuilder és una eina de l’editor. Els components que afegirem a objectes són Match3Piece, Match3Board i Match3Effects.
 
@@ -68,9 +68,9 @@ Match3Model no és un component: **no s’arrossega a cap objecte**. Match3Skin 
 1. Comprova que la imatge importada és a **Assets/Match3/Textures/Gemmes.png**. Ja està inclosa en el mateix paquet que els scripts.
 2. Espera que Unity acabi d’importar i compilar els scripts. Executa **Tools > Match3 > Preparar sprites i animacions** una vegada.
 3. L’eina configura el PNG com a **Sprite (2D and UI)**, **Sprite Mode = Multiple**, **Filter Mode = Bilinear**, **Compression = None**, **Max Size = 2048**, **Generate Mip Maps desactivat**, **Alpha Is Transparency activat** i **Pixels Per Unit = 256**.
-4. Desplega Gemmes.png a Project. Hi ha **20 sprites Gemma_0_0 … Gemma_4_3** i **4 sprites Burst_0 … Burst_3**.
+4. A Project, desplega Gemmes.png amb la fletxa de la icona. Hi ha **20 sprites Gemma_0_0 … Gemma_4_3** i **4 sprites Burst_0 … Burst_3**.
 5. A Assets/Match3 també apareix **GemmesSkin.asset**. Aquest recurs el genera l’eina; no l’has de descarregar ni crear a mà. Selecciona’l: **Gem Frames** té 20 entrades, **Burst Frames** en té 4 i **Frames Per Second = 6**. L’eina ja ha assignat cada referència.
-6. Obre Sprite Editor per inspeccionar els rectangles. **No facis Slice amb una graella de 256 × 256:** el full és il·lustrat i les formes no estan centrades en una graella exacta. L’eina usa rectangles ajustats, amb marge transparent i la mateixa mida als quatre fotogrames de cada tipus. Això evita tallar les puntes de l’ametista o fer saltar la imatge entre fotogrames.
+6. Si vols inspeccionar els rectangles, selecciona Gemmes.png i prem **Open Sprite Editor** a l’Inspector. **No facis Slice amb una graella de 256 × 256:** el full és il·lustrat i les formes no estan centrades en una graella exacta. L’eina usa rectangles ajustats, amb marge transparent i la mateixa mida als quatre fotogrames de cada tipus. Això evita tallar les puntes de l’ametista o fer saltar la imatge entre fotogrames.
 
 | Tipus / número | Forma i color | Fotogrames |
 |---|---|---|
@@ -83,10 +83,9 @@ Match3Model no és un component: **no s’arrossega a cap objecte**. Match3Skin 
 
 El PNG fa **1024 × 1536** i té transparència real. No redimensionis el fitxer: els rectangles del retall estan preparats per a aquestes dimensions. El fons del joc es veurà entre les formes. Reexecutar l’eina actualitza GemmesSkin; si el vols personalitzar, duplica primer aquest recurs.
 
-
 ## 3. Crear el Canvas i l'entrada del ratolí
 
-1. Fes **GameObject > UI (Canvas) > Canvas**. En algunes versions, el menú es diu simplement **UI**.
+1. Fes **GameObject > UI (Canvas) > Canvas**.
 2. A Canvas, deixa **Render Mode = Screen Space - Overlay**.
 3. A **Canvas Scaler**, posa **UI Scale Mode = Scale With Screen Size**, **Reference Resolution = 960 × 900** i **Screen Match Mode = Expand**. Unity ajusta la interfície perquè càpiga sencera; si sobra espai als costats o a dalt i a baix, el cobreix Fons.
 4. Conserva el component **Graphic Raycaster**: permet saber quina imatge de la UI rep el ratolí.
@@ -115,9 +114,9 @@ Els colors són valors **Hexadecimal** del selector Color, sempre amb opacitat *
 
 ### Textos
 
-Crea aquests fills de **Targeta** amb **UI (Canvas) > Text - TextMeshPro**. Si apareix TMP Importer, prem **Import TMP Essentials** i espera que acabi. No cal importar Examples & Extras.
+Selecciona **Targeta** i crea-hi aquests fills amb **GameObject > UI (Canvas) > Text - TextMeshPro**. Si apareix TMP Importer, prem **Import TMP Essentials** i espera que acabi. No cal importar Examples & Extras.
 
-Abans de continuar, comprova que existeix **Assets/TextMesh Pro/Resources**, que cada text té **Font Asset** assignat (per exemple, **LiberationSans SDF**) i que el text es veu a Game. Tancar TMP Importer no importa els recursos. Si falten, obre **Window > Text Mesh Pro > Import TMP Essential Resources**, completa la importació i revisa les fonts abans de desar l’escena.
+Abans de continuar, comprova que existeix **Assets/TextMesh Pro/Resources**, que cada text té **Font Asset** assignat (per exemple, **LiberationSans SDF**) i que el text es veu a Game. Tancar TMP Importer no importa els recursos. Si falten, obre **Window > TextMeshPro > Import TMP Essential Resources**, completa la importació i revisa les fonts abans de desar l’escena.
 
 Tots els textos van centrats amb Anchor Presets, amb alineació centrada horitzontal i vertical, **Auto Size desactivat** i **Raycast Target desactivat** a Extra Settings.
 
@@ -128,7 +127,7 @@ Tots els textos van centrats amb Anchor Presets, amb alineació centrada horitzo
 | Moviments | 145 / 285 | 245 / 40 | 23 | FFFFFF | Moviments |
 | Missatge | 0 / -292 | 555 / 60 | 19 | D9E4F8 | Clica dues veïnes o arrossega una peça. |
 
-Crea un **Button - TextMeshPro** dins de Targeta, anomena'l **NovaPartida**, centra'l i posa **Pos X / Y = 0 / -355**, **Width / Height = 250 / 48**. A Image, deixa Source Image a None, posa color `73E5D7` i mantén **Raycast Target activat**. Al fill Text (TMP), escriu **Nova partida**, Font Size 22, color `10223A`, alineació centrada i Raycast Target desactivat. El text fill ha d'omplir el botó, amb marges zero.
+Crea un **GameObject > UI (Canvas) > Button - TextMeshPro** dins de Targeta, anomena'l **NovaPartida**, centra'l i posa **Pos X / Y = 0 / -355**, **Width / Height = 250 / 48**. A Image, deixa Source Image a None, posa color `73E5D7` i mantén **Raycast Target activat**. Al fill Text (TMP), escriu **Nova partida**, Font Size 22, color `10223A`, alineació centrada i Raycast Target desactivat. El text fill ha d'omplir el botó, amb marges zero.
 
 ## 5. Construir una peça reutilitzable
 
@@ -157,7 +156,7 @@ No afegeixis Button a Peca: Match3Piece ja gestiona tant el clic com l'arrossega
 
 ### Preparar l’overlay d’eliminació
 
-1. Dins de **Targeta**, crea un objecte buit amb RectTransform anomenat **Efectes**. Pots crear una Image i eliminar-ne només el component Image, conservant RectTransform.
+1. Selecciona **Targeta** i fes **GameObject > Create Empty Child**. Anomena el nou objecte **Efectes**. Com que és dins del Canvas, ja té **Rect Transform**.
 2. Centra’l, posa **512 × 512**, **Pos X / Y = 0 / 0**, Rotation zero i Scale u. Ha de ser **germà de Tauler**, immediatament després seu a Hierarchy. No el posis dins de Tauler: el seu RectMask2D tallaria les espurnes que surten de les vores.
 3. Afegeix **Canvas Group**, amb **Interactable desactivat** i **Blocks Raycasts desactivat**. No hi afegeixis Image, mask ni collider.
 4. Afegeix **Match3 Effects**. Assigna **Overlay = Efectes**, **Skin = GemmesSkin.asset** i **Duration = 0.36**.
@@ -237,7 +236,7 @@ El ratolí dona coordenades de pantalla. **RectTransformUtility** les converteix
 
 No es mouen les dades a cada petit desplaçament del ratolí. Primer es mostra el gest; en deixar anar es decideix la jugada. Un desplaçament de menys d'aproximadament un terç de casella es cancel·la.
 
-La variable **dragged** evita que un arrossegament es converteixi també en un clic. Es reinicia en prémer de nou el botó. La UI també pot distingir botó esquerre, dret i central: aquí només acceptem l'esquerre. [Esdeveniments de la UI](https://docs.unity3d.com/2023.1/Documentation/Manual/SupportedEvents.html).
+La variable **dragged** evita que un arrossegament es converteixi també en un clic. Es reinicia en prémer de nou el botó. La UI també pot distingir botó esquerre, dret i central: aquí només acceptem l'esquerre. [Esdeveniments de la UI](https://docs.unity3d.com/Packages/com.unity.ugui@2.0/manual/SupportedEvents.html).
 
 ## 10. Combinacions, caigudes i cascades
 
