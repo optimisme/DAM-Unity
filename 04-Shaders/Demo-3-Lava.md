@@ -347,6 +347,10 @@ Els canvis durant Play són temporals. Per canviar els valors inicials de manera
 3. Mou Intensitat a 0: desapareix l’emissió, però continua existint el color de la superfície.
 4. Prem R: el temps torna a zero i la intensitat al valor del controlador.
 
+<a href="assets/demolava-variant.png"><img src="assets/demolava-variant.png" alt="Lliscador Intensitat al màxim (8): les esquerdes brillen més a totes les mostres" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
+
+<a href="assets/demolava-intensitat0.png"><img src="assets/demolava-intensitat0.png" alt="Intensitat a 0: desapareix l’emissió i es manté el color de la superfície" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
+
 <a href="assets/demolava-animacio.png"><img src="assets/demolava-animacio.png" alt="Animació en un altre instant, amb el paràmetre inicial" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
 ## Si alguna cosa no funciona

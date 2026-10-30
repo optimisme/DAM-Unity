@@ -213,6 +213,8 @@ Selecciona la **Directional Light** existent, canvia-li el nom a **Key Light** i
 
 Activa **HDR** i **Post Processing** a la càmera existent. Selecciona el **Global Volume** existent. A la finestra Project, selecciona el perfil que fa servir (a **Assets/Settings**), duplica’l amb **Edit > Duplicate**, mou la còpia a `Assets/Demos/Forat`, anomena-la `Bloom` i assigna-la al camp **Profile** del Global Volume. Conserva només **Bloom** al perfil de la demo (elimina els altres overrides per reproduir aquesta il·luminació) i activa els seus overrides: Intensity **0.35**, Threshold **1**, Scatter **0.6**.
 
+<a href="assets/demoforat-projecte.png"><img src="assets/demoforat-projecte.png" alt="Finestra Project amb la carpeta Assets/Demos/Forat: el perfil Bloom i les carpetes Materials, Scenes i Shaders" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
+
 ## 6. Afegir els controls
 
 ### Càmera orbital i zoom
@@ -403,6 +405,8 @@ El forat creix de radi zero fins a **Radius** en **Transition Duration** segons,
 7. Desactiva ForatController: restaura la paret immediatament per no deixar propietats de retall sense un controlador actiu.
 
 <a href="assets/demoforat-sense.png"><img src="assets/demoforat-sense.png" alt="Efecte desactivat: la paret oculta el personatge" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
+
+<a href="assets/demoforat-lateral.png"><img src="assets/demoforat-lateral.png" alt="Personatge desplaçat al lateral: el comptador marca 0 parets actives i la paret recupera el seu aspecte complet" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
 ### Transició del radi
 
