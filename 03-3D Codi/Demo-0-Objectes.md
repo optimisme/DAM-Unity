@@ -3,9 +3,9 @@
 
 Els GameObjects de *Unity* permeten afegir un o més arxius de codi per afectar-ne el comportament.
 
-Crea una escena **Basic** amb **Main Camera** i **Directional Light** (si parteixes d’una escena buida, crea-les amb **GameObject > Camera** i **GameObject > Light > Directional Light**), i desa-la com a **DemoObjectes**. Utilitza un projecte **Universal 3D (URP)**: els exemples de color fan servir la propietat `_BaseColor` dels seus materials.
+Utilitza un projecte **Universal 3D (URP)**: els exemples de color fan servir la propietat `_BaseColor` dels seus materials. Crea una escena amb **File > New Scene > Basic (URP)**, que ja inclou **Main Camera** i **Directional Light** (si parteixes d’una escena buida, crea-les amb **GameObject > Camera** i **GameObject > Light > Directional Light**), i desa-la com a **DemoObjectes** amb **File > Save As**.
 
-Per als apartats de teclat, comprova a **Window > Package Manager > Unity Registry** que **Input System** està instal·lat. 
+Per als apartats de teclat, comprova a **Window > Package Management > Package Manager > Unity Registry** que **Input System** està instal·lat. 
 
 A **Edit > Project Settings > Player > Other Settings > Configuration**, posa **Active Input Handling = Input System Package (New)** o **Both** i reinicia Unity si ho demana.
 
@@ -13,11 +13,11 @@ A **Edit > Project Settings > Player > Other Settings > Configuration**, posa **
 
 **El codi que s'associa a un objecte** s'ha de derivar de *MonoBehaviour*, i aquestes són les principals funcions:
 
-- Afegeix un objecte tipus *"3D Object > Cube"* a l'escena, anomena’l **Player**, posa’l a `(0, 0.5, 0)` i assigna-li el tag **Player**.
+- Afegeix un cub amb **GameObject > 3D Object > Cube**, anomena’l **Player**, posa’l a `(0, 0.5, 0)` i assigna-li el tag **Player**.
 - Posa **Main Camera** a `(0, 5, -5)`, amb rotació `(45, 0, 0)` i **Projection = Perspective**, **Field of View = 60**.
-- Crea un nou script amb nom **"SimpleRotation"**, amb el següent codi
-- Afegeix aquest script com a component del cub
-- Fes play, s'ha de veure com gira el cub 
+- Crea un nou script amb **Assets > Create > Scripting > MonoBehaviour Script**, anomena’l **SimpleRotation** i escriu-hi el codi següent
+- Arrossega l’script sobre el **Player** per afegir-lo com a component del cub
+- Fes Play: s'ha de veure com gira el cub
 - A la pestanya **"Console"** es veuen els missatges de *"Debug.Log"*
 
 Aquest codi té explicacions de les principals funcions dels objectes *MonoBehaviour*
@@ -110,14 +110,12 @@ public class SimpleRotation : MonoBehaviour
 }
 ```
 
-Conserva la resta del primer script: aquest fragment només mostra els canvis.
-
 **Nota**: el camp `[Header("Velocitat de rotació")]` serveix per definir una etiqueta i és opcional
 
 Les variables públiques dels objectes apareixen a la interfície de l'script de Unity i es poden modificar en temps d'execució.
 
-- Apreta "Play"
-- Modifica el valor a 200
+- Prem **Play**
+- Selecciona el **Player** i, a l'Inspector, canvia **Speed** a 200
 - Torna'l a 60
 
 Veuràs com canvia la velocitat de gir de l'objecte.
@@ -187,7 +185,7 @@ if (gameObject.tag == "Player")
     Debug.Log("És el jugador!");
 }
 
-// Crea abans el tag Enemy a Inspector > Tag > Add Tag.
+// Crea abans el tag Enemy a Inspector > Tag > Add Tag...
 // Assignar un tag inexistent provoca un error.
 gameObject.tag = "Enemy";
 ```
@@ -199,7 +197,7 @@ string nom = gameObject.name;
 Debug.Log("Nom de l’objecte: " + nom);
 
 // Assignar un nou nom
-gameObject.name = "CuboMovible";
+gameObject.name = "CubMobil";
 ```
 
 ### Propietats de transformació
@@ -274,9 +272,11 @@ Aquest primer moviment modifica directament el **Transform** i no necessita Rigi
 <img src="assets/demoobjectes-escena.png" alt="Escena amb Player, Sphere i Cylinder" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 - Atura Play abans de modificar l’escena. Deixa el Player amb el tag **Player**; si has provat l’exemple del tag Enemy, torna’l a Player.
-- Afegeix un **Plane** a `(0, 0, 0)` amb escala `(2, 1, 2)`, una **Sphere** a `(-2, 0.5, 3)` i un **Cylinder** a `(2, 1, 3)`, tots amb rotació zero. L’esfera i el cilindre conserven escala `(1, 1, 1)`.
-- Crea dos materials amb **Create > Render > Material** per defecte deixa'l a **Shader = Universal Render Pipeline/Lit**, un per a l’esfera i un per al cilindre, i assigna’ls als seus Mesh Renderers. Tria colors inicials diferents del vermell.
-- Crea un nou script amb nom **"SimpleMovement"**, amb el següent codi, i **afegeix-lo al Player**. Fes Play i clica la vista Game abans de prémer les fletxes.
+- Afegeix un pla amb **GameObject > 3D Object > Plane**, anomena’l **Ground** i posa’l a `(0, 0, 0)` amb escala `(2, 1, 2)`. Afegeix una **Sphere** a `(-2, 0.5, 3)` i un **Cylinder** a `(2, 1, 3)`, tots amb rotació zero. L’esfera i el cilindre conserven escala `(1, 1, 1)`.
+- Crea dos materials amb **Assets > Create > Material**, un per a l’esfera i un per al cilindre. Deixa el shader per defecte, **Universal Render Pipeline/Lit**.
+- Tria a **Base Map** un color inicial diferent del vermell per a cada material i arrossega cada material sobre el seu objecte.
+- Crea un nou script (**Assets > Create > Scripting > MonoBehaviour Script**) amb nom **SimpleMovement**, amb el següent codi, i **afegeix-lo al Player**.
+- Fes Play i clica la vista Game abans de prémer les fletxes.
 
 ```csharp
 using UnityEngine;
@@ -359,7 +359,7 @@ Vector3.back     // (0, 0, -1)
 
 ## Seguir l'objecte amb la càmera
 
-Crea un script amb nom **"CameraFollow"**, amb el següent codi:
+Crea un script (**Assets > Create > Scripting > MonoBehaviour Script**) amb nom **CameraFollow**, amb el següent codi:
 
 ```csharp
 using UnityEngine;
@@ -384,21 +384,21 @@ public class CameraFollow : MonoBehaviour
 
 Per tal que funcioni:
 
-- Afegeix aquest script a la càmera
-- Assigna l'objecte que vols seguir a la variable **target** de l'inspector
+- Afegeix aquest script a la **Main Camera**
+- Arrossega el **Player** des de Hierarchy al camp **Target** de l'Inspector
 
 ## Col·lisions amb *Character Controller*
 
 - Atura Play. 
 - Afegeix un component *Character Controller* al **Player**, amb **Center = (0, 0, 0)**, **Height = 1**, **Radius = 0.5** i **Min Move Distance = 0**.
 - Elimina el **Box Collider** original del Player i qualsevol **Rigidbody** que hi hagis afegit. Mantén el tag **Player**.
-- Afegeix un component **Sphere Collider** a l'esfera (si no el té)
-- Defineix l'sphere collider com a *Trigger* (Is Trigger = true > no li aplica forces, objectes poden travessar-lo)
-- Afegeix el *tag* **"ColorHit"** a l'esfera (crea el tag si no existeix)
+- Comprova que l'esfera té un **Sphere Collider** (el porta per defecte; si no, afegeix-lo amb **Add Component**)
+- Activa **Is Trigger** al Sphere Collider: no aplica forces i els objectes el poden travessar
+- Assigna el *tag* **ColorHit** a l'esfera (crea'l amb **Tag > Add Tag...** si no existeix)
 
 El cub podrà travessar l'esfera: es tornarà vermella en entrar-hi i recuperarà el color original en sortir-ne.
 
-El següent codi de **SimpleMovement** substitueix el moviment del *Transform* pel moviment del *Character Controller*, fent servir `controller.Move(...)` en lloc de canviar directament la posició del *Transform*.
+El nou codi de **SimpleMovement** substitueix el moviment del *Transform*:
 
 ```csharp
 // Canviar la posició d'un objecte
@@ -504,7 +504,7 @@ El jugador podrà travessar el **cilindre**, que es tornarà vermell en entrar-h
 
 - Deixa el cilindre amb tag **Untagged**, perquè **SimpleMovement** no li canviï el color.
 - Activa **Is Trigger** al seu *Capsule Collider*. Només cal aquest collider.
-- Crea **CylinderColor.cs** amb aquest codi i **afegeix-lo com a component del cilindre**; tenir l'arxiu a *Assets* no és suficient.
+- Crea l'script **CylinderColor** (**Assets > Create > Scripting > MonoBehaviour Script**) amb aquest codi i **afegeix-lo com a component del cilindre**; tenir l'arxiu a *Assets* no és suficient.
 
 
 ```csharp

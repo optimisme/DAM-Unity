@@ -12,23 +12,23 @@ La càmera gira en passos de 90°. Quan una paret tapa el jugador, es torna semi
 
 A Unity Hub, crea un projecte nou amb la plantilla **Universal 3D (URP)** i **Unity 6.6, 6000.6.3f1**. Els materials fan servir **Universal Render Pipeline/Lit** i la propietat de color `_BaseColor`.
 
-1. A l’escena inicial **SampleScene** de Universal 3D, fes **File > Save As** i desa **Assets/Scenes/DemoNivells.unity**. Conserva **Main Camera**, **Directional Light** i **Global Volume**. Més avall ajustarem la càmera i la llum existents. El component Transform de la càmera conserva **Scale `(1, 1, 1)`** i el tag **MainCamera**.
+1. A l’escena inicial **SampleScene** de Universal 3D, fes **File > Save As** i desa **Assets/Scenes/DemoNivells.unity**. Conserva **Main Camera**, **Directional Light** i, si la plantilla l’inclou, **Global Volume**. Més avall ajustarem la càmera i la llum existents. El component Transform de la càmera conserva **Scale `(1, 1, 1)`** i el tag **MainCamera**.
 2. A **Window > Package Management > Package Manager > Unity Registry**, comprova que **Input System** està instal·lat.
 3. A **Edit > Project Settings > Player > Other Settings**, configura **Active Input Handling** com **Input System Package (New)** o **Both**. Reinicia Unity si ho demana.
 4. A *Assets*, crea la carpeta **DemoNivells** i, dins, **Scripts** i **Materials**.
 5. Importa **TMP Essential Resources** des de **Window > TextMeshPro > Import TMP Essential Resources**, si encara no existeix la carpeta *TextMesh Pro*. També pots importar-los quan Unity ho demani en crear el primer text.
 
-Crea els set scripts dels apartats següents dins de *DemoNivells/Scripts*, amb el mateix nom que la seva classe. **Completa tots els scripts i totes les referències abans de fer Play**: alguns scripts depenen dels que s’expliquen més endavant. No afegeixis scripts de moviment d’altres demos al mateix jugador.
+Crea els set scripts dels apartats següents dins de *DemoNivells/Scripts* amb **Assets > Create > Scripting > MonoBehaviour Script**, amb el mateix nom que la seva classe. **Completa tots els scripts i totes les referències abans de fer Play**: alguns scripts depenen dels que s’expliquen més endavant. No afegeixis scripts de moviment d’altres demos al mateix jugador.
 
 **Coordenades i jerarquia:** abans de crear cada objecte independent, deixa de seleccionar qualsevol pare de la Hierarchy. Comprova que quedi a l’arrel. En crear un objecte buit, fes **Transform > ⋮ > Reset** i després introdueix els valors indicats. Les posicions de les taules són del món per als objectes a l’arrel; en els fills són **locals respecte al pare**. No facis fills del terra els murs ni el jugador. Si dupliques, revisa tots tres valors de Position, Rotation i Scale.
 
-**Colors i materials:** a Project, dins de Materials, fes **clic dret > Create > Rendering > Material**. Obre el selector del color de **Base Map** i selecciona **RGB, rang 0–255**: introdueix R, G i B separadament. Deixa **A = 255**, excepte quan s’indiqui transparència. En el codi, `new Color(...)` continua utilitzant components entre 0 i 1.
+**Colors i materials:** a Project, dins de Materials, fes **clic dret > Create > Material** (o **Assets > Create > Material**). Obre el selector del color de **Base Map** i selecciona **RGB, rang 0–255**: introdueix R, G i B separadament. Deixa **A = 255**, excepte quan s’indiqui transparència. En el codi, `new Color(...)` continua utilitzant components entre 0 i 1.
 
-**Interfície de Unity 6.6:** els textos i Canvas són a **GameObject > UI (Canvas)**; en altres versions el menú es diu UI. El menú Package Manager pot aparèixer directament sota Window en versions anteriors. El Canvas d’aquesta demo només mostra text: si Unity crea un **EventSystem**, elimina’l de la Hierarchy; no cal per llegir el teclat amb Input System.
+**Interfície:** els textos i el Canvas es creen des de **GameObject > UI (Canvas)**. El Canvas d’aquesta demo només mostra text: si Unity crea un **EventSystem**, elimina’l de la Hierarchy; no cal per llegir el teclat amb Input System.
 
 ## 2. Materials i construcció del diorama
 
-Crea cada material amb **Create > Rendering > Material**, selecciona el shader **Universal Render Pipeline/Lit** i assigna el color a **Base Map**. Deixa **Metallic = 0** i **Smoothness = 0.15**. Introdueix els valors RGB de la taula per reproduir la paleta de la demo.
+Crea cada material amb **Assets > Create > Material**, selecciona el shader **Universal Render Pipeline/Lit** i assigna el color a **Base Map**. Deixa **Metallic = 0** i **Smoothness = 0.15**. Introdueix els valors RGB de la taula per reproduir la paleta de la demo.
 
 | Material | Color RGB (0–255) | Surface Type |
 |---|---|---|
@@ -63,7 +63,7 @@ Afegeix els objectes següents amb **GameObject > 3D Object > Cube**. Tots són 
 
 La cara superior de **Base** queda a `Y = 0` i la d’**UpperFloor** a `Y = 3.5`. Hi ha espai per passar per sota del pis superior. **Lift** toca la vora frontal del pis superior quan arriba a dalt.
 
-A **Window > Rendering > Lighting > Environment**, posa **Environment Lighting > Source = Color** i Ambient Color **RGB `(128, 128, 128)`**.
+Obre **Window > Rendering > Lighting**, ves a la pestanya **Environment** i posa **Environment Lighting > Source = Color** i Ambient Color **RGB `(128, 128, 128)`**.
 
 A la **Directional Light** existent, selecciona **Color** a Light Appearance i posa rotació `(50, -30, 0)`, intensitat `2` i ombres activades.
 
@@ -306,7 +306,7 @@ Mantén el **Box Collider** sòlid, sense **Is Trigger** ni Rigidbody. No cal **
 
 `DefaultExecutionOrder(-100)` fa que l’elevador es mogui abans que el jugador. `Delta` és la diferència entre la seva posició actual i l’anterior, que el jugador utilitza per acompanyar-lo.
 
-<img src="assets/demonivells-elevador.png" alt="L’elevador transporta la càpsula fins al pis superior" width="600" style="width: 90%; max-width: 600px; height: auto;">
+<img src="assets/demonivells-elevador.png" alt="Elevador a la planta baixa, al costat de la càpsula, amb el comptador a 0/3" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 ## 6. Parets que es tornen semitransparents
 

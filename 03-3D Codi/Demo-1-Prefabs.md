@@ -9,13 +9,13 @@ En aquesta demo:
 
 # Crear l'escena
 
-Crea una escena **Basic**, amb **Main Camera** i **Directional Light** (o crea-les amb **GameObject > Camera** i **GameObject > Light > Directional Light** si l’escena és buida), i desa-la com a **DemoPrefabs**.
+En un projecte **Universal 3D (URP)**, crea una escena amb **File > New Scene > Basic (URP)**, que ja inclou **Main Camera** i **Directional Light** (o crea-les amb **GameObject > Camera** i **GameObject > Light > Directional Light** si l’escena és buida), i desa-la com a **DemoPrefabs** amb **File > Save As**.
 
-Comprova que **Input System** està instal·lat a **Window > Package Manager > Unity Registry**. 
+Comprova que **Input System** està instal·lat a **Window > Package Management > Package Manager > Unity Registry**. 
 
-A **Edit > Project Settings > Player > Other Settings**, **Active Input Handling** ha de ser **Input System Package (New)** o **Both**; reinicia Unity si ho demana.
+A **Edit > Project Settings > Player > Other Settings > Configuration**, **Active Input Handling** ha de ser **Input System Package (New)** o **Both**; reinicia Unity si ho demana.
 
-Mou la càmera a:
+Selecciona **Main Camera** i configura-la a l’Inspector:
 
 ```text
 Position X: 0
@@ -28,21 +28,21 @@ Field of View: 60
 
 Afegeix:
 
-- Un **Plane** a `(0, 0, 0)`, amb rotació zero i escala `(1, 1, 1)`
-- Un **Cube** que farà de jugador, a 
+- Un pla amb **GameObject > 3D Object > Plane**, anomenat **Ground**, a `(0, 0, 0)`, amb rotació zero i escala `(1, 1, 1)`
+- Un cub amb **GameObject > 3D Object > Cube**, que farà de jugador, a 
   ```text
   Position X: 0
   Position Y: 0.5
   Position Z: 0
   ```
-- Un objecte buit amb **"Create Empty"** i anomena'l **ItemGenerator**
+- Un objecte buit amb **GameObject > Create Empty**, anomenat **ItemGenerator**
 
 Al **Cube**:
 
 - Canvia el nom a `Player`
-- Afegeix el tag `Player`
-- Afegeix un component **Character Controller** amb els valors següents.
-- Esborra el `Box Collider` que té per defecte: el `Character Controller` ja és suficient. Deixa el Player sense "Rigidbody" i sense "Box Collider".
+- Assigna-li el tag `Player`
+- Esborra el `Box Collider` que té per defecte (menú **⋮ > Remove Component**): el `Character Controller` ja és suficient. Deixa el Player sense Rigidbody i sense Box Collider.
+- Afegeix un component **Character Controller** (**Add Component > Physics > Character Controller**) amb els valors següents:
 
 ```text
 Center: 0, 0, 0
@@ -52,7 +52,7 @@ Radius: 0.5
 
 # Crear els scripts
 
-Crea i completa els quatre scripts abans de configurar els components a l’Inspector.
+Crea i completa els quatre scripts abans de configurar els components a l’Inspector. Crea cada script amb **Assets > Create > Scripting > MonoBehaviour Script** i dona-li el nom indicat (sense `.cs`).
 
 Crea l'script **PrefabPlayerMovement.cs** i afegeix-lo al `Player`. El nom evita confondre’l amb el PlayerMovement d’altres demos.
 
@@ -214,16 +214,16 @@ public class ItemGenerator : MonoBehaviour
 
     public void ItemCollected()
     {
-        // Marca l'objecte com a agafat/col·lecionat
+        // Marca l'objecte com a agafat/col·leccionat
         currentItem = null;
 
-        // Fa un thread/corutina per genera run nou objecte al cap de "generateDelay"
+        // Inicia una corutina per generar un nou objecte al cap de "generateDelay"
         StartCoroutine(GenerateDelayed());
     }
 
     IEnumerator GenerateDelayed()
     {
-        // Generarà un nou objecte tipus prefag al cap de "generateDelay"
+        // Generarà un nou objecte del prefab al cap de "generateDelay"
         yield return new WaitForSeconds(generateDelay);
         Generate();
     }
@@ -232,19 +232,20 @@ public class ItemGenerator : MonoBehaviour
 
 # Objectes recollibles (Prefab)
 
-Afegeix un **3D Object > Sphere**.
+Afegeix una esfera amb **GameObject > 3D Object > Sphere**.
 
 Configura'l:
 
 - Nom: `Collectable`
-- Posició: `(0, 0.5, 0)`
-- Escala: aproximadament `0.5, 0.5, 0.5`
-- Crea el tag `Collectable` a **Inspector > Tag > Add Tag** i després assigna’l a l’esfera
+- Posició: `(0, 0.5, 3)`
+- Escala: `(0.5, 0.5, 0.5)`
+- Crea el tag `Collectable` a **Inspector > Tag > Add Tag...** i després assigna’l a l’esfera
 - Activa **Is Trigger** al seu `Sphere Collider`
+- Afegeix un **Rigidbody** (**Add Component > Physics > Rigidbody**), desactiva **Use Gravity** i activa **Is Kinematic**: el recollible no cau ni el mou la física, però el trigger detecta el jugador
 
 Assigna l'script `Collectable.cs` a aquesta esfera. Deixa el seu camp **Generator** a **None**: ItemGenerator l’assigna per codi quan crea cada instància.
 
-Arrossega `Collectable` des de la jerarquia fins a **Assets** per convertir-lo en un **Prefab**.
+Crea una carpeta **Prefabs** a la finestra Project (**Assets > Create > Folder**) i arrossega `Collectable` des de Hierarchy fins a aquesta carpeta per convertir-lo en un **Prefab**.
 
 **IMPORTANT:** **Esborra** després l'objecte `Collectable` de l'escena.
 
@@ -266,7 +267,7 @@ A l'Inspector:
 
 <img src="assets/demoprefabs-generador.png" alt="ItemGenerator amb el prefab Collectable assignat i Generate Delay a 2" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
-- Arrossega el prefab **Collectable** des de *Assets* al camp **Item Prefab** del component **Item Generator**
+- Arrossega el prefab **Collectable** des de la carpeta **Prefabs** de la finestra Project al camp **Item Prefab** del component **Item Generator**
 - Deixa **Generate Delay** a `2`
 
 # Provar la demo
@@ -309,12 +310,8 @@ El jugador el recull
 La cua creix
 ```
 
-<img src="assets/demoprefabs-cua.png" alt="Tres objectes recollits a la cua i un altre disponible al generador" width="600" style="width: 90%; max-width: 600px; height: auto;">
+<img src="assets/demoprefabs-cua.png" alt="Tres objectes recollits apilats darrere el Player" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
 En aturar Play, desapareixen les instàncies creades durant la partida. En tornar a fer Play, la cua comença buida i el generador crea un únic recollible.
 
-**Nota** Si no funciona, prova d'afegir un **Rigidbody** al prefab:
-
-- Afegeix un **Rigidbody**. (objecte detecció de triggers)
-- Desactiva **Use Gravity** (desactiva la gravetat)
-- Activa **Is Kinematic** (evita que la física mogui l'objecte)
+**Nota:** si el jugador no recull l’objecte, comprova que el prefab té el **Rigidbody** amb **Use Gravity** desactivat i **Is Kinematic** activat, i que el seu **Sphere Collider** té **Is Trigger** activat.

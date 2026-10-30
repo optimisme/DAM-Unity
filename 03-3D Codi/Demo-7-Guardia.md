@@ -19,16 +19,16 @@ Construirem un diorama amb una **càpsula**, un vigilant esfèric, dues parets p
 1. Crea un projecte **Universal 3D (URP)**. Versió utilitzada: **Unity 6.6, 6000.6.3f1**.
 2. A **Window > Package Management > Package Manager**, comprova que **Input System** està instal·lat.
 3. A **Edit > Project Settings > Player > Other Settings**, posa **Active Input Handling = Input System Package (New)** o **Both**. Reinicia l’Editor si ho demana.
-4. A l’escena inicial **SampleScene** de Universal 3D, fes **File > Save As** i desa **Assets/Scenes/DemoGuardia.unity**. Conserva **Main Camera**, **Directional Light** i **Global Volume**. Més avall ajustarem la càmera i la llum existents. El component Transform de la càmera conserva **Scale `(1, 1, 1)`** i el tag **MainCamera**.
+4. A l’escena inicial **SampleScene** de Universal 3D, fes **File > Save As** i desa **Assets/Scenes/DemoGuardia.unity**. Conserva **Main Camera**, **Directional Light** i, si la plantilla l’inclou, **Global Volume**. Més avall ajustarem la càmera i la llum existents. El component Transform de la càmera conserva **Scale `(1, 1, 1)`** i el tag **MainCamera**.
 5. Crea **Assets/DemoGuardia/Scripts** i **Assets/DemoGuardia/Materials**.
 6. Importa **Window > TextMeshPro > Import TMP Essential Resources**. No cal Examples & Extras.
-7. Crea els **quatre scripts complets de l’apartat 8** amb els noms indicats. Espera que acabin de compilar abans d’afegir-los als objectes. **No facis Play fins que hagis completat les referències de l’apartat 6.** Es referencien entre ells; mentre en falti algun, poden aparèixer errors provisionals.
+7. Crea els **quatre scripts complets de l’apartat 8** a **Assets/DemoGuardia/Scripts**, amb **clic dret > Create > Scripting > MonoBehaviour Script** i els noms indicats. Espera que acabin de compilar abans d’afegir-los als objectes. **No facis Play fins que hagis completat les referències de l’apartat 6.** Es referencien entre ells; mentre en falti algun, poden aparèixer errors provisionals.
 
 **Coordenades i jerarquia:** abans de crear cada objecte independent, deixa de seleccionar qualsevol pare de la Hierarchy. Comprova que quedi a l’arrel. En crear un objecte buit, fes **Transform > ⋮ > Reset** i després introdueix els valors indicats. Les posicions de les taules són del món per als objectes a l’arrel; en els fills són **locals respecte al pare**. No facis fills del terra els murs ni el jugador. Si dupliques, revisa tots tres valors de Position, Rotation i Scale.
 
-**Colors i materials:** a Project, dins de Materials, fes **clic dret > Create > Rendering > Material**. Obre el selector del color de **Base Map** i selecciona **RGB, rang 0–255**: introdueix R, G i B separadament. Deixa **A = 255**, excepte quan s’indiqui transparència. En el codi, `new Color(...)` continua utilitzant components entre 0 i 1.
+**Colors i materials:** a Project, dins de Materials, fes **clic dret > Create > Material**. Obre el selector del color de **Base Map** i selecciona **RGB, rang 0–255**: introdueix R, G i B separadament. Deixa **A = 255**, excepte quan s’indiqui transparència. En el codi, `new Color(...)` continua utilitzant components entre 0 i 1.
 
-**Interfície de Unity 6.6:** els textos i Canvas són a **GameObject > UI (Canvas)**; en altres versions el menú es diu UI. El menú Package Manager pot aparèixer directament sota Window en versions anteriors. El Canvas d’aquesta demo només mostra text: si Unity crea un **EventSystem**, elimina’l de la Hierarchy; no cal per llegir el teclat amb Input System.
+**Interfície de Unity 6.6:** els textos i Canvas són a **GameObject > UI (Canvas)**. El Canvas d’aquesta demo només mostra text: si Unity crea un **EventSystem**, elimina’l de la Hierarchy; no cal per llegir el teclat amb Input System.
 
 ## 2. Construir el diorama
 
@@ -45,9 +45,9 @@ Crea materials **Universal Render Pipeline/Lit**, opacs, amb Metallic 0 i Smooth
 | Door | `RGB (231, 117, 53)` |
 | Nose | `RGB (41, 63, 80)` |
 
-A **Inspector > Layer > Add Layer**, crea una capa d’usuari anomenada **GuardWalls**. Torna als objectes i assigna-la: crear una capa no l’assigna automàticament. No és un tag.
+Selecciona qualsevol objecte i, a l’Inspector, obre el desplegable **Layer > Add Layer...**. Escriu **GuardWalls** en una **User Layer** buida. Torna als objectes i assigna-la: crear una capa no l’assigna automàticament. No és un tag.
 
-Crea aquests **cubs** a l’arrel de la jerarquia. Tots tenen Rotation `(0, 0, 0)`, Box Collider activat i **Is Trigger desactivat**. No afegeixis Rigidbody.
+Crea aquests **cubs** amb **GameObject > 3D Object > Cube**, a l’arrel de la jerarquia. Tots tenen Rotation `(0, 0, 0)`, Box Collider activat i **Is Trigger desactivat**. No afegeixis Rigidbody.
 
 | Objecte | Position | Scale | Material | Layer |
 |---|---|---|---|---|
@@ -83,7 +83,7 @@ Configura **Main Camera**:
 | Background Type | Solid Color |
 | Background | `RGB (196, 219, 224)` |
 
-Al **Directional Light** existent, selecciona **Color** a Light Appearance i posa Rotation `(50, -30, 0)` i Intensity `1.3`. A **Window > Rendering > Lighting > Environment**, selecciona il·luminació ambiental de tipus Color amb gris `RGB (140, 140, 140)`.
+Al **Directional Light** existent, selecciona **Color** a Light Appearance i posa Rotation `(50, -30, 0)` i Intensity `1.3`. Obre **Window > Rendering > Lighting**, ves a la pestanya **Environment** i, a **Environment Lighting**, posa **Source = Color** i **Ambient Color** gris `RGB (140, 140, 140)`.
 
 A Game utilitza una proporció **16:9**, per exemple Full HD (1920×1080), per obtenir l’enquadrament de les captures.
 
@@ -123,7 +123,7 @@ Dins de Guard, crea un cub fill **Nose**. Posa **Local Position = `(0, 0.15, 0.6
 
 ## 4. Definir el recorregut per trams
 
-1. Crea un objecte buit **Route**, a Position zero, Rotation zero i Scale `(1, 1, 1)`.
+1. Crea un objecte buit **Route** amb **GameObject > Create Empty**, a Position zero, Rotation zero i Scale `(1, 1, 1)`.
 2. Crea quatre objectes buits com a fills: **P0**, **P1**, **P2** i **P3**.
 3. Assigna les posicions següents. Com que Route no està transformat, coincideixen les coordenades locals i les del món.
 
@@ -152,13 +152,13 @@ La detecció és un **sector circular de 100° i radi 5**, no una esfera. La dis
 2. Posa **Surface Type = Transparent**, **Blending Mode = Alpha** i Base Map de color blau, amb **RGB = (38, 140, 255)** i **Alpha = 46**, amb el selector en el rang 0–255. Deixa la textura buida. No cal crear ni editar cap shader.
 3. A Guard, crea un **objecte buit fill Vision**. Deixa **Local Position i Rotation a zero**, i Local Scale `(1, 1, 1)`.
 4. Afegeix **GuardiaVision**: Unity afegirà Mesh Filter i Mesh Renderer gràcies a `RequireComponent`.
-5. Al Mesh Renderer, posa el material Vision a **Materials > Element 0**. Desactiva Cast Shadows; el script també ho farà en executar-se.
+5. Al Mesh Renderer, posa el material Vision a **Materials > Element 0**. Desactiva Cast Shadows; l’script també ho farà en executar-se.
 6. A GuardiaVision, arrossega **Guard** al camp Guard. Deixa Segments `40` i Ground Height `0.07`.
 7. **No afegeixis cap Collider ni Rigidbody a Vision.** No bloqueja ni activa res.
 
 La malla apareix en fer Play. És plana, sense gruix, a Y = 0.07 perquè no coincideixi amb el terra. El radi i l’angle es llegeixen directament de GuardiaBrain: no cal introduir-los dues vegades. El color segueix els estats blau, vermell i groc.
 
-El script crea triangles com els talls d’una pizza. Per a cada extrem del ventall, llança un raig horitzontal des de l’alçada dels ulls i retalla el dibuix si troba GuardWalls. És una ajuda visual mostrejada amb 40 segments; la detecció real continua fent el Linecast cap al jugador. Aquesta representació plana està pensada per a **aquest terra horitzontal**, no per a escales o pendents.
+L’script crea triangles com els talls d’una pizza. Per a cada extrem del ventall, llança un raig horitzontal des de l’alçada dels ulls i retalla el dibuix si troba GuardWalls. És una ajuda visual mostrejada amb 40 segments; la detecció real continua fent el Linecast cap al jugador. Aquesta representació plana està pensada per a **aquest terra horitzontal**, no per a escales o pendents.
 
 <img src="assets/demoguardia-visio.png" alt="Ventall semitransparent retallat per les parets" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
@@ -168,10 +168,10 @@ Pots desactivar l’objecte Vision per amagar el dibuix: la detecció del vigila
 
 1. Crea **GameObject > UI (Canvas) > Canvas**, en **Screen Space - Overlay**.
 2. Al Canvas Scaler, posa **Scale With Screen Size**, Reference Resolution `(1600, 900)` i Match `0.5`.
-3. Crea un fill **UI (Canvas) > Text - TextMeshPro**, anomenat **Status**. Usa LiberationSans SDF, mida `26`, color fosc `RGB (20, 38, 46)`, alineació superior esquerra i desactiva Raycast Target.
+3. Amb el Canvas seleccionat, crea **GameObject > UI (Canvas) > Text - TextMeshPro** i anomena’l **Status**. Usa LiberationSans SDF, mida `26`, color fosc `RGB (20, 38, 46)`, alineació superior esquerra i desactiva Raycast Target.
 4. Al RectTransform, posa **Anchor Min = Anchor Max = `(0, 1)`**, Pivot `(0, 1)`, Pos X `24`, Pos Y `-20`, Width `1300` i Height `125`. Text inicial: `Vigilant: Patrulla (blau)`.
 5. Duplica’l com a **Controls**, posa Pos Y `-145`, mida de lletra `23` i text `WASD / fletxes: moure    R: reiniciar    El nas indica on mira el vigilant.`
-6. Crea un objecte buit **Game**, amb **GuardiaGame**.
+6. Crea un objecte buit **Game** a l’arrel amb **GameObject > Create Empty** i afegeix-li **GuardiaGame**.
 
 Ara completa **totes** les referències abans de fer Play:
 

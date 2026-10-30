@@ -13,27 +13,27 @@ En aquesta demo:
 
 A **Unity Hub**:
 
-- Crea un projecte nou amb **Unity 6**.
-- Selecciona la plantilla **3D (Built-In Render Pipeline)**.
-- Anomena'l `DemoProximitat`.
+1. Crea un projecte nou amb **Unity 6**.
+2. Selecciona la plantilla **Universal 3D (URP)**.
+3. Anomena'l `DemoPlataformes`.
 
-Si ja tens un projecte **Universal 3D (URP)**, també pots fer aquesta demo sense canviar de render pipeline. Utilitza materials **Universal Render Pipeline/Lit** i comprova que l'asset URP actiu a **Project Settings > Quality** (o el de **Graphics** si no hi ha cap substitució) tingui **Additional Lights** activats. Els noms i la distribució dels camps de l'Inspector poden variar segons la versió.
+Utilitza materials **Universal Render Pipeline/Lit** i comprova que l'asset URP actiu a **Edit > Project Settings > Quality** (o el de **Graphics** si no hi ha cap substitució) tingui **Additional Lights** activats. Els scripts també funcionen en un projecte **3D (Built-In Render Pipeline)** amb materials **Standard**.
 
-A **Window > Package Manager**:
+A **Window > Package Management > Package Manager**:
 
-- Selecciona **Unity Registry**.
-- Busca **Input System** i instal·la'l.
-- Accepta l'activació del nou sistema d'entrada i reinicia l'editor si ho demana.
+1. Selecciona **Unity Registry**.
+2. Busca **Input System** i comprova que està instal·lat; si no ho està, instal·la'l.
+3. Accepta l'activació del nou sistema d'entrada i reinicia l'editor si ho demana.
 
-A **Edit > Project Settings > Player > Other Settings**, deixa **Active Input Handling** a **Input System Package (New)** o **Both**.
+A **Edit > Project Settings > Player > Other Settings > Configuration**, deixa **Active Input Handling** a **Input System Package (New)** o **Both**.
 
-Desa l'escena amb nom `DemoProximitat`. Si treballes en un projecte existent, pots reutilitzar **SampleScene**: el nom de l'escena no afecta els scripts.
+Desa l'escena amb **File > Save As** i nom `DemoPlataformes`. També pots reutilitzar **SampleScene**: el nom de l'escena no afecta els scripts.
 
 Si l'escena és completament buida, crea una **Camera** anomenada `Main Camera` amb el tag **MainCamera** i un **Directional Light** abans de continuar. Si reutilitzes una escena, elimina els components antics que apareguin com a **Missing (Mono Script)** i comprova que no hi hagi errors de compilació a Console.
 
 # Crear l'escena
 
-Mou la **Main Camera** a:
+Selecciona la **Main Camera** i configura-la a l'Inspector:
 
 ```text
 Position: 2, 12, -12
@@ -42,7 +42,7 @@ Projection: Perspective
 Field of View: 60
 ```
 
-Afegeix un **3D Object > Plane**:
+Afegeix un pla amb **GameObject > 3D Object > Plane**:
 
 ```text
 Name: Ground
@@ -54,7 +54,7 @@ Mantén el component **Mesh Collider**. En aquests objectes, deixa **Rotation = 
 
 ## Jugador
 
-Afegeix un **3D Object > Capsule**:
+Afegeix una càpsula amb **GameObject > 3D Object > Capsule**:
 
 ```text
 Name: Player
@@ -63,9 +63,9 @@ Scale: 1, 1, 1
 Tag: Player
 ```
 
-- Elimina el **Capsule Collider** original.
-- Afegeix un **Character Controller**.
-- No hi afegeixis cap Rigidbody.
+1. Elimina el **Capsule Collider** original (menú **⋮ > Remove Component** del component).
+2. Afegeix un **Character Controller** amb **Add Component > Physics > Character Controller**.
+3. No hi afegeixis cap Rigidbody.
 
 Configura el **Character Controller**:
 
@@ -86,7 +86,7 @@ Min Move Distance: 0
 
 ## Replà
 
-Afegeix un **3D Object > Cube**:
+Afegeix un cub amb **GameObject > 3D Object > Cube**:
 
 ```text
 Name: Landing
@@ -100,9 +100,9 @@ El replà té una altura de `0.2`, inferior al **Step Offset** del jugador: s'hi
 
 ## Plataforma
 
-Afegeix un **3D Object > Cube**:
+Afegeix un altre cub amb **GameObject > 3D Object > Cube**:
 
-- Deixa **Static** desactivat (A dalt a la dreta de l'inspector, al costat del nom de l’objecte)
+- Deixa **Static** desactivat (a dalt a la dreta de l'Inspector, al costat del nom de l’objecte)
 
 ```text
 Name: Platform
@@ -111,9 +111,9 @@ Scale: 3, 0.2, 3
 ```
 
 - Mantén el **Box Collider** amb **Is Trigger** desactivat.
-- Afegeix un **Rigidbody**. (objecte detecció de triggers)
-- Desactiva **Use Gravity** (desactiva la gravetat)
-- Activa **Is Kinematic** (evita que la física mogui l'objecte)
+- Afegeix un **Rigidbody** (**Add Component > Physics > Rigidbody**): marca la plataforma com a cos físic que es mou per codi.
+- Desactiva **Use Gravity** (desactiva la gravetat).
+- Activa **Is Kinematic** (evita que la física mogui l'objecte).
 
 <img src="assets/demoplataformes-plataforma.png" alt="Transform, Box Collider i Rigidbody de Platform" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
@@ -121,7 +121,7 @@ Scale: 3, 0.2, 3
 
 El replà i la plataforma tenen la superfície a la mateixa altura.
 
-L'Script canviarà el color de la plataforma per mostrar la detecció:
+L'script canviarà el color de la plataforma per mostrar la detecció:
 
 - **Gris:** el jugador és fora del radi; la plataforma està aturada.
 - **Verd:** el jugador és dins del radi; la plataforma està activada.
@@ -132,9 +132,9 @@ El canvi afecta només **Platform**. Ground, Landing i Player conservaran el seu
 
 El recorregut serà **PointA → PointB → PointC → PointD**. En arribar a PointD, la plataforma torna pels mateixos trams: **PointD → PointC → PointB → PointA**, i repeteix.
 
-1. A la **Hierarchy**, crea un objecte buit amb **Create Empty** i anomena'l **Path**.
+1. A la **Hierarchy**, crea un objecte buit amb **+ > Create Empty** i anomena'l **Path**.
 2. Deixa el seu Transform a **Position = (0, 0, 0)**, **Rotation = (0, 0, 0)** i **Scale = (1, 1, 1)**.
-3. Dins de Path, crea quatre objectes buits. Pots crear el primer i duplicar-lo tres vegades.
+3. Fes clic dret sobre Path i tria **Create Empty** per crear-hi un fill. Repeteix-ho fins a tenir quatre objectes buits dins de Path (o duplica el primer tres vegades amb **Ctrl+D** / **Cmd+D**).
 4. Assigna aquests noms i posicions. Com que Path és a l'origen i no està girat ni escalat, les posicions locals coincideixen amb les globals:
 
 | Punt | Position X | Position Y | Position Z |
@@ -160,9 +160,10 @@ Tornada: D → C → B → A
 **Path ha de quedar a l'arrel de la jerarquia, fora de Platform.** Els punts són fills de Path, no de la plataforma: així no es desplacen amb ella. Path només serveix per ordenar els punts; no necessita cap component especial, collider ni script.
 
 ```text
-DemoProximitat
+DemoPlataformes
 ├─ Main Camera
 ├─ Directional Light
+├─ Global Volume (si la plantilla URP l'ha creat)
 ├─ Ground
 ├─ Player
 ├─ Landing
@@ -176,17 +177,17 @@ DemoProximitat
 
 <img src="assets/demoplataformes-path.png" alt="Jerarquia Path amb els quatre punts i Transform de PointC" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
-*Path és al mateix nivell que Platform. PointC és fill de Path i té la posició (6, 0.1, 4). Repeteix la comprovació amb les coordenades de cada punt de la taula.*
+*A la captura s’ha reutilitzat SampleScene. Path és al mateix nivell que Platform. PointC és fill de Path i té la posició (6, 0.1, 4). Repeteix la comprovació amb les coordenades de cada punt de la taula.*
 
-No cal cap clip d'Animation ni Animator. El script mourà la plataforma tram a tram amb `Vector3.MoveTowards()`. Evita una animació addicional sobre el seu Transform, perquè competiria amb aquest moviment.
+No cal cap clip d'Animation ni Animator. L'script mourà la plataforma tram a tram amb `Vector3.MoveTowards()`. Evita una animació addicional sobre el seu Transform, perquè competiria amb aquest moviment.
 
-**Activar o pausar el recorregut:** dins del radi, la plataforma avança i es torna verda; fora, es queda on és i es torna grisa. Conserva el punt de destí per reprendre el mateix tram quan el jugador torna. Mantén l'objecte i el script actius perquè continuïn detectant-lo.
+**Activar o pausar el recorregut:** dins del radi, la plataforma avança i es torna verda; fora, es queda on és i es torna grisa. Conserva el punt de destí per reprendre el mateix tram quan el jugador torna. Mantén l'objecte i l'script actius perquè continuïn detectant-lo.
 
 # Crear els scripts
 
-Crea una carpeta **Assets/Scripts**.
+Crea una carpeta **Scripts** a la finestra Project (**Assets > Create > Folder**).
 
-Crea i completa aquests tres scripts abans d'afegir-los als objectes:
+Dins d'aquesta carpeta, crea amb **Assets > Create > Scripting > MonoBehaviour Script** i completa aquests tres scripts abans d'afegir-los als objectes:
 
 ```text
 PlayerMovement.cs
@@ -250,7 +251,7 @@ public class PlayerMovement : MonoBehaviour
         if (platform != null)
             displacement += platform.FrameMovement;
 
-        // El proper frame es detecterà la plataforma automàticament
+        // Durant Move es tornarà a detectar la plataforma
         platform = null;
 
         // Moure el personatge
@@ -405,7 +406,7 @@ public class ProximityPlatform : MonoBehaviour
 - `Vector3.MoveTowards()` mou la plataforma cap al punt de destí.
 - `pathPoints` conté els punts en ordre. `targetIndex` indica el destí del tram actual.
 - En arribar a l'últim punt, `direction` passa a `-1` per tornar; en arribar al primer, passa a `1` per repetir l'anada.
-- Si falta Player, hi ha menys de dos punts o algun element està buit, el script mostra un error clar i s'atura.
+- Si falta Player, hi ha menys de dos punts o algun element està buit, l'script mostra un error clar i s'atura.
 - Quan el jugador és lluny, s'atura sense perdre el destí actual.
 - `FrameMovement` guarda el desplaçament d'aquest frame; el jugador el pot llegir.
 - `[DefaultExecutionOrder(-100)]` fa que aquest script s'actualitzi abans que `PlayerMovement`.
@@ -457,10 +458,10 @@ A **Platform**:
 
 - Afegeix **ProximityPlatform.cs** al mateix objecte que el **Box Collider**.
 - Arrossega `Player` al camp **Player**.
-- Desplega **Path Points** i posa **Size = 4** (en algunes versions el nombre d'elements apareix al costat del nom de la llista).
+- Desplega **Path Points** i escriu `4` al camp numèric que hi ha al costat del nom de la llista (el nombre d'elements).
 - Arrossega els objectes de la **Hierarchy** als elements de la llista, en aquest ordre:
 
-| Camp del script | Objecte que hi has d'arrossegar |
+| Camp de l'script | Objecte que hi has d'arrossegar |
 |---|---|
 | Element 0 | Path / PointA |
 | Element 1 | Path / PointB |
@@ -469,10 +470,8 @@ A **Platform**:
 
 L'ordre de la llista defineix el recorregut; els noms dels objectes no l'ordenen automàticament. No arrosseguis Path a la llista: arrossega cadascun dels seus punts. Cap element ha de quedar a **None**.
 
-Si vens de la versió anterior del script, els camps **Point A** i **Point B** desapareixen: cal omplir la nova llista **Path Points** abans de fer Play.
-
 - Deixa **Activation Distance = 4** i **Speed = 1.5**.
-- Deixa **Inactive Color = gris** (RGB `(128, 128, 128)`) i **Active Color = verd** (RGB `(0, 255, 0)`), amb el selector en **RGB, rang 0–255**, i **Alpha = 255**. Aquests camps apareixen després de desar i compilar el script.
+- Deixa **Inactive Color = gris** (RGB `(128, 128, 128)`) i **Active Color = verd** (RGB `(0, 255, 0)`), amb el selector en **RGB, rang 0–255**, i **Alpha = 255**. Aquests camps apareixen després de desar i compilar l'script.
 - El color gris inicial s'aplica en començar Play; fora de Play pots continuar veient el color original del material.
 
 <img src="assets/demoplataformes-referencies.png" alt="Proximity Platform amb Player assignat i els quatre Path Points en ordre" width="600" style="width: 90%; max-width: 600px; height: auto;">
@@ -485,9 +484,10 @@ El jugador es manté a l'arrel de la jerarquia; no l'arrosseguis dins de la plat
 
 Per veure clarament quan s'encenen:
 
-- Selecciona **Directional Light** i deixa **Light > Emission > Intensity = 0.2**.
-- A **Window > Rendering > Lighting > Environment > Environment Lighting > Source**, selecciona **Color**
-- Deixa **Ambient Color** en un gris fosc, per exemple `RGB(32,32,32)`.
+1. Selecciona **Directional Light** i deixa **Light > Emission > Intensity = 0.2**.
+2. Obre **Window > Rendering > Lighting** i selecciona la pestanya **Environment**.
+3. A **Environment Lighting > Source**, selecciona **Color**.
+4. Deixa **Ambient Color** en un gris fosc, per exemple `RGB(32,32,32)`.
 
 Afegeix **GameObject > Light > Point Light**:
 
@@ -512,14 +512,14 @@ Emission > Range: 5
 
 <img src="assets/demoplataformes-llum.png" alt="Inspector de LightA amb Point, Realtime, Intensity 3, Range 5 i referència al Player" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
-*Hi ha dos valors diferents: Range = 5 al component Light i Activation Distance = 3 a Proximity Light. El camp Player ha d'estar assignat. En aquesta versió URP pot aparèixer un avís sobre la llum indirecta dels Point Lights; no impedeix la il·luminació directa que utilitza aquesta demo.*
+*Hi ha dos valors diferents: Range = 5 al component Light i Activation Distance = 3 a Proximity Light. El camp Player ha d'estar assignat. En URP pot aparèixer un avís sobre la llum indirecta dels Point Lights; no impedeix la il·luminació directa que utilitza aquesta demo.*
 
-Duplica `LightA` i configura la còpia:
+Duplica `LightA` (**Ctrl+D** / **Cmd+D**) i configura la còpia:
 
 ```text
 Name: LightB
 Position: 6, 2, 2
-Color: blau clar
+Emission > Color: blau clar
 ```
 
 La còpia conserva l'script i la referència al jugador.

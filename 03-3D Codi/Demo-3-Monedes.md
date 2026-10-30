@@ -47,7 +47,7 @@ Les captures d'aquesta guia corresponen a **Unity 6.6 amb URP**. També pots seg
 
 El script de moviment llegirà les fletxes del teclat amb el nou **Input System**.
 
-1. Obre **Window > Package Manager** (en algunes versions, **Window > Package Management > Package Manager**).
+1. Obre **Window > Package Management > Package Manager**.
 2. Selecciona **Unity Registry**, cerca **Input System** i prem **Install**. Si ja està instal·lat, continua.
 3. Si Unity proposa activar el nou sistema d'entrada, accepta i deixa que es reiniciï.
 4. A **Edit > Project Settings > Player > Other Settings > Active Input Handling**, comprova que hi ha **Input System Package (New)** o **Both**. Si ho canvies, reinicia l'Editor quan ho demani.
@@ -61,7 +61,7 @@ No cal crear un fitxer Input Actions ni afegir el component Player Input: en aqu
 
 A **Window > TextMeshPro > Import TMP Essential Resources**, importa els recursos essencials. També pot aparèixer aquesta proposta quan crees el primer text TMP. No cal importar **Examples & Extras**. Si ja existeix `Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset`, els recursos essencials ja estan importats.
 
-En versions on no aparegui aquest menú, comprova a Package Manager que tens **Unity UI (uGUI)**: en Unity 6, TextMeshPro forma part d'aquest paquet. Si el text no té cap font assignada, utilitzarem **LiberationSans SDF**, que s'inclou als recursos essencials.
+En Unity 6, TextMeshPro forma part del paquet **Unity UI (uGUI)**, que ja ve instal·lat. Si el text no té cap font assignada, utilitzarem **LiberationSans SDF**, que s'inclou als recursos essencials.
 
 # Crear l'escena
 
@@ -104,13 +104,13 @@ Color: RGB (255, 255, 255)
 Intensity: 1
 ```
 
-Per tenir una il·luminació uniforme, a **Window > Rendering > Lighting > Environment** posa **Environment Lighting > Source = Color** i **Ambient Color = RGB (128, 128, 128)**. La Directional Light il·lumina tot el recinte; no calen altres llums.
+Per tenir una il·luminació uniforme, obre **Window > Rendering > Lighting**, ves a la pestanya **Environment** i posa **Environment Lighting > Source = Color** i **Ambient Color = RGB (128, 128, 128)**. La Directional Light il·lumina tot el recinte; no calen altres llums.
 
 Els colors d’aquesta guia s’expressen en **RGB de 0 a 255**; al selector de color de Unity, tria aquest format.
 
 ## Materials
 
-A la carpeta `Assets/Materials/DemoMonedes`, amb **Create > Rendering > Material**, crea aquests materials i assigna'ls als objectes corresponents arrossegant-los sobre el seu Mesh Renderer:
+A la carpeta `Assets/Materials/DemoMonedes`, amb **Assets > Create > Material** (o el botó **+** de la finestra Project), crea aquests materials i assigna'ls als objectes corresponents arrossegant-los sobre el seu Mesh Renderer:
 
 | Material | Color orientatiu | Objectes |
 |---|---|---|
@@ -175,7 +175,7 @@ El tag **Player** ja existeix a Unity: selecciona’l al desplegable Tag de l’
 
 ## Moviment del jugador: PlayerMovement
 
-A `Assets/Scripts`, crea un script **MonoBehaviour Script** (o **C# Script**, segons la versió) i anomena'l **PlayerMovement**. Obre'l i substitueix tot el contingut pel codi següent. El fitxer ha de dir-se **PlayerMovement.cs**, igual que la classe.
+A `Assets/Scripts`, crea un script amb **Assets > Create > Scripting > MonoBehaviour Script** i anomena'l **PlayerMovement**. Obre'l i substitueix tot el contingut pel codi següent. El fitxer ha de dir-se **PlayerMovement.cs**, igual que la classe.
 
 ```csharp
 using UnityEngine;
@@ -321,7 +321,7 @@ Material: ExitMonedes
 
 # Crear els scripts de recollida i de la porta
 
-Ja tenim PlayerMovement. A `Assets/Scripts`, crea i completa **els tres scripts següents** abans d'afegir-los als objectes. Els scripts es referencien entre ells: espera a tenir-los tots desats i sense errors de compilació.
+Ja tenim PlayerMovement. A `Assets/Scripts`, crea amb **Assets > Create > Scripting > MonoBehaviour Script** i completa **els tres scripts següents** abans d'afegir-los als objectes. Els scripts es referencien entre ells: espera a tenir-los tots desats i sense errors de compilació.
 
 ## Estat de la partida: CoinCollector
 
@@ -575,8 +575,6 @@ Totes comparteixen el mateix prefab i el mateix comportament. Només canvia la p
 
 # Crear el Canvas i el comptador
 
-En versions anteriors, el menú **UI (Canvas)** pot aparèixer com a **UI**.
-
 1. Desselecciona els objectes de la Hierarchy fent clic en un espai buit. Fes **GameObject > UI (Canvas) > Text - TextMeshPro**. Unity crearà un **Canvas** i un **EventSystem** si encara no existeixen.
 2. Anomena el text **TextMonedes**.
 3. Al Canvas, deixa **Render Mode = Screen Space - Overlay**.
@@ -612,7 +610,7 @@ Auto Size: desactivat
 Raycast Target: desactivat
 ```
 
-En aquesta versió de TextMeshPro, trobaràs **Raycast Target** desplegant **Extra Settings** del component de text.
+Trobaràs **Raycast Target** desplegant **Extra Settings** del component de text.
 
 El `0/5` de l'Inspector és només una previsualització: CoinCollector l'actualitza quan comença Play.
 

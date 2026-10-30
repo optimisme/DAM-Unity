@@ -19,7 +19,7 @@ Construirem un petit diorama amb una **càpsula**, dues illes, una palanca i un 
 1. Crea un projecte **Universal 3D (URP)**. Versió utilitzada: **Unity 6.6, 6000.6.3f1**.
 2. Comprova a **Window > Package Management > Package Manager** que **Input System** està instal·lat.
 3. A **Edit > Project Settings > Player > Other Settings**, selecciona **Active Input Handling = Input System Package (New)** o **Both**. Reinicia si Unity ho demana.
-4. A l’escena inicial **SampleScene** de Universal 3D, fes **File > Save As** i desa **Assets/Scenes/DemoPalanca.unity**. Conserva **Main Camera**, **Directional Light** i **Global Volume**. Més avall ajustarem la càmera i la llum existents. El component Transform de la càmera conserva **Scale `(1, 1, 1)`** i el tag **MainCamera**.
+4. A l’escena inicial **SampleScene** de Universal 3D, fes **File > Save As** i desa **Assets/Scenes/DemoPalanca.unity**. Conserva **Main Camera**, **Directional Light** i, si la plantilla l’inclou, **Global Volume**. Més avall ajustarem la càmera i la llum existents. El component Transform de la càmera conserva **Scale `(1, 1, 1)`** i el tag **MainCamera**.
 5. Crea **Assets/DemoPalanca** amb les carpetes **Scripts**, **Materials**, **Animations** i **Input**.
 6. Importa **Window > TextMeshPro > Import TMP Essential Resources** si encara no hi ha els recursos de text. No cal importar Examples & Extras.
 
@@ -27,9 +27,9 @@ Els quatre scripts complets són més avall. Crea’ls tots abans de fer Play, p
 
 **Coordenades i jerarquia:** abans de crear cada objecte independent, deixa de seleccionar qualsevol pare de la Hierarchy. Comprova que quedi a l’arrel. En crear un objecte buit, fes **Transform > ⋮ > Reset** i després introdueix els valors indicats. Les posicions de les taules són del món per als objectes a l’arrel; en els fills són **locals respecte al pare**. No facis fills del terra els murs ni el jugador. Si dupliques, revisa tots tres valors de Position, Rotation i Scale.
 
-**Colors i materials:** a Project, dins de Materials, fes **clic dret > Create > Rendering > Material**. Obre el selector del color de **Base Map** i selecciona **RGB, rang 0–255**: introdueix R, G i B separadament. Deixa **A = 255**, excepte quan s’indiqui transparència. En el codi, `new Color(...)` continua utilitzant components entre 0 i 1.
+**Colors i materials:** a Project, dins de Materials, fes **clic dret > Create > Material**. Obre el selector del color de **Base Map** i selecciona **RGB, rang 0–255**: introdueix R, G i B separadament. Deixa **A = 255**, excepte quan s’indiqui transparència. En el codi, `new Color(...)` continua utilitzant components entre 0 i 1.
 
-**Interfície de Unity 6.6:** els textos i Canvas són a **GameObject > UI (Canvas)**; en altres versions el menú es diu UI. El menú Package Manager pot aparèixer directament sota Window en versions anteriors. El Canvas d’aquesta demo només mostra text: si Unity crea un **EventSystem**, elimina’l de la Hierarchy; no cal per llegir el teclat amb Input System.
+**Interfície de Unity 6.6:** els textos i Canvas són a **GameObject > UI (Canvas)**. El Canvas d’aquesta demo només mostra text: si Unity crea un **EventSystem**, elimina’l de la Hierarchy; no cal per llegir el teclat amb Input System.
 
 ## 2. Construir les illes i preparar la càmera
 
@@ -44,7 +44,7 @@ Crea materials **Universal Render Pipeline/Lit**, amb **Surface Type = Opaque**,
 | Handle | Taronja, `RGB (255, 140, 38)` |
 | Gold | Daurat, `RGB (255, 186, 26)` |
 
-Crea aquests **cubs**, independents a l’arrel, amb rotació zero i Box Collider sòlid. Les dues illes deixen un buit entre Z = -1.8 i Z = 1.8. La superfície de les illes queda a Y = 0.
+Crea aquests **cubs** amb **GameObject > 3D Object > Cube**, independents a l’arrel, amb rotació zero i Box Collider sòlid. Les dues illes deixen un buit entre Z = -1.8 i Z = 1.8. La superfície de les illes queda a Y = 0.
 
 | Objecte | Position | Scale | Material |
 |---|---|---|---|
@@ -71,13 +71,13 @@ Configura **Main Camera**:
 | Background Type | Solid Color |
 | Background | Blau grisós clar, `RGB (196, 219, 224)` |
 
-Al Directional Light existent, selecciona **Color** a Light Appearance i posa **Rotation = (50, -30, 0)** i **Intensity = 1.3**. A **Window > Rendering > Lighting > Environment**, selecciona una il·luminació ambiental de tipus **Color**, gris `RGB (140, 140, 140)`.
+Al Directional Light existent, selecciona **Color** a Light Appearance i posa **Rotation = (50, -30, 0)** i **Intensity = 1.3**. Obre **Window > Rendering > Lighting**, ves a la pestanya **Environment** i, a **Environment Lighting**, posa **Source = Color** i **Ambient Color** gris `RGB (140, 140, 140)`.
 
 ## 3. El pont i el seu pivot
 
 El pont ha de girar des d’un extrem, no des del centre del cub.
 
-1. Crea un objecte buit **BridgePivot** a **Position = (0, 0, -1.8)** i escala `(1, 1, 1)`.
+1. Crea un objecte buit **BridgePivot** amb **GameObject > Create Empty** a **Position = (0, 0, -1.8)** i escala `(1, 1, 1)`.
 2. Deixa’l inicialment amb rotació zero mentre construeixes el tauler.
 3. Crea un cub **Deck** com a fill de BridgePivot.
 4. Al Deck, configura **Local Position = (0, -0.15, 1.8)**, **Local Rotation = (0, 0, 0)** i **Local Scale = (2.6, 0.3, 3.6)**.
@@ -195,11 +195,11 @@ Crea una **Sphere** anomenada **Treasure** a `(0, 0.65, 4)`, escala `(1.1, 1.1, 
 
 ## 8. Input Actions i PlayerInput
 
-A **Assets/DemoPalanca/Input**, fes **Create > Input Actions** i anomena l’asset **PalancaControls**. Obre’l amb doble clic. Si el menú està dins d’un submenú Input, tria igualment Input Actions.
+A **Assets/DemoPalanca/Input**, fes **clic dret > Create > Input Actions** i anomena l’asset **PalancaControls**. Obre’l amb doble clic.
 
 1. Crea un **Action Map** anomenat **Player**.
 2. Crea l’acció **Move**, amb **Action Type = Value** i **Control Type = Vector2**.
-3. A Move, afegeix un **2D Vector Composite**. Segons la versió apareix com a **Add Up/Down/Left/Right Composite**. Assigna els quatre bindings a W, S, A i D, respectivament.
+3. Fes clic al **+** de Move i tria **Add Up\Down\Left\Right Composite** (un composite 2D Vector). Assigna els quatre bindings Up, Down, Left i Right a W, S, A i D, respectivament.
 4. Afegeix un segon composite 2D Vector a Move, aquesta vegada amb les fletxes. Deixa els composites en mode Digital Normalized.
 5. Crea **Interact**, amb **Action Type = Button** i un binding a **E**. No afegeixis Hold ni altres Interactions.
 6. Desa amb **Save Asset** si Auto-Save no està activat. No cal generar una classe C# ni crear Control Schemes.
@@ -243,7 +243,7 @@ No cal cap EventSystem per llegir el teclat amb PlayerInput ni per mostrar aques
 
 ## 10. Scripts complets
 
-Crea els quatre fitxers següents a **Assets/DemoPalanca/Scripts**. Desa’ls tots i espera que desapareguin els errors de compilació abans d’assignar les referències.
+Crea els quatre fitxers següents a **Assets/DemoPalanca/Scripts** amb **clic dret > Create > Scripting > MonoBehaviour Script**. Desa’ls tots i espera que desapareguin els errors de compilació abans d’assignar les referències.
 
 ### PalancaPlayer.cs
 
@@ -483,7 +483,7 @@ Atura Play. Arrossega els objectes de la **Hierarchy** als camps dels components
 | Lever / PalancaSwitch | Interaction Distance | `2.5` |
 | Treasure / PalancaTreasure | Lever | Lever |
 
-Deixa tots els GameObjects actius. Només el component **Box Collider de Deck** comença desactivat. El script el tornarà a activar al final de l’animació de baixada.
+Deixa tots els GameObjects actius. Només el component **Box Collider de Deck** comença desactivat. L’script el tornarà a activar al final de l’animació de baixada.
 
 Desa l’escena amb aquesta estructura principal:
 

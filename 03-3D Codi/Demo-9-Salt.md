@@ -18,18 +18,18 @@ Construirem un diorama amb una **càpsula**, quatre illes de cubs, un checkpoint
 1. Crea un projecte **Universal 3D (URP)**. Versió utilitzada: **Unity 6.6, 6000.6.3f1**.
 2. A **Window > Package Management > Package Manager**, comprova que hi ha **Input System** instal·lat.
 3. A **Edit > Project Settings > Player > Other Settings**, posa **Active Input Handling = Input System Package (New)** o **Both**. Reinicia l’editor si ho demana.
-4. A l’escena inicial **SampleScene** de Universal 3D, fes **File > Save As** i desa **Assets/Scenes/DemoSalt.unity**. Conserva **Main Camera**, **Directional Light** i **Global Volume**. Més avall ajustarem la càmera i la llum existents. El component Transform de la càmera conserva **Scale `(1, 1, 1)`** i el tag **MainCamera**.
+4. A l’escena inicial **SampleScene** de Universal 3D, fes **File > Save As** i desa **Assets/Scenes/DemoSalt.unity**. Conserva **Main Camera**, **Directional Light** i, si la plantilla l’inclou, **Global Volume**. Més avall ajustarem la càmera i la llum existents. El component Transform de la càmera conserva **Scale `(1, 1, 1)`** i el tag **MainCamera**.
 5. Crea **Assets/DemoSalt**, amb les carpetes **Scripts** i **Materials**.
 6. Importa **Window > TextMeshPro > Import TMP Essential Resources**. No cal importar Examples & Extras.
-7. Crea els **quatre scripts complets de l’apartat 8** a Scripts. Els noms dels fitxers i de les classes han de coincidir. Espera que hi siguin tots i acabin de compilar.
+7. A **Assets/DemoSalt/Scripts**, crea els **quatre scripts complets de l’apartat 8** amb **clic dret > Create > Scripting > MonoBehaviour Script**. Els noms dels fitxers i de les classes han de coincidir. Espera que hi siguin tots i acabin de compilar.
 
 No facis Play fins a completar les referències de l’apartat 6. No necessitem PlayerInput, Animator ni scripts de les altres demos.
 
-**Coordenades i jerarquia:** abans de crear cada objecte independent, deixa de seleccionar qualsevol pare de la Hierarchy. Comprova que quedi a l’arrel. En crear un objecte buit, fes **Transform > ⋮ > Reset** i després introdueix els valors indicats. Les posicions de les taules són del món per als objectes a l’arrel; en els fills són **locals respecte al pare**. No facis fills del terra els murs ni el jugador. Si dupliques, revisa tots tres valors de Position, Rotation i Scale.
+**Coordenades i jerarquia:** abans de crear cada objecte independent, deixa de seleccionar qualsevol pare de la Hierarchy. Comprova que quedi a l’arrel. En crear un objecte buit, fes **Transform > ⋮ > Reset** i després introdueix els valors indicats. Les posicions de les taules són del món per als objectes a l’arrel; en els fills són **locals respecte al pare**. No facis fills de les illes el jugador, el checkpoint ni la meta. Si dupliques, revisa tots tres valors de Position, Rotation i Scale.
 
-**Colors i materials:** a Project, dins de Materials, fes **clic dret > Create > Rendering > Material**. Obre el selector del color de **Base Map** i selecciona **RGB, rang 0–255**: introdueix R, G i B separadament. Deixa **A = 255**, excepte quan s’indiqui transparència. En el codi, `new Color(...)` continua utilitzant components entre 0 i 1.
+**Colors i materials:** a Project, dins de Materials, fes **clic dret > Create > Material**. Obre el selector del color de **Base Map** i selecciona **RGB, rang 0–255**: introdueix R, G i B separadament. Deixa **A = 255**, excepte quan s’indiqui transparència. En el codi, `new Color(...)` continua utilitzant components entre 0 i 1.
 
-**Interfície de Unity 6.6:** els textos i Canvas són a **GameObject > UI (Canvas)**; en altres versions el menú es diu UI. El menú Package Manager pot aparèixer directament sota Window en versions anteriors. El Canvas d’aquesta demo només mostra text: si Unity crea un **EventSystem**, elimina’l de la Hierarchy; no cal per llegir el teclat amb Input System.
+**Interfície de Unity 6.6:** els textos i Canvas són a **GameObject > UI (Canvas)**. El Canvas d’aquesta demo només mostra text: si Unity crea un **EventSystem**, elimina’l de la Hierarchy; no cal per llegir el teclat amb Input System.
 
 ## 2. Construir les quatre illes
 
@@ -42,7 +42,7 @@ Crea aquests materials amb Shader **Universal Render Pipeline/Lit**, Surface Typ
 | Checkpoint | `RGB (51, 153, 255)` |
 | Goal | `RGB (255, 170, 51)` |
 
-Crea quatre **Cube** a l’arrel de Hierarchy. Tots tenen Rotation `(0, 0, 0)`, material Platform i **Box Collider amb Is Trigger desactivat**. No hi posis Rigidbody.
+Crea quatre cubs amb **GameObject > 3D Object > Cube**, a l’arrel de Hierarchy. Tots tenen Rotation `(0, 0, 0)`, material Platform i **Box Collider amb Is Trigger desactivat**. No hi posis Rigidbody.
 
 | Objecte | Position | Scale | Alçada de la superfície |
 |---|---|---|---|
@@ -67,17 +67,17 @@ Configura Main Camera:
 
 La càmera mira aproximadament al punt `(0, 0, 1)`. No segueix el jugador: es veu tot el recorregut.
 
-Al Directional Light existent, selecciona **Color** a Light Appearance i posa Rotation `(50, -30, 0)` i Intensity `1.3`. A **Window > Rendering > Lighting > Environment**, posa il·luminació ambiental de tipus Color, gris `RGB (140, 140, 140)`.
+Al Directional Light existent, selecciona **Color** a Light Appearance i posa Rotation `(50, -30, 0)` i Intensity `1.3`. A **Window > Rendering > Lighting**, pestanya **Environment**, posa **Environment Lighting > Source = Color** i **Ambient Color** gris `RGB (140, 140, 140)`.
 
 A la vista Game, selecciona **16:9**, per exemple Full HD (1920×1080).
 
 ## 3. Crear el jugador i el punt inicial
 
-1. Crea una **Capsule** anomenada **Player** a Position `(0, 1.05, -6)`, Rotation zero i Scale `(1, 1, 1)`.
+1. Crea una càpsula amb **GameObject > 3D Object > Capsule**, anomena-la **Player** i posa-la a Position `(0, 1.05, -6)`, Rotation zero i Scale `(1, 1, 1)`.
 2. Assigna el material Player.
 3. **Elimina Capsule Collider** i afegeix **CharacterController**. No hi posis Rigidbody.
 4. Configura’l amb la taula següent i afegeix **SaltPlayer**.
-5. Crea un objecte buit **StartPoint** a l’arrel, amb Position `(0, 1.05, -6)`, Rotation zero i Scale 1. És una marca de reaparició; no necessita collider ni script.
+5. Crea un objecte buit (**GameObject > Create Empty**) anomenat **StartPoint** a l’arrel, amb Position `(0, 1.05, -6)`, Rotation zero i Scale 1. És una marca de reaparició; no necessita collider ni script.
 
 | CharacterController | Valor |
 |---|---|
@@ -104,11 +104,11 @@ Deixa Game pendent fins a l’apartat 6. Gravity i Release Gravity són **magnit
 
 ## 4. Crear el checkpoint
 
-1. Crea un objecte buit **Checkpoint** a Position `(0, 1, 4)`, Rotation zero i Scale 1. Queda a la superfície de la tercera illa.
+1. Crea un objecte buit (**GameObject > Create Empty**) anomenat **Checkpoint** a Position `(0, 1, 4)`, Rotation zero i Scale 1. Queda a la superfície de la tercera illa.
 2. Afegeix **Box Collider**, amb **Is Trigger activat**, Center `(0, 0.65, 0)` i Size `(1.8, 1.4, 1.8)`.
 3. Afegeix **Rigidbody**, amb **Use Gravity desactivat** i **Is Kinematic activat**. Aquest Rigidbody permet la detecció del trigger sense que el checkpoint caigui.
-4. Dins de Checkpoint, crea un **Cylinder** fill anomenat **Visual**. Posa **Local Position `(0, 0.06, 0)`**, Local Rotation zero i **Local Scale `(1.6, 0.06, 1.6)`**. Assigna el material Checkpoint i **elimina el Capsule Collider del cilindre**.
-5. Crea un altre fill buit, **SpawnPoint**, amb **Local Position `(0, 1.05, 0)`**, Local Rotation zero i Scale 1. La posició del món serà `(0, 2.05, 4)`.
+4. Fes **clic dret a Checkpoint > 3D Object > Cylinder** i anomena el fill **Visual**. Posa **Local Position `(0, 0.06, 0)`**, Local Rotation zero i **Local Scale `(1.6, 0.06, 1.6)`**. Assigna el material Checkpoint i **elimina el Capsule Collider del cilindre**.
+5. Fes **clic dret a Checkpoint > Create Empty** i anomena el fill **SpawnPoint**, amb **Local Position `(0, 1.05, 0)`**, Local Rotation zero i Scale 1. La posició del món serà `(0, 2.05, 4)`.
 6. Afegeix **SaltCheckpoint** al pare Checkpoint. Assigna **SpawnPoint** a Spawn Point i el **Mesh Renderer de Visual** a Visual. Game queda pendent.
 
 El cilindre és només un indicador: no ha de sostenir ni bloquejar el jugador. El trigger és al pare i la plataforma sòlida sosté la càpsula. Quan entrem al trigger, l’indicador es torna verd i es guarda SpawnPoint com a lloc de reaparició.
@@ -117,7 +117,7 @@ El cilindre és només un indicador: no ha de sostenir ni bloquejar el jugador. 
 
 ## 5. Crear la meta
 
-1. Crea una **Sphere** anomenada **Goal**, a Position `(0, 1.8, 8.7)`, Rotation zero i Scale `(0.8, 0.8, 0.8)`.
+1. Crea una esfera amb **GameObject > 3D Object > Sphere**, anomena-la **Goal** i posa-la a Position `(0, 1.8, 8.7)`, Rotation zero i Scale `(0.8, 0.8, 0.8)`.
 2. Assigna el material Goal.
 3. Conserva Sphere Collider amb Center zero, Radius `0.5` i **Is Trigger activat**.
 4. Afegeix Rigidbody amb **Use Gravity desactivat** i **Is Kinematic activat**.
@@ -129,7 +129,7 @@ En tocar l’esfera s’acaba el repte i es bloqueja el moviment. No cal recolli
 
 1. Crea **GameObject > UI (Canvas) > Canvas**, en **Screen Space - Overlay**.
 2. Al Canvas Scaler, posa **Scale With Screen Size**, Reference Resolution `(1600, 900)` i Match `0.5`.
-3. Dins de Canvas, crea **UI (Canvas) > Text - TextMeshPro**, anomenat **Status**. Font LiberationSans SDF, Font Size `28`, color `RGB (20, 38, 46)`, alineació superior esquerra, Auto Size desactivat i Raycast Target desactivat.
+3. Fes **clic dret al Canvas > UI (Canvas) > Text - TextMeshPro** i anomena’l **Status**. Font LiberationSans SDF, Font Size `28`, color `RGB (20, 38, 46)`, alineació superior esquerra, Auto Size desactivat i Raycast Target desactivat.
 4. Al RectTransform, posa **Anchor Min = Anchor Max = `(0, 1)`**, Pivot `(0, 1)`, Pos X `24`, Pos Y `-20`, Width `1500` i Height `75`.
 5. Text inicial: `Caigudes: 0     Checkpoint: pendent`.
 6. Duplica Status com a **Controls**. Posa Pos Y `-100`, Font Size `23` i text `WASD / fletxes: moure    Espai: saltar (mantén per pujar més)    R: reiniciar`.

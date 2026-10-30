@@ -14,23 +14,23 @@ La placa també s’activa quan la trepitja el jugador, però es desactiva quan 
 
 A Unity Hub, crea un projecte nou amb la plantilla **Universal 3D (URP)** i **Unity 6.6, 6000.6.3f1**.
 
-1. A l’escena inicial **SampleScene** de Universal 3D, fes **File > Save As** i desa **Assets/Scenes/DemoMecanismes.unity**. Conserva **Main Camera**, **Directional Light** i **Global Volume**. Més avall ajustarem la càmera i la llum existents. El component Transform de la càmera conserva **Scale `(1, 1, 1)`** i el tag **MainCamera**.
+1. A l’escena inicial **SampleScene** de Universal 3D, fes **File > Save As** i desa **Assets/Scenes/DemoMecanismes.unity**. Conserva **Main Camera**, **Directional Light** i, si la plantilla l’inclou, **Global Volume**. Més avall ajustarem la càmera i la llum existents. El component Transform de la càmera conserva **Scale `(1, 1, 1)`** i el tag **MainCamera**.
 2. A **Window > Package Management > Package Manager > Unity Registry**, comprova que tens **Input System** instal·lat.
 3. A **Edit > Project Settings > Player > Other Settings**, posa **Active Input Handling = Input System Package (New)** o **Both**. Reinicia Unity si ho demana.
 4. Crea **Assets/DemoMecanismes** i, dins, les carpetes **Scripts** i **Materials**.
 5. Si encara no tens els recursos de TextMeshPro, importa **Window > TextMeshPro > Import TMP Essential Resources**. També ho pots fer quan aparegui l’avís en crear el primer text.
 
-Crea els **cinc scripts** dels apartats següents amb el mateix nom que la seva classe. Completa’ls tots abans de fer Play: alguns fan referència a classes que s’expliquen més endavant. Assigna totes les referències de l’Inspector i desa els canvis fora de Play.
+Crea els **cinc scripts** dels apartats següents dins de *DemoMecanismes/Scripts* amb **Assets > Create > Scripting > MonoBehaviour Script**, amb el mateix nom que la seva classe. Completa’ls tots abans de fer Play: alguns fan referència a classes que s’expliquen més endavant. Assigna totes les referències de l’Inspector i desa els canvis fora de Play.
 
 **Coordenades i jerarquia:** abans de crear cada objecte independent, deixa de seleccionar qualsevol pare de la Hierarchy. Comprova que quedi a l’arrel. En crear un objecte buit, fes **Transform > ⋮ > Reset** i després introdueix els valors indicats. Les posicions de les taules són del món per als objectes a l’arrel; en els fills són **locals respecte al pare**. No facis fills del terra els murs ni el jugador. Si dupliques, revisa tots tres valors de Position, Rotation i Scale.
 
-**Colors i materials:** a Project, dins de Materials, fes **clic dret > Create > Rendering > Material**. Obre el selector del color de **Base Map** i selecciona **RGB, rang 0–255**: introdueix R, G i B separadament. Deixa **A = 255**, excepte quan s’indiqui transparència. En el codi, `new Color(...)` continua utilitzant components entre 0 i 1.
+**Colors i materials:** a Project, dins de Materials, fes **clic dret > Create > Material** (o **Assets > Create > Material**). Obre el selector del color de **Base Map** i selecciona **RGB, rang 0–255**: introdueix R, G i B separadament. Deixa **A = 255**, excepte quan s’indiqui transparència. En el codi, `new Color(...)` continua utilitzant components entre 0 i 1.
 
-**Interfície de Unity 6.6:** els textos i Canvas són a **GameObject > UI (Canvas)**; en altres versions el menú es diu UI. El menú Package Manager pot aparèixer directament sota Window en versions anteriors. El Canvas d’aquesta demo només mostra text: si Unity crea un **EventSystem**, elimina’l de la Hierarchy; no cal per llegir el teclat amb Input System.
+**Interfície:** els textos i el Canvas es creen des de **GameObject > UI (Canvas)**. El Canvas d’aquesta demo només mostra text: si Unity crea un **EventSystem**, elimina’l de la Hierarchy; no cal per llegir el teclat amb Input System.
 
 ## 2. Construir el temple
 
-Crea materials amb **Create > Rendering > Material**, shader **Universal Render Pipeline/Lit**, **Surface Type = Opaque**, **Metallic = 0** i **Smoothness = 0.15**. Introdueix aquests colors RGB a **Base Map**, amb alfa 255:
+Crea els materials dins de *DemoMecanismes/Materials* amb **Assets > Create > Material**, shader **Universal Render Pipeline/Lit**, **Surface Type = Opaque**, **Metallic = 0** i **Smoothness = 0.15**. Introdueix aquests colors RGB a **Base Map**, amb alfa 255:
 
 | Material | Color RGB (0–255) |
 |---|---|
@@ -73,7 +73,7 @@ A **Game**, selecciona **Full HD (1920×1080)** o **16:9**. La càmera no porta 
 
 A la **Directional Light** existent, selecciona **Color** a Light Appearance i posa rotació `(50, -30, 0)`, intensitat `2` i ombres activades.
 
-A **Window > Rendering > Lighting > Environment**, selecciona **Environment Lighting > Source = Color** i Ambient Color **RGB `(128, 128, 128)`**.
+Obre **Window > Rendering > Lighting**, ves a la pestanya **Environment** i selecciona **Environment Lighting > Source = Color** i Ambient Color **RGB `(128, 128, 128)`**.
 
 ## 3. La càpsula i el moviment
 

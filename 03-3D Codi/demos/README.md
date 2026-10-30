@@ -11,7 +11,7 @@ Cada ZIP conté un **projecte Unity independent**, amb l’escena acabada, els s
 ## Obrir una demo
 
 1. Descarrega el ZIP i **descomprimeix-lo completament** en una carpeta local on puguis escriure.
-2. Obre **Unity Hub** i selecciona **Add → Add project from disk** (el nom pot variar segons l’idioma o la versió del Hub).
+2. Obre **Unity Hub** i a **Projects**, selecciona **Add > Add project from disk**.
 3. Selecciona la carpeta descomprimida que conté directament **Assets**, **Packages** i **ProjectSettings**.
 4. Obre el projecte amb **6000.6.3f1**. Espera que Unity instal·li els paquets i importi els recursos; la primera obertura pot trigar uns minuts.
 5. En acabar la primera importació, s’obre automàticament l’escena de la demo i queda enquadrada a Scene.
@@ -47,7 +47,7 @@ Les mides són aproximades, en MB decimals; la mida descomprimida és abans que 
 
 No inclouen **Library**, **Temp** ni **Logs**. Unity genera aquestes carpetes automàticament; per això el ZIP és petit. No esborris els fitxers **.meta**, perquè mantenen les referències entre recursos.
 
-Els projectes utilitzen **URP**, **Input System** i càmeres en **perspectiva**, ja configurats. La demo Plataformes correspon a l’alternativa URP descrita al tutorial i la seva escena es diu **DemoPlataformes**.
+Els projectes utilitzen **URP**, **Input System** i càmeres en **perspectiva**, ja configurats. La demo Plataformes també es fa amb URP, com indica el tutorial, i la seva escena es diu **DemoPlataformes**.
 
 ## Si no s’obre correctament
 

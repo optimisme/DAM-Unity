@@ -22,18 +22,18 @@ En aquesta versió les bales desapareixen en impactar; no reboten. Primer aprend
 1. Crea un projecte **Universal 3D (URP)**. Versió utilitzada: **Unity 6.6, 6000.6.3f1**.
 2. Comprova a **Window > Package Management > Package Manager** que **Input System** està instal·lat.
 3. A **Edit > Project Settings > Player > Other Settings**, selecciona **Active Input Handling = Input System Package (New)** o **Both** i reinicia si Unity ho demana.
-4. A l’escena inicial **SampleScene** de Universal 3D, fes **File > Save As** i desa **Assets/Scenes/DemoDuel.unity**. Conserva **Main Camera**, **Directional Light** i **Global Volume**. Més avall ajustarem la càmera i la llum existents. El component Transform de la càmera conserva **Scale `(1, 1, 1)`** i el tag **MainCamera**.
+4. A l’escena inicial **SampleScene** de Universal 3D, fes **File > Save As** i desa **Assets/Scenes/DemoDuel.unity**. Conserva **Main Camera**, **Directional Light** i, si la plantilla l’inclou, **Global Volume**. Més avall ajustarem la càmera i la llum existents. El component Transform de la càmera conserva **Scale `(1, 1, 1)`** i el tag **MainCamera**.
 5. Crea **Assets/DemoDuel**, amb les carpetes **Scripts**, **Materials** i **Prefabs**.
 6. Importa **Window > TextMeshPro > Import TMP Essential Resources**. No cal Examples & Extras.
-7. Crea els **cinc scripts complets de l’apartat 8** amb els noms indicats. Es referencien entre ells: espera que hi siguin tots i que acabin de compilar abans d’afegir-los com a components.
+7. A **Assets/DemoDuel/Scripts**, crea els **cinc scripts complets de l’apartat 8** amb **clic dret > Create > Scripting > MonoBehaviour Script** i els noms indicats. Es referencien entre ells: espera que hi siguin tots i que acabin de compilar abans d’afegir-los com a components.
 
 **No facis Play fins que hagis assignat les referències de l’apartat 6.** No necessitem PlayerInput, NavMesh ni escriure shaders.
 
 **Coordenades i jerarquia:** abans de crear cada objecte independent, deixa de seleccionar qualsevol pare de la Hierarchy. Comprova que quedi a l’arrel. En crear un objecte buit, fes **Transform > ⋮ > Reset** i després introdueix els valors indicats. Les posicions de les taules són del món per als objectes a l’arrel; en els fills són **locals respecte al pare**. No facis fills del terra els murs ni el jugador. Si dupliques, revisa tots tres valors de Position, Rotation i Scale.
 
-**Colors i materials:** a Project, dins de Materials, fes **clic dret > Create > Rendering > Material**. Obre el selector del color de **Base Map** i selecciona **RGB, rang 0–255**: introdueix R, G i B separadament. Deixa **A = 255**, excepte quan s’indiqui transparència. En el codi, `new Color(...)` continua utilitzant components entre 0 i 1.
+**Colors i materials:** a Project, dins de Materials, fes **clic dret > Create > Material**. Obre el selector del color de **Base Map** i selecciona **RGB, rang 0–255**: introdueix R, G i B separadament. Deixa **A = 255**, excepte quan s’indiqui transparència. En el codi, `new Color(...)` continua utilitzant components entre 0 i 1.
 
-**Interfície de Unity 6.6:** els textos i Canvas són a **GameObject > UI (Canvas)**; en altres versions el menú es diu UI. El menú Package Manager pot aparèixer directament sota Window en versions anteriors. El Canvas d’aquesta demo només mostra text: si Unity crea un **EventSystem**, elimina’l de la Hierarchy; no cal per llegir el teclat amb Input System.
+**Interfície de Unity 6.6:** els textos i Canvas són a **GameObject > UI (Canvas)**. El Canvas d’aquesta demo només mostra text: si Unity crea un **EventSystem**, elimina’l de la Hierarchy; no cal per llegir el teclat amb Input System.
 
 ## 2. Construir l’arena i configurar la càmera
 
@@ -50,7 +50,7 @@ Crea aquests materials amb **Shader = Universal Render Pipeline/Lit**, **Surface
 
 A **Inspector > Layer > Add Layer**, crea la capa **DuelWalls**. Després torna als objectes i assigna-la. És una **Layer**, no un tag.
 
-Crea aquests **cubs** a l’arrel de la jerarquia, amb rotació zero. Conserva Box Collider sòlid, amb **Is Trigger desactivat**. No hi afegeixis Rigidbody.
+Crea aquests **cubs** amb **GameObject > 3D Object > Cube**, a l’arrel de la jerarquia i amb rotació zero. Conserva Box Collider sòlid, amb **Is Trigger desactivat**. No hi afegeixis Rigidbody.
 
 | Objecte | Position | Scale | Material | Layer |
 |---|---|---|---|---|
@@ -77,13 +77,13 @@ Configura **Main Camera**:
 | Background Type | Solid Color |
 | Background | `RGB (196, 219, 224)` |
 
-Al Directional Light existent, selecciona **Color** a Light Appearance i posa Rotation `(50, -30, 0)` i Intensity `1.3`. A **Window > Rendering > Lighting > Environment**, posa il·luminació ambiental de tipus Color, gris `RGB (140, 140, 140)`.
+Al Directional Light existent, selecciona **Color** a Light Appearance i posa Rotation `(50, -30, 0)` i Intensity `1.3`. A **Window > Rendering > Lighting**, pestanya **Environment**, posa **Environment Lighting > Source = Color** i **Ambient Color** gris `RGB (140, 140, 140)`.
 
 A Game, selecciona una proporció **16:9**, per exemple Full HD (1920×1080), per reproduir l’enquadrament de les captures.
 
 ## 3. Crear el prefab de la bala
 
-1. Crea una **Sphere** anomenada **Bullet**, amb Position i Rotation zero i **Scale = `(0.3, 0.3, 0.3)`**.
+1. Crea una esfera amb **GameObject > 3D Object > Sphere** i anomena-la **Bullet**, amb Position i Rotation zero i **Scale = `(0.3, 0.3, 0.3)`**.
 2. Assigna el material Bullet. El codi posarà el color de cada tirador en crear-la.
 3. Conserva **Sphere Collider**, Center zero, Radius `0.5` i **Is Trigger desactivat**. Amb l’escala 0.3, el radi real és **0.15**.
 4. Afegeix **Rigidbody** amb els valors següents.
@@ -109,7 +109,7 @@ No congelis Position X/Z: la bala ha de poder avançar. No la converteixis en tr
 
 ## 4. Crear els dos personatges
 
-Crea dues **Capsule** independents, amb escala `(1, 1, 1)`:
+Crea dues càpsules independents amb **GameObject > 3D Object > Capsule**, amb escala `(1, 1, 1)`:
 
 | Objecte | Position | Rotation | Material |
 |---|---|---|---|
@@ -160,8 +160,8 @@ A **Enemy**, afegeix **DuelEnemy**. Arrossega Player al camp Player i el **Mesh 
 
 ## 5. Definir la patrulla de l’enemic
 
-1. Crea un objecte buit **Route**, amb Position i Rotation zero i Scale `(1, 1, 1)`.
-2. Crea dos fills buits **P0** i **P1**.
+1. Crea un objecte buit (**GameObject > Create Empty**) anomenat **Route**, amb Position i Rotation zero i Scale `(1, 1, 1)`.
+2. Amb Route seleccionat, fes **clic dret > Create Empty** dues vegades i anomena els fills **P0** i **P1**.
 3. Posa **P0 a `(-5, 1.05, 3.5)`** i **P1 a `(5, 1.05, 3.5)`**. Les coordenades locals coincideixen amb les del món perquè Route no està transformat.
 4. A Enemy > DuelEnemy > Points, posa **Size = 2**. Assigna P0 a Element 0 i P1 a Element 1.
 
@@ -175,7 +175,7 @@ Quan té visió del jugador a menys de 14 unitats, s’atura i prepara un tret. 
 
 1. Crea **GameObject > UI (Canvas) > Canvas**, en **Screen Space - Overlay**.
 2. Al Canvas Scaler, posa **Scale With Screen Size**, Reference Resolution `(1600, 900)` i Match `0.5`.
-3. Dins del Canvas, crea **UI (Canvas) > Text - TextMeshPro**, anomenat **Status**. Font LiberationSans SDF, mida `28`, color fosc `RGB (20, 38, 46)`, alineació superior esquerra i Raycast Target desactivat.
+3. Fes **clic dret al Canvas > UI (Canvas) > Text - TextMeshPro** i anomena’l **Status**. Font LiberationSans SDF, mida `28`, color fosc `RGB (20, 38, 46)`, alineació superior esquerra i Raycast Target desactivat.
 4. Al RectTransform: **Anchor Min = Anchor Max = `(0, 1)`**, Pivot `(0, 1)`, Pos X `24`, Pos Y `-20`, Width `1500`, Height `110`.
 5. Text inicial: `Vida: 3 / 3     Contrincant: 3 / 3`.
 6. Duplica’l com a **Controls**, posa Pos Y `-135`, mida `23` i text: `WASD / fletxes: moure    Ratolí: apuntar    Clic esquerre: disparar    R: reiniciar`.
