@@ -59,6 +59,8 @@ Per projectar una textura sobre un terra, es poden utilitzar les components XZ d
 
 <img src="assets/tecniques-coordsWorld.png" alt="Exemple existent amb coordenades món" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
+A la captura, **Split** envia **G** (Y) i **B** (Z) de **Position** (World) a **Combine**: és la projecció adequada per a una paret perpendicular a l'eix X. Per a un terra, connecta **R** (X) i **B** (Z).
+
 ## Coordenades de pantalla
 
 Per als càlculs 2D, utilitza XY de **Screen Position en mode Default**. Els modes Raw i Center tenen significats diferents; no són intercanviables.

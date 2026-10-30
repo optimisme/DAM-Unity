@@ -11,14 +11,14 @@ El ZIP inclou també **DemoAiguaGalaxy.unity**, una segona escena amb superfíci
 ## 1. Partir de Universal 3D
 
 1. Crea un projecte **Universal 3D (URP)**.
-2. A Package Manager, comprova **Universal RP**, **Shader Graph** i **Input System**. Shader Graph arriba com a dependència d’URP.
+2. A **Window > Package Management > Package Manager**, comprova **Universal RP**, **Shader Graph** i **Input System**. Shader Graph arriba com a dependència d’URP.
 3. A **Project Settings > Player > Active Input Handling**, selecciona **Input System Package (New)**. Accepta el reinici si Unity el demana.
-4. Crea `Assets/Demos/Aigua` amb les carpetes **Shaders**, **Materials**, **Scenes** i **Meshes**. Crea també **Assets/Common** per als scripts.
+4. A la finestra **Project**, crea `Assets/Demos/Aigua` (botó dret > **Create > Folder**) amb les carpetes **Shaders**, **Materials**, **Scenes** i **Meshes**. Crea també **Assets/Common** per als scripts.
 5. Obre **Assets/Scenes/SampleScene**, que ja inclou **Main Camera**, **Directional Light** i **Global Volume**. Conserva aquests objectes. Amb **File > Save As…**, desa una còpia com a `DemoAigua` dins de Scenes. Més endavant ajustarem la càmera i la llum existents.
 
 ## 2. Crear el Shader Graph
 
-A Shaders, crea **Create > Shader Graph > URP > Lit Shader Graph**, amb nom **SAigua**. A Graph Inspector > Graph Settings, fixa:
+A la finestra Project, fes botó dret a la carpeta Shaders i tria **Create > Shader Graph > URP > Lit Shader Graph**, amb nom **SAigua**. Obre’l i, a **Graph Inspector > Graph Settings**, fixa:
 
 | Opció | Valor |
 |---|---|
@@ -31,7 +31,7 @@ A Shaders, crea **Create > Shader Graph > URP > Lit Shader Graph**, amb nom **SA
 
 Per a Transparent, utilitza Blending Mode **Alpha**.
 
-Afegeix al Blackboard aquestes propietats. Activa **Exposed** i escriu les **Reference exactes**, inclòs el guió baix. Els colors s’indiquen com a **RGB (0–255)**, tal com apareixen al selector de Unity; mantén **Alpha = 255** llevat que s’indiqui un altre valor. Els valors Float i Vector continuen en les seves unitats originals.
+Afegeix al Blackboard aquestes propietats. Activa **Show In Inspector** i escriu les **Reference exactes**, inclòs el guió baix. Els colors s’indiquen com a **RGB (0–255)**, tal com apareixen al selector de Unity; mantén **Alpha = 255** llevat que s’indiqui un altre valor. Els valors Float i Vector continuen en les seves unitats originals.
 
 | Nom | Tipus | Reference | Valor inicial |
 |---|---|---|---|
@@ -59,9 +59,9 @@ Per veure el resultat d’un node, fes-hi botó dret i tria **View > Expand Prev
 
 Escriu els valors de la taula als camps sense cable. Si el camp és vectorial i només s’indica un valor, repeteix-lo a tots els components. Clica les captures per veure-les a mida completa.
 
-**Graf complet de Aigua:** segueix els grups numerats i els cables fins al **Master Stack**. [Obre la captura a mida completa](assets/demoaigua-graf-complet.png) per llegir els ports i els valors.
+**Graf complet d’Aigua:** segueix els grups numerats i els cables fins al **Master Stack**. [Obre la captura a mida completa](assets/demoaigua-graf-complet.png) per llegir els ports i els valors.
 
-<a href="assets/demoaigua-graf-complet.png"><img src="assets/demoaigua-graf-complet.png" alt="Graf complet de Aigua, amb totes les connexions i previsualitzacions" width="1600" style="width: 100%; max-width: 1600px; height: auto;"></a>
+<a href="assets/demoaigua-graf-complet.png"><img src="assets/demoaigua-graf-complet.png" alt="Graf complet d’Aigua, amb totes les connexions i previsualitzacions" width="1600" style="width: 100%; max-width: 1600px; height: auto;"></a>
 
 ### Pas 1. Ona sinusoidal
 
@@ -86,12 +86,12 @@ Construeix la fase amb Position Object.x, Frequencia i Temps; Sine produeix l’
 | `Eixos` | R | `FreqX` | A |
 | `Frequencia` | Out | `FreqX` | B |
 | `FreqX` | Out | `Fase` | A |
-| `Temps` | Out | `Fase` | B |
+| `Temps (controlat pel guio)` | Out | `Fase` | B |
 | `Fase` | Out | `Ona` | In |
 
 **Comprova el resultat:** Desplega **Sine** (Ona): mostra la variació de gris de l’ona sobre la malla de previsualització. Canvia temporalment Temps al Blackboard per veure com es desplacen; torna’l a 0.
 
-### Pas 2. Desplacament de vertexs
+### Pas 2. Desplaçament de vèrtexs
 
 Multiplica l’ona per Amplitud i suma-la només a Y. Aquesta sortida va a Vertex / Position.
 
@@ -141,13 +141,13 @@ Scene Depth i Position View han d’utilitzar la mateixa profunditat lineal: Eye
 | `VistaXYZ` | B | `ProfunditatAigua` | A |
 | `Fons` | Out | `Separacio` | A |
 | `ProfunditatAigua` | Out | `Separacio` | B |
-| `AmpladaEscuma` | Out | `Vora` | Edge2 |
+| `Amplada escuma` | Out | `Vora` | Edge2 |
 | `Separacio` | Out | `Vora` | In |
 | `Vora` | Out | `Escuma` | In |
 
 **Comprova el resultat:** Aquesta branca necessita la profunditat de l’escena. Comprova l’escuma al contacte amb les roques després de muntar l’escena i activar Depth Texture; la miniatura del node no valida aquest contacte.
 
-### Pas 4. Color i superficie
+### Pas 4. Color i superfície
 
 El soroll barreja els dos blaus; l’escuma força el color clar. Alpha i Smoothness són propietats independents.
 
@@ -177,7 +177,7 @@ El soroll barreja els dos blaus; l’escuma força el color clar. Alpha i Smooth
 
 ### Pas 5. Master Stack i connexions finals
 
-Connecta les sortides als blocs del Master Stack indicats a la taula de cables. Si hi ha un bloc Normal, configura’l en Tangent. Els blocs sense cable conserven el valor per defecte.
+Connecta les sortides als blocs del Master Stack indicats a la taula de cables. Al node **Normal From Height**, deixa **Output Space = Tangent**. Els blocs sense cable (Metallic, Emission) conserven el valor per defecte.
 
 **Cables: arrossega de la sortida a l’entrada indicada.**
 
@@ -187,7 +187,7 @@ Connecta les sortides als blocs del Master Stack indicats a la taula de cables. 
 | `ColorFinal` | Out | `Fragment / Base Color` | Base Color |
 | `Opacitat` | Out | `Fragment / Alpha` | Alpha |
 | `Brillantor` | Out | `Fragment / Smoothness` | Smoothness |
-| `Normals` | Out | `Fragment / Normal (Tangent)` | Normal (Tangent) |
+| `Normals` | Out | `Fragment / Normal (Tangent Space)` | Normal (Tangent Space) |
 
 Els números de les entrades són valors literals. En un vector, repeteix el valor a tots els components quan s’indica un únic nombre. A Combine, tria RG per a Vector2; a Split, R/G/B equivalen a X/Y/Z. Desa el graf abans de crear els materials.
 
@@ -195,11 +195,13 @@ Els números de les entrades són valors literals. En un vector, repeteix el val
 
 ## 4. Crear els materials
 
-A la carpeta **Materials**, utilitza **Create > Rendering > Material** per a cada material indicat. A l’Inspector, selecciona **Shader > DAM Shaders > SAigua** (o arrossega SAigua del Project sobre el material). Crea un material `MAigua` amb els valors inicials. Assigna’l al Mesh Renderer de l’objecte Aigua. Els materials de les roques de la riba són **Universal Render Pipeline/Lit**, RGB (64,77,79), Smoothness 0.25. Crea el material **Riba** amb **Create > Rendering > Material** i assigna’l a les tres ribes i a les cinc roques.
+1. A la finestra Project, fes botó dret a la carpeta **Materials** i tria **Create > Material**. Anomena’l **MAigua**.
+2. A l’Inspector, selecciona **Shader > DAM Shaders > SAigua** (o arrossega SAigua del Project sobre el material). Conserva els valors inicials. L’assignaràs a l’objecte Aigua a l’apartat 5.
+3. Crea de la mateixa manera el material **Riba**: shader **Universal Render Pipeline > Lit**, Base Map RGB (64, 77, 79), Smoothness 0.25. L’assignaràs a les tres ribes i a les cinc roques.
 
 ## 5. Construir l’escena
 
-Les posicions són globals i les escales corresponen a les primitives de Unity. Mantén els objectes a l’arrel, sense un pare escalat. Els elements decoratius i textos es poden ometre: no intervenen en el shader.
+Crea cada objecte amb el menú **+** de la Hierarchy (**3D Object > Cube** o **3D Object > Sphere**). Les posicions són globals i les escales corresponen a les primitives de Unity. Mantén els objectes a l’arrel, sense un pare escalat. Els textos decoratius es poden ometre: no intervenen en el shader.
 
 | Objecte | Primitiva | Posicio | Escala |
 |---|---|---|---|
@@ -213,6 +215,8 @@ Les posicions són globals i les escales corresponen a les primitives de Unity. 
 | RocaRiba2 | Sphere | (-0.1, 0.5, 0.4) | (1.4, 1.7, 1.3) |
 | RocaRiba3 | Sphere | (1.1, 0.5, 1.3) | (1.4, 1.7, 1.3) |
 | RocaRiba4 | Sphere | (2.3, 0.5, 0.4) | (1.4, 1.7, 1.3) |
+
+Arrossega el material **Riba** del Project sobre les tres ribes i les cinc roques.
 
 ### Generar les malles
 
@@ -311,23 +315,23 @@ public static class GenerarMalles
 }
 ```
 
-Executa els dos menús. Crea un objecte buit **Aigua** a **(0,0.65,0)**, escala **(1,1,1)**, amb **Mesh Filter = WaterGrid** i **Mesh Renderer = MAigua**. Assigna Rock1–Rock5 als Mesh Filter de les roques. No cal cap collider per a l’aigua.
+Executa els dos menús. Crea un objecte buit **Aigua** (**+ > Create Empty**) a **(0,0.65,0)**, escala **(1,1,1)**. Afegeix-hi **Mesh Filter** amb **Mesh = WaterGrid** i **Mesh Renderer** amb el material **MAigua**. Assigna Rock1–Rock5 al **Mesh Filter** de RocaRiba0–RocaRiba4, respectivament. No cal cap collider per a l’aigua.
 
 ### Càmera i llums
 
 Posa Main Camera a **(9,8,−11)**, amb projecció **Perspective**, Field of View **40**, Near **0.1**, Far **100** i fons de color sòlid **RGB (5,7,13)**. Orienta-la cap al punt **(0,1.7,0)**. La rotació Euler corresponent és aproximadament **(23.906, -39.289, 0)**.
 
-Selecciona la **Directional Light** existent, canvia-li el nom a **Key Light** i ajusta-la: rotació (45,−30,0), intensitat 2 i color RGB (255,224,189); afegeix una segona llum amb **GameObject > Light > Directional Light**, anomena-la **Fill Light** i configura-la: rotació (25,140,0), intensitat 1 i color RGB (89,171,255). A **Window > Rendering > Lighting > Environment**, posa **Environment Lighting > Source = Color** i **Ambient Color** (82,97,122). La base porta un material Lit gris blavós (14,18,24), Smoothness 0.25; les peanyes, RGB (26,36,48). Crea aquests materials també amb **Create > Rendering > Material**, selecciona **Shader > Universal Render Pipeline > Lit** i assigna’ls als objectes corresponents.
+Selecciona la **Directional Light** existent, canvia-li el nom a **Key Light** i ajusta-la: rotació (45,−30,0), intensitat 2 i color RGB (255,224,189); afegeix una segona llum amb **+ > Light > Directional Light** a la Hierarchy, anomena-la **Fill Light** i configura-la: rotació (25,140,0), intensitat 1 i color RGB (89,171,255). A **Window > Rendering > Lighting**, pestanya **Environment**, posa **Environment Lighting > Source = Color** i **Ambient Color** (82,97,122). Crea el material **Base** amb **Create > Material**, shader **Universal Render Pipeline > Lit**, color gris blavós RGB (14,18,24) i Smoothness 0.25, i assigna’l a l’objecte Base.
 
-A l’URP Asset actiu, activa **Depth Texture** i comprova que la càmera no ho sobreescriu desactivant-la. Utilitza el renderer 3D Universal. **Opaque Texture no és necessària en aquest gràfic**, perquè no utilitza Scene Color. El projecte la té disponible per experimentar. Crea **Sorra** amb **Create > Rendering > Material**, shader **Universal Render Pipeline/Lit**, RGB (128,99,59), Smoothness 0.25; assigna’l a **FonsPiscina**.
+A l’URP Asset actiu (**Edit > Project Settings > Quality > Render Pipeline Asset**; en una plantilla Universal 3D és **PC_RPAsset**), activa **Depth Texture**. A Main Camera, a **Rendering > Depth Texture**, tria **On** o **Use Pipeline Settings**, mai Off. **Opaque Texture no és necessària en aquest gràfic**, perquè no utilitza Scene Color. El projecte la té disponible per experimentar. Crea **Sorra** amb **Create > Material**, shader **Universal Render Pipeline > Lit**, RGB (128,99,59), Smoothness 0.25; assigna’l a **FonsPiscina**.
 
-Al **Global Volume** existent, duplica el perfil a la carpeta de la demo i assigna-hi la còpia. Conserva només **Bloom** i activa Intensity = **0.35**, Threshold = **1** i Scatter = **0.6**. Mantén **HDR** i **Post Processing** activats a Main Camera.
+Al **Global Volume** existent, duplica el perfil a la carpeta de la demo (al ZIP es diu **Bloom**) i assigna-hi la còpia. Conserva només **Bloom** i activa Intensity = **0.35**, Threshold = **1** i Scatter = **0.6**. Mantén **HDR** i **Post Processing** activats a Main Camera.
 
 ## 6. Afegir els controls
 
 ### Càmera orbital i zoom
 
-Descarrega [DemoOrbitCamera.cs](demos/DemoOrbitCamera.cs) i desa’l a **Assets/Common/DemoOrbitCamera.cs**. Afegeix el component **Demo Orbit Camera** a **Main Camera**. Al ZIP ja està configurat.
+A la finestra Project, fes botó dret a **Assets/Common** i tria **Create > Scripting > MonoBehaviour Script**. Anomena’l **DemoOrbitCamera**, obre’l i substitueix-ne tot el contingut pel de [DemoOrbitCamera.cs](demos/DemoOrbitCamera.cs). Afegeix el component **Demo Orbit Camera** a **Main Camera**. Al ZIP ja està configurat.
 
 - **Center = (0, 1.7, 0)**: punt fix al voltant del qual gira la càmera.
 - **Minimum Distance = 3**, **Maximum Distance = 35**.
@@ -340,7 +344,7 @@ El controlador del panell, que trobaràs a continuació, informa la càmera de q
 
 A **DemoAiguaGalaxy**, utilitza **Center = (0, 1, 0)**. Aquesta escena també porta el component configurat.
 
-Crea **Assets/Common/DemoControls.cs** amb aquest codi complet:
+A **Assets/Common**, crea **DemoControls** amb **Create > Scripting > MonoBehaviour Script** i substitueix-ne el contingut per aquest codi complet:
 
 ```csharp
 using UnityEngine;
@@ -439,7 +443,7 @@ public class DemoControls : MonoBehaviour
 }
 ```
 
-Crea un objecte buit **Controls** i afegeix-hi DemoControls. A **Surfaces**, assigna el Mesh Renderer d’Aigua. No hi afegeixis la base, els textos ni les peanyes.
+Crea un objecte buit **Controls** i afegeix-hi DemoControls. A **Surfaces**, assigna el Mesh Renderer d’Aigua. No hi afegeixis la base ni els textos.
 
 | Camp | Valor |
 |---|---|
@@ -450,7 +454,7 @@ Crea un objecte buit **Controls** i afegeix-hi DemoControls. A **Surfaces**, ass
 | Maximum | 0.35 |
 | Initial Value | 0.12 |
 
-**Controls:** lliscador per modificar `_Amplitud`; Espai pausa el temps; R reinicia temps i paràmetre; H amaga el panell. En moure el lliscador, el valor s’aplica a totes les mostres. Abans de tocar-lo, cada material conserva les variants de l’apartat 4. Els rètols de l’escena identifiquen aquestes variants inicials; el panell mostra el valor actual del control.
+**Controls:** lliscador per modificar `_Amplitud`; Espai pausa el temps; R reinicia temps i paràmetre; H amaga el panell. En moure el lliscador, el valor s’aplica a la còpia del material de l’aigua. Abans de tocar-lo, l’aigua conserva el valor inicial de MAigua; el panell mostra el valor actual del control.
 
 Els canvis durant Play són temporals. Per canviar els valors inicials de manera permanent, atura Play i edita els assets de material.
 
@@ -460,7 +464,7 @@ Els canvis durant Play són temporals. Per canviar els valors inicials de manera
 2. Mou Amplitud a 0: desapareix el desplaçament de vèrtexs.
 3. Comprova que les roques tenen una franja clara al contacte visual amb l’aigua.
 4. Atura Play i desactiva Depth Texture: observa per què la profunditat és un requisit; torna-la a activar.
-5. Canvia AmpladaEscuma al material i compara la mida de la franja.
+5. Canvia **Amplada escuma** al material i compara la mida de la franja.
 
 <a href="assets/demoaigua-variant.png"><img src="assets/demoaigua-variant.png" alt="Variant amb el lliscador al màxim" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
@@ -482,9 +486,9 @@ L’efecte separa una superfície plana que retalla taques blanques i un fons am
 
 ### 8.1. Textures i importació
 
-Copia la carpeta `Assets/Demos/Aigua/Textures` del projecte descarregat al teu projecte de pràctiques. No cal descarregar cap textura externa.
+Les textures són dins del ZIP del projecte acabat, a `Demo-4-Aigua/Assets/Demos/Aigua/Textures`. Arrossega aquesta carpeta des del ZIP descomprimit fins a **Assets/Demos/Aigua** a la finestra **Project** de Unity. Després, selecciona cada textura al Project i configura-la a l’Inspector segons la taula. No cal descarregar cap textura externa.
 
-| Textura | Ús | sRGB | Texture Type | Wrap Mode | Filter Mode |
+| Textura | Ús | sRGB (Color Texture) | Texture Type | Wrap Mode | Filter Mode |
 |---|---|---|---|---|---|
 | Ripples.png | Camp suau per crear taques de reflexos | Desactivat | Default | Repeat | Trilinear |
 | Distorsio.png | R/G codifiquen el desplaçament UV | Desactivat | Default | Repeat | Trilinear |
@@ -495,7 +499,7 @@ Les quatre imatges són de 512 × 512. Mantén Generate Mip Maps activat i Compr
 
 ### 8.2. Shader del fons
 
-Amb **Create > Shader Graph > URP > Unlit Shader Graph**, crea **SGalaxyFons**: Surface **Opaque**, Alpha Clipping desactivat, Render Face **Front**, Cast Shadows desactivat. Deixa Vertex / Position sense connectar. El fons està il·luminat artísticament pel mateix color i les càustiques.
+A la carpeta Shaders, amb **Create > Shader Graph > URP > Unlit Shader Graph**, crea **SGalaxyFons**. A Graph Settings: Surface Type **Opaque**, Alpha Clipping desactivat, Render Face **Front**, Cast Shadows desactivat. Deixa Vertex / Position sense connectar. El fons està il·luminat artísticament pel mateix color i les càustiques.
 
 | Nom | Tipus | Reference | Valor inicial |
 |---|---|---|---|
@@ -512,7 +516,7 @@ Amb **Create > Shader Graph > URP > Unlit Shader Graph**, crea **SGalaxyFons**: 
 
 <a href="assets/demoaigua-galaxy-fons-graf-complet.png"><img src="assets/demoaigua-galaxy-fons-graf-complet.png" alt="Graf complet de GalaxyFons, amb totes les connexions i previsualitzacions" width="1600" style="width: 100%; max-width: 1600px; height: auto;"></a>
 
-### Pas 1. Mostra de distorsio
+### Pas 1. Mostra de distorsió
 
 Llegeix Distorsio com a dades lineals. No configuris aquesta textura com a normal map: farem servir els seus canals R i G directament.
 
@@ -539,7 +543,7 @@ Llegeix Distorsio com a dades lineals. No configuris aquesta textura com a norma
 
 **Comprova el resultat:** Desplega **Sample Texture 2D** (MostraDistorsio): ha de mostrar la textura Distorsio assignada al Blackboard.
 
-### Pas 2. Refraccio del fons
+### Pas 2. Refracció del fons
 
 Combine recupera RG; Subtract 0.5 centra el vector i Multiply n’ajusta la força. Les UV resultants distorsionen el dibuix de les pedres.
 
@@ -561,7 +565,7 @@ Combine recupera RG; Subtract 0.5 centra el vector i Multiply n’ajusta la for�
 | `MostraDistorsio` | G | `VectorRG` | G |
 | `VectorRG` | RG | `VectorCentrat` | A |
 | `VectorCentrat` | Out | `Desviacio` | A |
-| `Refraccio` | Out | `Desviacio` | B |
+| `Forca distorsio` | Out | `Desviacio` | B |
 | `UV` | Out | `UVRefractada` | A |
 | `Desviacio` | Out | `UVRefractada` | B |
 | `Pedres` | Out | `MostraPedres` | Texture |
@@ -569,7 +573,7 @@ Combine recupera RG; Subtract 0.5 centra el vector i Multiply n’ajusta la for�
 
 **Comprova el resultat:** Desplega **Sample Texture 2D** (MostraPedres): ha de mostrar les pedres amb les UV desviades. Canvia temporalment Forca distorsio a 0 per comparar i restaura el valor inicial.
 
-### Pas 3. Caustiques capa A
+### Pas 3. Càustiques capa A
 
 Les càustiques fan servir les UV ja distorsionades. Aquesta és la primera mostra animada.
 
@@ -595,7 +599,7 @@ Les càustiques fan servir les UV ja distorsionades. Aquesta és la primera most
 
 **Comprova el resultat:** Desplega **Sample Texture 2D** (MostraCausticaA): ha de mostrar la primera capa de càustiques.
 
-### Pas 4. Caustiques capa B
+### Pas 4. Càustiques capa B
 
 Una segona mostra es mou en una altra direcció. Minimum selecciona coincidències suaus; Multiply amb 0.22 regula la llum que se suma al fons.
 
@@ -631,7 +635,7 @@ Una segona mostra es mou en una altra direcció. Minimum selecciona coincidènci
 
 ### Pas 5. Profunditat
 
-La profunditat és vertical en espai de món: NivellAigua − Position World.y. Divide i Saturate la normalitzen.
+La profunditat és vertical en espai de món: Nivell aigua − Position World.y. Divide i Saturate la normalitzen.
 
 **Nodes que has de crear i valors que has d’escriure:**
 
@@ -648,14 +652,14 @@ La profunditat és vertical en espai de món: NivellAigua − Position World.y. 
 | Node origen | Port de sortida | Node destí | Port d’entrada |
 |---|---|---|---|
 | `PosicioMon` | Out | `Eixos` | In |
-| `NivellAigua` | Out | `Profunditat` | A |
+| `Nivell aigua (Y mon)` | Out | `Profunditat` | A |
 | `Eixos` | G | `Profunditat` | B |
 | `Profunditat` | Out | `EscalaProfunditat` | A |
 | `EscalaProfunditat` | Out | `Absorcio` | In |
 
 **Comprova el resultat:** La profunditat depèn de la posició World del fons. Comprova’n la distribució sobre la malla del fons quan muntis l’escena.
 
-### Pas 6. Color de laigua
+### Pas 6. Color de l’aigua
 
 Lerp calcula el tint segons profunditat i Multiply el combina amb el fons il·luminat. No modifiquis Vertex / Position.
 
@@ -680,7 +684,7 @@ Lerp calcula el tint segons profunditat i Multiply el combina amb el fons il·lu
 
 ### Pas 7. Master Stack i connexions finals
 
-Connecta les sortides als blocs del Master Stack indicats a la taula de cables. Si hi ha un bloc Normal, configura’l en Tangent. Els blocs sense cable conserven el valor per defecte.
+Connecta les sortides als blocs del Master Stack indicats a la taula de cables. Els blocs sense cable conserven el valor per defecte.
 
 **Cables: arrossega de la sortida a l’entrada indicada.**
 
@@ -692,7 +696,7 @@ Connecta les sortides als blocs del Master Stack indicats a la taula de cables. 
 
 ### 8.3. Shader de la superfície
 
-Amb **Create > Shader Graph > URP > Unlit Shader Graph**, crea **SGalaxySuperficie**: Surface **Transparent**, Blending **Alpha**, **Alpha Clipping activat**, Render Face **Front**, Cast Shadows desactivat. Afegeix Alpha Clip Threshold al Master Stack. Deixa Vertex / Position sense connectar: no hi ha ones geomètriques.
+A la carpeta Shaders, amb **Create > Shader Graph > URP > Unlit Shader Graph**, crea **SGalaxySuperficie**. A Graph Settings: Surface Type **Transparent**, Blending Mode **Alpha**, **Alpha Clipping activat**, Render Face **Front**, Cast Shadows desactivat. En activar Alpha Clipping, el Master Stack mostra el bloc **Alpha Clip Threshold**. Deixa Vertex / Position sense connectar: no hi ha ones geomètriques.
 
 | Nom | Tipus | Reference | Valor inicial |
 |---|---|---|---|
@@ -734,7 +738,7 @@ Mostreja Ripples amb les UV de la primera capa. La textura es repeteix i es desp
 
 ### Pas 2. Segona capa i reflexos
 
-Mostreja la mateixa textura amb una altra escala i direcció. Multiply i Step retenen només les taques brillants que superen Llindar.
+Mostreja la mateixa textura amb una altra escala i direcció. Multiply i Step retenen només les taques brillants que superen Llindar reflexos.
 
 **Nodes que has de crear i valors que has d’escriure:**
 
@@ -759,12 +763,12 @@ Mostreja la mateixa textura amb una altra escala i direcció. Multiply i Step re
 | `CapaBUV` | Out | `MostraB` | UV |
 | `MostraA` | R | `Interferencia` | A |
 | `MostraB` | R | `Interferencia` | B |
-| `Llindar` | Out | `Reflexos` | Edge |
+| `Llindar reflexos` | Out | `Reflexos` | Edge |
 | `Interferencia` | Out | `Reflexos` | In |
 
 **Comprova el resultat:** Desplega **Multiply** (Interferencia) i **Step** (Reflexos): el primer mostra grisos i el segon els converteix en una màscara negra i blanca.
 
-### Pas 3. Distancia a les vores UV
+### Pas 3. Distància a les vores UV
 
 Minimum entre U, 1−U, V i 1−V mesura la proximitat al contorn del pla; encara no detecta cap roca.
 
@@ -879,7 +883,7 @@ La segona textura varia l’amplada de contacte entre 0.12 i 0.65. Maximum uneix
 
 ### Pas 7. Master Stack i connexions finals
 
-Connecta les sortides als blocs del Master Stack indicats a la taula de cables. Si hi ha un bloc Normal, configura’l en Tangent. Els blocs sense cable conserven el valor per defecte.
+Connecta les sortides als blocs del Master Stack indicats a la taula de cables. Els blocs sense cable conserven el valor per defecte.
 
 **Cables: arrossega de la sortida a l’entrada indicada.**
 
@@ -893,13 +897,13 @@ Connecta les sortides als blocs del Master Stack indicats a la taula de cables. 
 
 ### 8.4. Muntar la segona escena
 
-1. Duplica DemoAigua i desa-la com **DemoAiguaGalaxy**. No sobreescriguis l’escena amb ones.
-2. Amb **Create > Rendering > Material**, crea **MGalaxyFons** i **MGalaxySuperficie**. Assigna’ls **DAM Shaders > SGalaxyFons** i **DAM Shaders > SGalaxySuperficie**, respectivament. Assigna les quatre textures a les propietats corresponents dels materials.
+1. A la finestra Project, selecciona l’escena DemoAigua, tria **Edit > Duplicate** i reanomena la còpia com **DemoAiguaGalaxy**. Obre-la. No sobreescriguis l’escena amb ones.
+2. Amb **Create > Material**, crea **MGalaxyFons** i **MGalaxySuperficie**. Assigna’ls **DAM Shaders > SGalaxyFons** i **DAM Shaders > SGalaxySuperficie**, respectivament. Assigna les quatre textures a les propietats corresponents dels materials.
 3. Mantén Aigua amb WaterGrid i escala (1,1,1), situa-la a **(0,0.8,0)** i assigna-hi MGalaxySuperficie. No reutilitzis MAigua: aquell shader mou vèrtexs.
 4. Elimina FonsPiscina només d’aquesta escena duplicada. Crea FonsGalaxy a **(0,0,0)** amb Mesh Filter i Mesh Renderer. Assigna-hi FonsInclinat i MGalaxyFons. La malla inclosa al ZIP baixa de Y=0.45 a Y=−0.7 al llarg de X; també es pot generar amb el codi següent.
 5. Situa Base a (0,−1,0). A les tres ribes, canvia només la Y a −0.05 i l’escala Y a 1.7. Situa les cinc roques a Y=0.8, conservant X/Z i escala.
-6. Situa la càmera a **(8,11,−11)** i orienta-la cap a **(0,1,0)**; mantén FOV 40. Activa Depth Texture a l’URP Asset actiu i a la càmera. Les roques han de continuar sent **opaques** perquè apareguin a la textura de profunditat.
-7. A DemoControls, posa Surfaces de mida 2: primer el Renderer d’Aigua, després el de FonsGalaxy. Configura Parameter = `_Llindar`, Minimum = **0.05**, Maximum = **0.65** i Initial Value = **0.42** i Time Scale = **2**. El temps avança al doble de velocitat; posa Time Scale = 1 per comparar amb la velocitat inicial. Els dos shaders reben `_Temps`; el lliscador afecta només la superfície.
+6. Situa la càmera a **(8,11,−11)** i orienta-la cap a **(0,1,0)** (rotació aproximada (36.32, -36.03, 0)); mantén FOV 40. Comprova que Depth Texture continua activada a l’URP Asset actiu i a la càmera. Les roques han de continuar sent **opaques** perquè apareguin a la textura de profunditat.
+7. A DemoControls, posa Surfaces de mida 2: primer el Renderer d’Aigua, després el de FonsGalaxy. Al ZIP, Title = **04 / AIGUA — TEXTURES** i Description = **Superficie plana + refraccio + caustiques**. Configura Parameter = `_Llindar`, Minimum = **0.05**, Maximum = **0.65** i Initial Value = **0.42** i Time Scale = **2**. El temps avança al doble de velocitat; posa Time Scale = 1 per comparar amb la velocitat inicial. Els dos shaders reben `_Temps`; el lliscador afecta només la superfície.
 8. Comprova que `_NivellAigua` del material del fons és **0.8**, la Y global del pla. Si mous el pla, actualitza aquesta propietat.
 
 Per reconstruir el fons sense importar-ne la malla, crea `Assets/Editor/GenerarFonsGalaxy.cs` i executa **Demos > Crear fons inclinat Galaxy**. Assigna l’asset generat a FonsGalaxy. Quatre vèrtexs són suficients perquè el pla no es deforma durant el joc.

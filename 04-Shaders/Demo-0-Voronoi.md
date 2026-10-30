@@ -22,8 +22,6 @@ Al **Blackboard**, el panell de propietats de l’esquerra:
 4. Selecciona Velocitat, deixa **Scope = Per Material**, activa **Show In Inspector** i escriu **X = 1**, **Y = 1** al valor per defecte.
 5. Arrossega les dues propietats del Blackboard cap al gràfic. Apareixerà un node de propietat per a cadascuna.
 
-Si la casella apareix amb el nom **Exposed**, activa-la igualment: és l’opció que mostra la propietat al material.
-
 **Velocitat és una propietat Vector 2 del Blackboard.** Això permet editar els dos components des del material.
 
 <a href="assets/demovoronoi-propietats.png"><img src="assets/demovoronoi-propietats.png" alt="Blackboard amb Color i Velocitat; Velocitat exposada amb X i Y iguals a 1" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
@@ -56,7 +54,7 @@ Aquest Multiply calcula el desplaçament en els dos eixos. Amb Velocitat `(1, 1)
 
 1. Crea un node **Voronoi** a la dreta de Tiling And Offset.
 2. Connecta **Out** de Tiling And Offset a **UV** de Voronoi.
-3. Deixa **Angle Offset = 2** i **Cell Density = 5**, sense cables. Si apareix **Hash Type**, selecciona **Deterministic**.
+3. Deixa **Angle Offset = 2** i **Cell Density = 5**, sense cables. Deixa **Hash Type = Deterministic**.
 
 Per obrir el preview d’un node, fes-hi clic dret i tria **View > Expand Preview**. El preview de Voronoi mostra el degradat de la seva sortida principal; al pas següent utilitzarem **Cells** per obtenir cel·les de color uniforme i vores definides.
 
@@ -71,7 +69,7 @@ Per obrir el preview d’un node, fes-hi clic dret i tria **View > Expand Previe
 
 ## 4. Crear un material i assignar-li el shader
 
-1. A **Project > Assets/Materials**, fes clic dret i tria **Create > Rendering > Material**.
+1. A **Project > Assets/Materials**, fes clic dret i tria **Create > Material**.
 2. Anomena el material **MVoronoiAnimat**.
 3. Assigna-li **SVoronoiAnimat** amb **una** d’aquestes dues opcions:
 
@@ -112,7 +110,7 @@ Els valors mouen les **coordenades de lectura**: sobre una superfície amb UV ha
 
 Canvia **Color** i comprova que totes les cel·les adopten diferents intensitats del nou color. Si tries negre, tot el patró quedarà negre. Per acabar, deixa **Velocitat = (1, 1)**.
 
-Si no apareixen els controls al material, revisa **Show In Inspector** (o **Exposed**), desa el shader i comprova el camp **Shader** del material. Si el cub no canvia, revisa el material assignat a **Mesh Renderer > Materials**.
+Si no apareixen els controls al material, revisa **Show In Inspector**, desa el shader i comprova el camp **Shader** del material. Si el cub no canvia, revisa el material assignat a **Mesh Renderer > Materials**.
 
 Si els previews es tornen quadriculats després de tenir Unity obert molta estona, desa el shader i reinicia l’editor abans de tornar a comprovar-los.
 

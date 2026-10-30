@@ -14,8 +14,8 @@ Cada ZIP conté un **projecte Unity independent** amb escenes acabades, Shader G
 2. A Unity Hub, utilitza **Add > Add project from disk**.
 3. Selecciona la carpeta que conté directament **Assets**, **Packages** i **ProjectSettings**.
 4. Obre-la amb **Unity** i espera que acabi la importació.
-5. En acabar la primera importació, s’obre automàticament l’escena principal de la demo. Els materials poden trigar una estona a carregar-se. Aigua també inclou una segona escena, `DemoAiguaGalaxy`, que pots obrir des de `Assets/Demos/Aigua/Scenes/`.
-6. Prem **Play** i clica la vista **Game**. A **Demo 0: Voronoi animat**, selecciona **MVoronoiAnimat** a Project per canviar **Color** i **Velocitat X/Y** a l’Inspector. A les altres demos, el panell mostra els controls.
+5. En acabar la primera importació, s’obre automàticament l’escena principal de la demo. Els materials poden trigar una estona a carregar-se. Aigua també inclou una segona escena, `DemoAiguaGalaxy`, que pots obrir amb doble clic des de `Assets/Demos/Aigua/Scenes/` a la finestra **Project**.
+6. Prem **Play** i clica la vista **Game**. A **Demo 0: Voronoi animat**, selecciona **Assets/Materials/MVoronoiAnimat** a la finestra **Project** per canviar **Color** i **Velocitat X/Y** a l’Inspector. A les altres demos, el panell mostra els controls.
 7. Atura Play abans d’editar valors que vulguis conservar als materials.
 
 El menú **Demo > Obrir escena principal** permet tornar a la demo. L’obertura automàtica només actua el primer cop; després es respecten les escenes amb què estiguis treballant.
@@ -67,33 +67,12 @@ Les demos 1–8 inclouen **DemoOrbitCamera** a Main Camera: **botó dret + arros
 
 No s’inclouen **Library**, **Temp**, **Logs** ni les eines internes utilitzades per preparar les captures. No moguis només l’escena fora del projecte: depèn dels materials, els gràfics i la configuració d’URP.
 
-## Comprovació dels projectes
-
-Aquest registre correspon a les demos anteriors a la substitució de la Demo 0 per Voronoi animat. Les comprovacions de Patró no descriuen el nou projecte.
-
-Revisió del **9 d’octubre de 2026**, sobre els fitxers de la branca **main**:
-
-- Els set tutorials 0–6 parteixen de **Universal 3D / SampleScene**, conservant Main Camera, Directional Light i Global Volume. Les escenes s’han reconstruït amb aquests objectes originals, els scripts publicats i les utilitats de malles dels tutorials.
-- **551 comprovacions** de les escenes: posicions i escales contrastades amb les taules dels Markdown, variants dels materials, controls, referències, càmera, malles, profunditat i configuració de Galaxy.
-- **306 connexions, 69 entrades literals i 56 propietats** dels deu Shader Graphs contrastades amb les taules dels tutorials.
-- Els **vuit ZIP de les demos 0–6 i del catàleg** s’han extret en carpetes noves i s’han obert amb **Unity en mode gràfic a macOS**. Les nou escenes han funcionat en Play: **589 comprovacions** d’obertura automàtica, compilació, renderitzat, paràmetres, animacions, càmera orbital, obertura i tancament progressius de Forat i aïllament de les 15 famílies del catàleg.
-- **Demo-7-Sombra** també parteix de Universal 3D i s’ha obert des del seu ZIP en una carpeta nova: silueta emplenada en gris, paret intacta, oclusió parcial, activació/desactivació i càmera orbital. La prova completa ha passat **111 comprovacions**, incloses 30 de posició, rotació i escala contra les taules del tutorial. Aquestes 30 comprovacions s’han afegit en una segona obertura reutilitzant la importació inicial.
-- Corregida una referència buida al perfil **Bloom** dels projectes de demo: el resplendor es conserva en tornar-los a obrir.
-- Els **137 recursos** de la biblioteca del ZIP coincideixen amb el `.unitypackage` importable.
-
-La reconstrucció i les proves són automatitzades; no és una repetició manual de cada clic de l’alumne. S’han reutilitzat els Shader Graphs després de contrastar-ne totes les connexions i entrades. S’han inspeccionat les captures de les deu escenes. El catàleg va superar el límit de temps de la primera prova mentre compilava totes les famílies; la comprovació completa s’ha acabat amb més marge reutilitzant aquella importació. No s’ha provat en Windows o Linux. Una excepció del cercador intern de Unity (`UnityEditor.Search.SearchDatabase`) s’ha distingit dels errors de les demos.
-
-## Comprovació de Pèls
-
-La **Demo-8-Pels** s’ha reconstruït des de zero amb la plantilla Universal 3D el **13 d’octubre de 2026**, utilitzant el codi i les taules del tutorial: 46 connexions dels grafs, 181 comprovacions de configuració i escena i 60 comprovacions en Play. El ZIP s’ha extret en una carpeta nova i les proves d’escena i Play s’han repetit correctament. [Informe i abast de la validació](Validacio-Demo-8-Pels.md).
-
 ## Si alguna cosa no funciona
 
 - **Projecte no reconegut:** selecciona la carpeta amb Assets, Packages i ProjectSettings, no el ZIP ni la carpeta exterior.
-- **Material rosa:** espera que acabi la compilació i comprova que el projecte utilitza URP i revisa els errors de la Console.
+- **Material rosa:** espera que acabi la compilació, comprova que el projecte utilitza URP i revisa els errors de la Console.
 - **Escena buida:** utilitza **Demo > Obrir escena principal**.
 - **Teclat sense resposta:** clica Game, comprova que Pause estigui desactivat i que Input System sigui el sistema d’entrada actiu.
 - **Escuma incorrecta:** comprova Depth Texture a l’URP Asset actiu i a la càmera.
 - **Forat inactiu:** comprova les referències del controlador i que els colliders de les parets siguin a la capa 8, DioramaWalls.
-
 - **Silueta inactiva:** comprova Depth Texture, Depth Test = Always, Depth Write = Force Disabled i les referències Silhouettes del controlador de Sombra.

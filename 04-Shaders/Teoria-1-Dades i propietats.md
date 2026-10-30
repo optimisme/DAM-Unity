@@ -7,20 +7,20 @@ Un node rep valors pels ports d'entrada i produeix valors pels de sortida. Abans
 | Tipus | Components | Ús |
 |---|---|---|
 | Float | Un valor | Velocitat, gruix, intensitat o màscara |
-| Vector2 | X, Y | Coordenades UV o velocitat de desplaçament |
-| Vector3 | X, Y, Z | Posició, direcció, normal o RGB |
-| Vector4 | X, Y, Z, W | Quatre canals; per exemple RGBA |
+| Vector 2 | X, Y | Coordenades UV o velocitat de desplaçament |
+| Vector 3 | X, Y, Z | Posició, direcció, normal o RGB |
+| Vector 4 | X, Y, Z, W | Quatre canals; per exemple RGBA |
 | Color | R, G, B, A | Color amb selector a l'Inspector |
-| Texture2D | Recurs de textura | Entrada de Sample Texture 2D |
+| Texture 2D | Recurs de textura | Entrada de Sample Texture 2D |
 | Boolean | Cert/fals | Selecció de comportament |
 
-X/Y/Z/W i R/G/B/A són noms de components. Un Vector3 no sap si representa un color o una posició: ho determina l'ús. Una Texture2D és un recurs; **Sample Texture 2D** en llegeix un valor en unes coordenades.
+X/Y/Z/W i R/G/B/A són noms de components. Un Vector 3 no sap si representa un color o una posició: ho determina l'ús. Una Texture 2D és un recurs; **Sample Texture 2D** en llegeix un valor en unes coordenades.
 
 ## Constants i propietats
 
 - Una **constant** queda definida dins del gràfic.
 - Una **propietat** del Blackboard permet reutilitzar un paràmetre en diferents punts.
-- Amb **Exposed** activat, una propietat compatible es pot editar al material.
+- Amb **Show In Inspector** activat, una propietat compatible es pot editar al material.
 - **Display Name** és l'etiqueta visible. **Reference** és l'identificador que utilitza el codi, per exemple `_LineWidth`.
 
 | Propietat d'exemple | Tipus | Valor inicial | Significat |
@@ -29,7 +29,7 @@ X/Y/Z/W i R/G/B/A són noms de components. Un Vector3 no sap si representa un co
 | Color B | Color | Blanc | Color del patró |
 | Repeticions | Float | 8 | Nombre de cel·les en una unitat UV |
 | Gruix | Float | 0.1 | Fracció de cada cel·la ocupada per la línia |
-| Velocitat | Vector2 | (0.1, 0) | Unitats UV per segon |
+| Velocitat | Vector 2 | (0.1, 0) | Unitats UV per segon |
 
 El valor inicial del Blackboard serveix de valor per defecte. Un material pot tenir-ne un de propi. Un lliscador facilita l'edició, però el shader ha de tractar els rangs que necessiti, especialment si el valor s'assigna per codi.
 
@@ -44,7 +44,7 @@ UV + (0.2, 0) → modifica només U
 UV + (0.2, 0.2) → modifica U i V
 ```
 
-No connectis un Vector3 a un port escalar esperant que calculi automàticament la mitjana. Extreu o calcula el valor desitjat.
+No connectis un Vector 3 a un port escalar esperant que calculi automàticament la mitjana. Extreu o calcula el valor desitjat.
 
 ## Colors i rangs
 

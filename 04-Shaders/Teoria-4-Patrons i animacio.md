@@ -1,6 +1,6 @@
 # Patrons i animació
 
-Un patró procedural és una funció de coordenades. Abans de donar-li color, convé visualitzar-ne el resultat com una màscara en blanc i negre. Aquesta fitxa prepara la demo **0-Patro**: línies, quadrícula i quadres alternats.
+Un patró procedural és una funció de coordenades. Abans de donar-li color, convé visualitzar-ne el resultat com una màscara en blanc i negre. Aquesta fitxa prepara les demos **0-Voronoi** i **1-Rajoles**: línies, quadrícula, quadres alternats i cel·les.
 
 ## Línies repetides
 
@@ -77,7 +77,7 @@ uvAnimada = uv + temps * velocitatUV
 
 VelocitatUV = (0.1,0) avança 0.1 unitats UV de mostreig per segon. Pot ser zero, negativa o superior a 1; no hi ha l'obligació de multiplicar el temps per un valor menor que 1.
 
-Utilitza un Vector2 per controlar cada eix. Desplaçar les UV anima el patró sobre l'objecte; no deforma la malla.
+Utilitza un Vector 2 per controlar cada eix. Desplaçar les UV anima el patró sobre l'objecte; no deforma la malla.
 
 ## Sinus, freqüència i amplitud
 

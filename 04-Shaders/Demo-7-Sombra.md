@@ -8,15 +8,17 @@ Quan una paret tapa el personatge, mostrarem la seva silueta plana emplenada en 
 
 ## 1. Partir de Universal 3D
 
-1. Crea un projecte "Universal 3D"
-2. A **Edit > Project Settings > Player > Active Input Handling**, selecciona **Input System Package (New)**. Accepta el reinici si Unity el demana.
-3. Crea **Assets/Demos/Sombra**, amb les carpetes **Shaders**, **Materials** i **Scenes**. Crea també **Assets/Common**.
+1. Crea un projecte **Universal 3D (URP)**. A **Window > Package Management > Package Manager**, comprova **Universal RP**, **Shader Graph** i **Input System**.
+2. A **Edit > Project Settings > Player > Other Settings > Active Input Handling**, selecciona **Input System Package (New)**. Accepta el reinici si Unity el demana.
+3. A la finestra **Project**, crea **Assets/Demos/Sombra** (botó dret > **Create > Folder**), amb les carpetes **Shaders**, **Materials** i **Scenes**. Crea també **Assets/Common**.
 4. Obre **Assets/Scenes/SampleScene**. Conserva **Main Camera**, **Directional Light** i **Global Volume**. Amb **File > Save As…**, desa una còpia com a **DemoSombra** dins de Scenes.
-5. A **Project Settings > Quality**, comprova quin URP Asset utilitza el nivell actiu. Selecciona aquest asset al Project i activa **Depth Texture**. A la plantilla per a ordinador és **Assets/Settings/PC_RPAsset**. A Main Camera, activa també **Rendering > Depth Texture** si apareix l’opció específica de càmera; no la deixis desactivada.
+5. A **Edit > Project Settings > Quality**, comprova quin URP Asset utilitza el nivell actiu. A la plantilla per a ordinador és **Assets/Settings/PC_RPAsset**.
+6. Selecciona aquest asset a la finestra Project i, a l’Inspector, activa **Rendering > Depth Texture**.
+7. Selecciona **Main Camera** i, al component Camera, posa **Rendering > Depth Texture = On**.
 
 ## 2. Crear el Shader Graph
 
-A Shaders, utilitza **Create > Shader Graph > URP > Unlit Shader Graph**, amb nom **SSombra**. Obre’l i fixa aquestes opcions a **Graph Inspector > Graph Settings**:
+A la finestra Project, fes botó dret a la carpeta **Shaders** i tria **Create > Shader Graph > URP > Unlit Shader Graph**, amb nom **SSombra**. Fes-hi doble clic per obrir-lo. Al Blackboard, fes doble clic al camí que hi ha sota el nom del gràfic i escriu `DAM Shaders`. Fixa aquestes opcions a **Graph Inspector > Graph Settings**:
 
 | Opció | Valor |
 |---|---|
@@ -32,7 +34,7 @@ A Shaders, utilitza **Create > Shader Graph > URP > Unlit Shader Graph**, amb no
 
 Transparent situa la còpia després de les superfícies opaques. L’alpha final només és 0 o 1, de manera que la silueta queda emplenada, sense transparència parcial.
 
-Al Blackboard, crea aquestes propietats amb **Exposed** activat. Els colors són **RGB (0–255)**; mantén **Alpha = 255**.
+Al Blackboard, crea aquestes propietats amb **Show In Inspector** activat. Els colors són **RGB (0–255)**; mantén **Alpha = 255**.
 
 | Nom | Tipus | Reference exacta | Valor inicial |
 |---|---|---|---|
@@ -127,18 +129,18 @@ Desa el Shader Graph. Els blocs de Vertex es mantenen amb els seus valors inicia
 
 ## 3. Materials i escenari
 
-A Materials, utilitza **Create > Rendering > Material** per a cada material:
+A la finestra Project, fes botó dret a la carpeta **Materials** i tria **Create > Material** per a cada material. A l’Inspector, tria el shader indicat a **Shader**:
 
 | Material | Shader | Color i paràmetres |
 |---|---|---|
-| `MBase` | Universal Render Pipeline/Lit | Base Map RGB (20,42,57); Smoothness 0.25 |
-| `MParet` | Universal Render Pipeline/Lit | Base Map RGB (255,158,64); Smoothness 0.25 |
-| `MPersonatge` | Universal Render Pipeline/Unlit | Base Map RGB (5,255,204) |
-| `MSilueta` | SSombra | Color silueta RGB (128,128,128); Marge profunditat 0.015 |
+| `MBase` | Universal Render Pipeline > Lit | Base Map RGB (20,42,57); Smoothness 0.25 |
+| `MParet` | Universal Render Pipeline > Lit | Base Map RGB (255,158,64); Smoothness 0.25 |
+| `MPersonatge` | Universal Render Pipeline > Unlit | Base Map RGB (5,255,204) |
+| `MSilueta` | DAM Shaders > SSombra | Color silueta RGB (128,128,128); Marge profunditat 0.015 |
 
-Per assignar SSombra, arrossega el Shader Graph del Project sobre MSilueta; al ZIP apareix com a **DAM Shaders/SSombra**. Les dues parets comparteixen MParet i totes les peces originals comparteixen MPersonatge.
+També pots assignar SSombra arrossegant el Shader Graph del Project sobre MSilueta. Les dues parets comparteixen MParet i totes les peces originals comparteixen MPersonatge.
 
-Crea aquests objectes **a l’arrel de la jerarquia**, sense pares. Les rotacions són (0,0,0):
+Crea aquests objectes **a l’arrel de la jerarquia**, sense pares, amb el botó **+** de la Hierarchy (**3D Object > Cube** per als cubs; **Create Empty** per a Personatge). Les rotacions són (0,0,0):
 
 | Objecte | Tipus | Posició global | Escala | Material |
 |---|---|---|---|---|
@@ -149,7 +151,7 @@ Crea aquests objectes **a l’arrel de la jerarquia**, sense pares. Les rotacion
 
 A **Edit > Project Settings > Tags and Layers**, posa **DioramaWalls** a **User Layer 8**. Assigna aquesta capa només a ParetDavant i ParetDarrera. Conserva els seus **Box Collider**, amb Is Trigger desactivat.
 
-Crea les sis peces com a **fills directes de Personatge**. Pots utilitzar **GameObject > 3D Object** i arrossegar-les a Personatge abans d’escriure els valors. Aquesta taula dona **posicions, rotacions i escales locals**, relatives a Personatge:
+Crea les sis peces com a **fills directes de Personatge**. Pots fer botó dret a Personatge a la Hierarchy i triar **3D Object** > tipus indicat, o crear-les amb **GameObject > 3D Object** i arrossegar-les a Personatge abans d’escriure els valors. Aquesta taula dona **posicions, rotacions i escales locals**, relatives a Personatge:
 
 | Peça | Tipus | Posició local | Rotació local | Escala local |
 |---|---|---|---|---|
@@ -198,15 +200,15 @@ Ajusta la **Main Camera existent**:
 
 - Position = (4,4,-13), Rotation = (10.26,-16.17,0), Field of View = 40.
 - Background Type = Solid Color, color RGB (5,7,13).
-- Depth Texture activada; Post Processing activat. Conserva Camera, Audio Listener i Universal Additional Camera Data.
+- **Rendering > Depth Texture = On**; **Rendering > Post Processing** activat. Conserva Camera, Audio Listener i Universal Additional Camera Data.
 
-Canvia el nom de **Directional Light** a **Key Light**. Rotation = (45,-30,0), Intensity = 2, Color RGB (255,224,189), Shadows = Soft Shadows. Afegeix una segona **Directional Light** com a **Fill Light**, Rotation = (25,140,0), Intensity = 1, Color RGB (89,171,255), Shadows = None.
+Canvia el nom de **Directional Light** a **Key Light**. Rotation = (45,-30,0), Intensity = 2, Color RGB (255,224,189), **Shadow Type = Soft Shadows**. Afegeix una segona llum amb **GameObject > Light > Directional Light**, anomena-la **Fill Light** i configura-la: Rotation = (25,140,0), Intensity = 1, Color RGB (89,171,255), **Shadow Type = No Shadows**.
 
-A **Window > Rendering > Lighting > Environment**, fixa **Environment Lighting > Source = Color**, Ambient Color RGB (82,97,122). Conserva Global Volume amb el perfil de SampleScene. Si vols un perfil propi, duplica SampleSceneProfile a Demos/Sombra i assigna la còpia al volum; el ZIP inclou aquesta còpia com a DemoVolume.
+A **Window > Rendering > Lighting > Environment**, fixa **Environment Lighting > Source = Color**, Ambient Color RGB (82,97,122). Conserva Global Volume amb el perfil de SampleScene. Si vols un perfil propi, selecciona **Assets/Settings/SampleSceneProfile** a la finestra Project, duplica’l amb **Edit > Duplicate**, mou la còpia a `Assets/Demos/Sombra`, anomena-la `DemoVolume` i assigna-la al camp **Profile** del Global Volume (és el que fa el ZIP).
 
-Copia [DemoOrbitCamera.cs](demos/DemoOrbitCamera.cs) a **Assets/Common** i afegeix-lo a Main Camera. Configura **Center = (0,1.4,0.8)** i conserva els altres valors inicials. El script té ordre d’execució −100 per moure la càmera abans de detectar l’oclusió.
+A la finestra Project, fes botó dret a **Assets/Common** i tria **Create > Scripting > MonoBehaviour Script**, amb nom `DemoOrbitCamera`. Obre’l i substitueix-ne tot el contingut pel de [DemoOrbitCamera.cs](demos/DemoOrbitCamera.cs). Afegeix el component **Demo Orbit Camera** a Main Camera. Configura **Center = (0,1.4,0.8)** i conserva els altres valors inicials. El script té ordre d’execució −100 per moure la càmera abans de detectar l’oclusió.
 
-Crea **Assets/Common/SombraController.cs** amb aquest codi complet:
+A **Assets/Common**, crea un altre script amb **Create > Scripting > MonoBehaviour Script**, anomena’l `SombraController` i substitueix-ne el contingut per aquest codi complet:
 
 ```csharp
 using UnityEngine;
@@ -315,7 +317,7 @@ public class SombraController : MonoBehaviour
 }
 ```
 
-Crea un objecte buit **ControlSombra**, amb transformació inicial, i afegeix-hi SombraController. Configura:
+Crea un objecte buit amb el botó **+** de la Hierarchy > **Create Empty**, anomena’l **ControlSombra** (amb la transformació inicial) i afegeix-hi el component **Sombra Controller**. Configura:
 
 | Camp | Valor |
 |---|---|

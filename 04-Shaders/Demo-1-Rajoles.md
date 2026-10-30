@@ -9,25 +9,27 @@ Construirem un material Lit de rajoles amb juntes fosques, alternança de colors
 ## 1. Partir de Universal 3D
 
 1. Crea un projecte **Universal 3D (URP)**.
-2. A Package Manager, comprova **Universal RP**, **Shader Graph** i **Input System**. Shader Graph arriba com a dependència d’URP.
-3. A **Project Settings > Player > Active Input Handling**, selecciona **Input System Package (New)**. Accepta el reinici si Unity el demana.
-4. Crea `Assets/Demos/Rajoles` amb les carpetes **Shaders**, **Materials**, **Scenes** i **Meshes**. Crea també **Assets/Common** per als scripts.
+2. A **Window > Package Management > Package Manager**, comprova **Universal RP**, **Shader Graph** i **Input System**. Shader Graph arriba com a dependència d’URP.
+3. A **Edit > Project Settings > Player > Other Settings > Active Input Handling**, selecciona **Input System Package (New)**. Accepta el reinici si Unity el demana.
+4. Crea `Assets/Demos/Rajoles` amb les carpetes **Shaders**, **Materials** i **Scenes**. Crea també **Assets/Common** per als scripts.
 5. Obre **Assets/Scenes/SampleScene**, que ja inclou **Main Camera**, **Directional Light** i **Global Volume**. Conserva aquests objectes. Amb **File > Save As…**, desa una còpia com a `DemoRajoles` dins de Scenes. Més endavant ajustarem la càmera i la llum existents.
 
 ## 2. Crear el Shader Graph
 
-A Shaders, crea **Create > Shader Graph > URP > Lit Shader Graph**, amb nom **SRajoles**. A Graph Inspector > Graph Settings, fixa:
+A Shaders, crea **Create > Shader Graph > URP > Lit Shader Graph**, amb nom **SRajoles**. Al **Blackboard**, fes doble clic al subtítol **Shader Graphs** sota el nom del graf i escriu **DAM Shaders**: és la carpeta on apareixerà el shader al selector del material. A Graph Inspector > Graph Settings, fixa:
 
 | Opció | Valor |
 |---|---|
 | Target | Universal |
 | Material | Lit |
+| Workflow Mode | Metallic |
 | Surface Type | Opaque |
 | Alpha Clipping | Desactivat |
 | Render Face | Front |
 | Cast Shadows | Desactivat |
+| Fragment Normal Space | Tangent |
 
-Afegeix al Blackboard aquestes propietats. Activa **Exposed** i escriu les **Reference exactes**, inclòs el guió baix. Els colors s’indiquen com a **RGB (0–255)**, tal com apareixen al selector de Unity; mantén **Alpha = 255** llevat que s’indiqui un altre valor. Els valors Float i Vector continuen en les seves unitats originals.
+Afegeix al Blackboard aquestes propietats. Activa **Show In Inspector** i escriu les **Reference exactes**, inclòs el guió baix. Els colors s’indiquen com a **RGB (0–255)**, tal com apareixen al selector de Unity; mantén **Alpha = 255** llevat que s’indiqui un altre valor. Els valors Float i Vector continuen en les seves unitats originals.
 
 | Nom | Tipus | Reference | Valor inicial |
 |---|---|---|---|
@@ -56,7 +58,7 @@ Escriu els valors de la taula als camps sense cable. Si el camp és vectorial i 
 
 <a href="assets/demorajoles-graf-complet.png"><img src="assets/demorajoles-graf-complet.png" alt="Graf complet de Rajoles, amb totes les connexions i les previsualitzacions obertes" width="1600" style="width: 100%; max-width: 1600px; height: auto;"></a>
 
-### Pas 1. UV i repeticio
+### Pas 1. UV i repetició
 
 Parteix de les UV i separa els dos eixos per repetir les cel·les.
 
@@ -111,7 +113,7 @@ La màscara blanca representa les juntes. Augmentar Gruix eixampla les dues dire
 
 **Comprova el resultat:** Desplega els **One Minus** per veure les línies separades i **Maximum** per veure la quadrícula de juntes blanca sobre negre.
 
-### Pas 3. Alternanca
+### Pas 3. Alternança
 
 La paritat alterna les rajoles; no utilitzis Fraction directament sense identificar abans la cel·la amb Floor.
 
@@ -177,7 +179,7 @@ Lerp introdueix el color de la junta. One Minus dona l’interior de rajola per 
 |---|---|---|
 | `ColorFinal` | Lerp | Valors per defecte |
 | `Interior` | One Minus | Valors per defecte |
-| `Relleu` | Normal From Height | Strength = 0.035 |
+| `Relleu` | Normal From Height | Strength = 0.035; Output Space = Tangent |
 
 **Cables: arrossega de la sortida a l’entrada indicada.**
 
@@ -193,29 +195,29 @@ Lerp introdueix el color de la junta. One Minus dona l’interior de rajola per 
 
 ### Pas 6. Master Stack i connexions finals
 
-Connecta les sortides als blocs del Master Stack indicats a la taula de cables. Si hi ha un bloc Normal, configura’l en Tangent. Els blocs sense cable conserven el valor per defecte.
+Connecta les sortides als blocs del Master Stack indicats a la taula de cables. El bloc **Normal (Tangent Space)** apareix perquè Fragment Normal Space és Tangent. Els blocs sense cable conserven el valor per defecte.
 
 **Cables: arrossega de la sortida a l’entrada indicada.**
 
 | Node origen | Port de sortida | Node destí | Port d’entrada |
 |---|---|---|---|
-| `Relleu` | Out | `Fragment / Normal (Tangent)` | Normal (Tangent) |
+| `Relleu` | Out | `Fragment / Normal (Tangent Space)` | Normal (Tangent Space) |
 | `Brillantor` | Out | `Fragment / Smoothness` | Smoothness |
 | `ColorFinal` | Out | `Fragment / Base Color` | Base Color |
 
-Els números de les entrades són valors literals. En un vector, repeteix el valor a tots els components quan s’indica un únic nombre. A Combine, tria RG per a Vector2; a Split, R/G/B equivalen a X/Y/Z. Desa el graf abans de crear els materials.
+Els números de les entrades són valors literals. En un vector, repeteix el valor a tots els components quan s’indica un únic nombre. A Split, R/G/B equivalen a X/Y/Z. Desa el graf abans de crear els materials.
 
 **Comprova el resultat:** Desa el graf. Comprova el relleu i la brillantor amb el material aplicat a la mostra de l’escena.
 
 ## 4. Crear els materials
 
-A la carpeta **Materials**, utilitza **Create > Rendering > Material** per a cada material indicat. A l’Inspector, selecciona **Shader > DAM Shaders > SRajoles** (o arrossega SRajoles del Project sobre el material). `MRajoles0`, `MRajoles1`, `MRajoles2`: Repeticions = **4, 6, 8** i Brillantor = **0.3, 0.6, 0.9**. ColorA en RGB és (6,56,74), (115,31,18) i (20,61,36), respectivament. La resta de propietats conserva els valors inicials.
+A la carpeta **Materials**, utilitza **Create > Material** per a cada material indicat. A l’Inspector, selecciona **Shader > DAM Shaders > SRajoles** (o arrossega SRajoles del Project sobre el material). `MRajoles0`, `MRajoles1`, `MRajoles2`: Repeticions = **4, 6, 8** i Brillantor = **0.3, 0.6, 0.9**. ColorA en RGB és (6,56,74), (115,31,18) i (20,61,36), respectivament. La resta de propietats conserva els valors inicials.
 
 ## 5. Construir l’escena
 
 Les posicions són globals i les escales corresponen a les primitives de Unity. Mantén els objectes a l’arrel, sense un pare escalat. Els elements decoratius i textos es poden ometre: no intervenen en el shader.
 
-| Objecte | Primitiva | Posicio | Escala |
+| Objecte | Primitiva | Posició | Escala |
 |---|---|---|---|
 | Base | Cube | (0, -0.22, 0) | (12, 0.4, 8) |
 | Mostra0 | Cube | (-3.2, 2.25, 0) | (2.7, 2.7, 0.35) |
@@ -231,7 +233,7 @@ Aplica una rotació Y = **−8°** a les tres mostres i assigna el material nume
 
 Posa Main Camera a **(8,6,−14)**, amb projecció **Perspective**, Field of View **40**, Near **0.1**, Far **100** i fons de color sòlid **RGB (5,7,13)**. Orienta-la cap al punt **(0,1.7,0)**. La rotació Euler corresponent és aproximadament **(14.932, -29.745, 0)**.
 
-Selecciona la **Directional Light** existent, canvia-li el nom a **Key Light** i ajusta-la: rotació (45,−30,0), intensitat 2 i color RGB (255,224,189); afegeix una segona llum amb **GameObject > Light > Directional Light**, anomena-la **Fill Light** i configura-la: rotació (25,140,0), intensitat 1 i color RGB (89,171,255). A **Window > Rendering > Lighting > Environment**, posa **Environment Lighting > Source = Color** i **Ambient Color** (82,97,122). La base porta un material Lit gris blavós (14,18,24), Smoothness 0.25; les peanyes, RGB (26,36,48). Crea aquests materials també amb **Create > Rendering > Material**, selecciona **Shader > Universal Render Pipeline > Lit** i assigna’ls als objectes corresponents.
+Selecciona la **Directional Light** existent, canvia-li el nom a **Key Light** i ajusta-la: rotació (45,−30,0), intensitat 2 i color RGB (255,224,189); afegeix una segona llum amb **GameObject > Light > Directional Light**, anomena-la **Fill Light** i configura-la: rotació (25,140,0), intensitat 1 i color RGB (89,171,255). A **Window > Rendering > Lighting**, pestanya **Environment**, posa **Environment Lighting > Source = Color** i **Ambient Color** (82,97,122). La base porta un material Lit **Base** gris blavós RGB (14,18,24); les peanyes, un material Lit **Pedestal** RGB (26,36,48). Tots dos tenen Smoothness 0.25. Crea aquests materials a Materials també amb **Create > Material**, selecciona **Shader > Universal Render Pipeline > Lit** i assigna’ls als objectes corresponents.
 
 Al **Global Volume** existent, duplica el perfil a la carpeta de la demo i assigna-hi la còpia. Conserva només **Bloom** i activa Intensity = **0.35**, Threshold = **1** i Scatter = **0.6**. Mantén **HDR** i **Post Processing** activats a Main Camera.
 
@@ -239,7 +241,7 @@ Al **Global Volume** existent, duplica el perfil a la carpeta de la demo i assig
 
 ### Càmera orbital i zoom
 
-Descarrega [DemoOrbitCamera.cs](demos/DemoOrbitCamera.cs) i desa’l a **Assets/Common/DemoOrbitCamera.cs**. Afegeix el component **Demo Orbit Camera** a **Main Camera**. Al ZIP ja està configurat.
+Descarrega [DemoOrbitCamera.cs](demos/DemoOrbitCamera.cs) i arrossega el fitxer a la carpeta **Assets/Common** de la finestra **Project**. Afegeix el component **Demo Orbit Camera** a **Main Camera**. Al ZIP ja està configurat.
 
 - **Center = (0, 1.7, 0)**: punt fix al voltant del qual gira la càmera.
 - **Minimum Distance = 3**, **Maximum Distance = 35**.
@@ -250,7 +252,7 @@ En **Play**, clica **Game**. Mantén premut el **botó dret** i arrossega per gi
 
 El controlador del panell, que trobaràs a continuació, informa la càmera de quan el punter és sobre els controls perquè el lliscador no mogui el punt de vista. La càmera funciona igualment quan el temps del shader està en pausa.
 
-Crea **Assets/Common/DemoControls.cs** amb aquest codi complet:
+A **Project > Assets/Common**, fes clic dret i tria **Create > Scripting > MonoBehaviour Script**. Anomena’l **DemoControls**, obre’l i substitueix-ne tot el contingut per aquest codi:
 
 ```csharp
 using UnityEngine;
@@ -349,7 +351,7 @@ public class DemoControls : MonoBehaviour
 }
 ```
 
-Crea un objecte buit **Controls** i afegeix-hi DemoControls. A **Surfaces**, assigna els tres Renderers de les mostres, en ordre d’esquerra a dreta. No hi afegeixis la base, els textos ni les peanyes.
+Crea un objecte buit **Controls** i afegeix-hi DemoControls. A **Surfaces**, assigna els tres Renderers de les mostres (Mostra0, Mostra1 i Mostra2), en ordre d’esquerra a dreta. No hi afegeixis la base, els textos ni les peanyes.
 
 | Camp | Valor |
 |---|---|
@@ -369,7 +371,7 @@ Els canvis durant Play són temporals. Per canviar els valors inicials de manera
 1. Comprova els tres colors de ceràmica i el nombre creixent de cel·les.
 2. Mou Gruix fins a 0.2: les juntes ocupen una part visible de cada rajola.
 3. Atura Play, canvia Brillantor i gira la llum: varia el reflex sense canviar les UV.
-4. Desconnecta temporalment NormalTS: desapareix el relleu aparent, però es mantenen color i juntes.
+4. Desconnecta temporalment **Normal (Tangent Space)**: desapareix el relleu aparent, però es mantenen color i juntes.
 
 <a href="assets/demorajoles-variant.png"><img src="assets/demorajoles-variant.png" alt="Variant amb el lliscador al màxim" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 

@@ -1,14 +1,11 @@
 # Recursos: mostres de Shader Graph
 
-**Unity** té un paquet amb shaders professionals pre-definits, per a veure tècniques i aprendre a fer-ne de nous.
+**Unity** té un paquet amb shaders professionals predefinits, per a veure tècniques i aprendre a fer-ne de nous.
 
-Al package manager:
-
-*Menú Window > Package Management > Package Manager*
-
-A la pestanya **"In Project"** buscar: **"Shader Graph"**
-
-En un projecte URP, comprova que Shader Graph apareix instal·lat. Les mostres són recursos opcionals: obre **"Samples"** i importa el conjunt que vulguis estudiar. Els noms i les carpetes poden variar segons la versió del paquet.
+1. Obre el Package Manager amb **Window > Package Management > Package Manager**.
+2. Selecciona la secció **In Project** i escriu **Shader Graph** al cercador. En un projecte URP, Shader Graph ja apareix instal·lat.
+3. Selecciona **Shader Graph** i obre la pestanya **Samples**.
+4. Prem **Import** al costat de **Feature Examples** i de **Production Ready Shaders** (les mostres que es fan servir a continuació). Les altres mostres són opcionals.
 
 <center>
 <img src="./assets/libs-samples.png" style="width: 90%; max-width: 600px">
@@ -17,7 +14,9 @@ En un projecte URP, comprova que Shader Graph apareix instal·lat. Les mostres s
 
 ## Feature Examples
 
-Exemples simples, obrir l'escena de demostració a:
+Les mostres s'importen a **Assets/Samples/Shader Graph/XX.Y.Z**, on XX.Y.Z és la versió instal·lada de Shader Graph (a la captura, 17.2.0).
+
+Exemples simples. Obre l'escena de demostració des de la finestra **Project**:
 
 *Assets > Samples > Shader Graph > XX.Y.Z > Feature Examples > Scenes > URPFeatureExamplesScene.unity*
 
@@ -35,7 +34,7 @@ Els shaders estan comentats amb notes explicatives:
 
 ## Production Ready
 
-Exemples professionals avançats, obrir l'escena de demostració a:
+Exemples professionals avançats. Obre l'escena de demostració des de la finestra **Project**:
 
 *Assets > Samples > Shader Graph > XX.Y.Z > Production Ready Shaders > Scenes > URPProductionReadyShaders.unity*
 
@@ -44,7 +43,7 @@ Exemples professionals avançats, obrir l'escena de demostració a:
 </center>
 <br/>
 
-Alguns materials es poden fer servir directament sobre objectes. Per exemple, arrossega aquest material a un cub:
+Alguns materials es poden fer servir directament sobre objectes. Per exemple, arrossega aquest material des de la finestra **Project** a sobre d'un cub:
 
 *Assets > Samples > Shader Graph > XX.Y.Z > Production Ready Shaders > Environment > Ice > Ice Shader.mat*
 

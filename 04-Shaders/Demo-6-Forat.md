@@ -9,25 +9,25 @@ Construirem una paret que es retalla al voltant del personatge quan l’oculta. 
 ## 1. Partir de Universal 3D
 
 1. Crea un projecte **Universal 3D (URP)**.
-2. A Package Manager, comprova **Universal RP**, **Shader Graph** i **Input System**. Shader Graph arriba com a dependència d’URP.
-3. A **Project Settings > Player > Active Input Handling**, selecciona **Input System Package (New)**. Accepta el reinici si Unity el demana.
-4. Crea `Assets/Demos/Forat` amb les carpetes **Shaders**, **Materials**, **Scenes** i **Meshes**. Crea també **Assets/Common** per als scripts.
+2. A **Window > Package Management > Package Manager**, comprova **Universal RP**, **Shader Graph** i **Input System**. Shader Graph arriba com a dependència d’URP.
+3. A **Edit > Project Settings > Player > Other Settings > Active Input Handling**, selecciona **Input System Package (New)**. Accepta el reinici si Unity el demana.
+4. A la finestra **Project**, crea `Assets/Demos/Forat` amb les carpetes **Shaders**, **Materials** i **Scenes** (botó dret > **Create > Folder**). Crea també **Assets/Common** per als scripts.
 5. Obre **Assets/Scenes/SampleScene**, que ja inclou **Main Camera**, **Directional Light** i **Global Volume**. Conserva aquests objectes. Amb **File > Save As…**, desa una còpia com a `DemoForat` dins de Scenes. Més endavant ajustarem la càmera i la llum existents.
 
 ## 2. Crear el Shader Graph
 
-A Shaders, crea **Create > Shader Graph > URP > Lit Shader Graph**, amb nom **SForat**. A Graph Inspector > Graph Settings, fixa:
+A la finestra Project, fes botó dret a la carpeta **Shaders** i tria **Create > Shader Graph > URP > Lit Shader Graph**, amb nom **SForat**. Fes-hi doble clic per obrir-lo. Al Blackboard, fes doble clic al camí que hi ha sota el nom del gràfic i escriu `DAM Shaders` (així el shader apareixerà a **Shader > DAM Shaders > SForat**). A **Graph Inspector > Graph Settings**, fixa:
 
 | Opció | Valor |
 |---|---|
 | Target | Universal |
 | Material | Lit |
 | Surface Type | Opaque |
-| Alpha Clipping | Activat; llindar 0.5 |
+| Alpha Clipping | Activat (el llindar 0.5 arriba del node `Llindar`, pas 5) |
 | Render Face | Front |
 | Cast Shadows | Desactivat |
 
-Afegeix al Blackboard aquestes propietats. Activa **Exposed** i escriu les **Reference exactes**, inclòs el guió baix. Els colors s’indiquen com a **RGB (0–255)**, tal com apareixen al selector de Unity; mantén **Alpha = 255** llevat que s’indiqui un altre valor. Els valors Float i Vector continuen en les seves unitats originals.
+Afegeix al Blackboard aquestes propietats. Activa **Show In Inspector** i escriu les **Reference exactes**, inclòs el guió baix. Els colors s’indiquen com a **RGB (0–255)**, tal com apareixen al selector de Unity; mantén **Alpha = 255** llevat que s’indiqui un altre valor. Els valors Float i Vector continuen en les seves unitats originals.
 
 | Nom | Tipus | Reference | Valor inicial |
 |---|---|---|---|
@@ -84,7 +84,7 @@ Resta el centre enviat pel controlador a Screen Position. Multiplica només X pe
 
 **Comprova el resultat:** Aquesta branca calcula coordenades de pantalla. El centre del forat el fixarà el controlador de l’escena; no el validis només amb la miniatura del graf.
 
-### Pas 2. Distancia i retall
+### Pas 2. Distància i retall
 
 Length dona una distància circular corregida. Actiu decideix si s’aplica el retall.
 
@@ -172,7 +172,7 @@ La diferència entre dos Step forma un anell estret. Actiu també controla aques
 
 ### Pas 5. Master Stack i connexions finals
 
-Connecta les sortides als blocs del Master Stack indicats a la taula de cables. Si hi ha un bloc Normal, configura’l en Tangent. Els blocs sense cable conserven el valor per defecte.
+Connecta les sortides als blocs del Master Stack indicats a la taula de cables. Els blocs sense cable (Position, Normal (Tangent Space), Metallic = 0, Smoothness = 0.5) conserven el valor per defecte.
 
 **Cables: arrossega de la sortida a l’entrada indicada.**
 
@@ -189,13 +189,15 @@ Els números de les entrades són valors literals. En un vector, repeteix el val
 
 ## 4. Crear els materials
 
-A la carpeta **Materials**, utilitza **Create > Rendering > Material** per a cada material indicat. A l’Inspector, selecciona **Shader > DAM Shaders > SForat** (o arrossega SForat del Project sobre el material). Crea un únic material `MParet` i assigna’l a les dues parets. El personatge porta un material **Universal Render Pipeline/Unlit**, RGB (5,255,204). No assignis el shader Forat al personatge.
+1. A la finestra Project, fes botó dret a la carpeta **Materials** i tria **Create > Material**. Anomena’l `MParet`.
+2. A l’Inspector, selecciona **Shader > DAM Shaders > SForat** (o arrossega SForat del Project sobre el material). Aquest únic material s’assignarà a les dues parets.
+3. Crea un altre material, `Jugador`, amb **Shader > Universal Render Pipeline > Unlit** i Base Map RGB (5,255,204). És el material del personatge: no hi assignis el shader SForat.
 
 ## 5. Construir l’escena
 
-Les posicions són globals i les escales corresponen a les primitives de Unity. Mantén els objectes a l’arrel, sense un pare escalat. Els elements decoratius i textos es poden ometre: no intervenen en el shader.
+Crea cada objecte amb el botó **+** de la Hierarchy > **3D Object** > primitiva indicada. Les posicions són globals i les escales corresponen a les primitives de Unity. Mantén els objectes a l’arrel, sense un pare escalat. Els elements decoratius i textos es poden ometre: no intervenen en el shader.
 
-| Objecte | Primitiva | Posicio | Escala |
+| Objecte | Primitiva | Posició | Escala |
 |---|---|---|---|
 | Base | Cube | (0, -0.22, 0) | (12, 0.4, 8) |
 | Personatge | Capsule | (0, 1.05, 1.5) | (0.85, 1, 0.85) |
@@ -207,15 +209,15 @@ Les posicions són globals i les escales corresponen a les primitives de Unity. 
 
 Posa Main Camera a **(7,5,−13)**, amb projecció **Perspective**, Field of View **40**, Near **0.1**, Far **100** i fons de color sòlid **RGB (5,7,13)**. Orienta-la cap al punt **(0,1.5,0.8)**. La rotació Euler corresponent és aproximadament **(12.745, -26.896, 0)**.
 
-Selecciona la **Directional Light** existent, canvia-li el nom a **Key Light** i ajusta-la: rotació (45,−30,0), intensitat 2 i color RGB (255,224,189); afegeix una segona llum amb **GameObject > Light > Directional Light**, anomena-la **Fill Light** i configura-la: rotació (25,140,0), intensitat 1 i color RGB (89,171,255). A **Window > Rendering > Lighting > Environment**, posa **Environment Lighting > Source = Color** i **Ambient Color** (82,97,122). La base porta un material **Universal Render Pipeline/Lit**, RGB (14,18,24), Smoothness 0.25. Crea un altre material Lit per a **Destinacio**, RGB (26,115,102), Smoothness 0.25.
+Selecciona la **Directional Light** existent, canvia-li el nom a **Key Light** i ajusta-la: rotació (45,−30,0), intensitat 2 i color RGB (255,224,189); afegeix una segona llum amb **GameObject > Light > Directional Light**, anomena-la **Fill Light** i configura-la: rotació (25,140,0), intensitat 1 i color RGB (89,171,255). A **Window > Rendering > Lighting > Environment**, posa **Environment Lighting > Source = Color** i **Ambient Color** (82,97,122). Crea a Materials el material `Base` (**Create > Material**, shader **Universal Render Pipeline > Lit**, RGB (14,18,24), Smoothness 0.25) i assigna’l a **Base**. Crea un altre material Lit, `Marca`, per a **Destinacio**: RGB (26,115,102), Smoothness 0.25.
 
-Activa **HDR** i **Post Processing** a la càmera existent. Selecciona el **Global Volume** existent; duplica el seu perfil a la carpeta de la demo i assigna-hi la còpia. Conserva només **Bloom** al perfil de la demo (elimina els altres overrides per reproduir aquesta il·luminació) i activa els seus overrides: Intensity **0.35**, Threshold **1**, Scatter **0.6**.
+Activa **HDR** i **Post Processing** a la càmera existent. Selecciona el **Global Volume** existent. A la finestra Project, selecciona el perfil que fa servir (a **Assets/Settings**), duplica’l amb **Edit > Duplicate**, mou la còpia a `Assets/Demos/Forat`, anomena-la `Bloom` i assigna-la al camp **Profile** del Global Volume. Conserva només **Bloom** al perfil de la demo (elimina els altres overrides per reproduir aquesta il·luminació) i activa els seus overrides: Intensity **0.35**, Threshold **1**, Scatter **0.6**.
 
 ## 6. Afegir els controls
 
 ### Càmera orbital i zoom
 
-Descarrega [DemoOrbitCamera.cs](demos/DemoOrbitCamera.cs) i desa’l a **Assets/Common/DemoOrbitCamera.cs**. Afegeix el component **Demo Orbit Camera** a **Main Camera**. Al ZIP ja està configurat.
+A la finestra Project, fes botó dret a **Assets/Common** i tria **Create > Scripting > MonoBehaviour Script**, amb nom `DemoOrbitCamera`. Obre’l i substitueix-ne tot el contingut pel de [DemoOrbitCamera.cs](demos/DemoOrbitCamera.cs). Afegeix el component **Demo Orbit Camera** a **Main Camera**. Al ZIP ja està configurat.
 
 - **Center = (0, 1.5, 0.8)**: punt fix al voltant del qual gira la càmera.
 - **Minimum Distance = 3**, **Maximum Distance = 35**.
@@ -228,7 +230,7 @@ El controlador del panell, que trobaràs a continuació, informa la càmera de q
 
 La càmera té ordre d’execució **−100** i es mou abans del `LateUpdate` de ForatController. Així, el retall utilitza la posició nova de la càmera en el mateix fotograma.
 
-Crea **Assets/Common/ForatController.cs** amb aquest codi complet:
+A **Assets/Common**, crea un altre script amb **Create > Scripting > MonoBehaviour Script**, anomena’l `ForatController` i substitueix-ne el contingut per aquest codi complet:
 
 ```csharp
 using UnityEngine;
@@ -372,7 +374,7 @@ public class ForatController : MonoBehaviour
 }
 ```
 
-Crea un objecte buit **ControlForat** i afegeix-hi ForatController. Configura:
+Crea un objecte buit amb el botó **+** de la Hierarchy > **Create Empty**, anomena’l **ControlForat** i afegeix-hi el component **Forat Controller**. Configura:
 
 | Camp | Assignació |
 |---|---|
@@ -384,7 +386,7 @@ Crea un objecte buit **ControlForat** i afegeix-hi ForatController. Configura:
 | Transition Duration | 0.35 segons |
 | Effect Enabled / Auto Move | Activats |
 
-Crea **DioramaWalls a l’índex 8** a Project Settings > Tags and Layers i assigna aquesta capa a les dues parets. Mantén els Box Collider de les parets amb Is Trigger desactivat. El personatge queda a Default. La consulta és un segment central; no comprova tota la silueta ni fa que el personatge travessi físicament la paret.
+Crea **DioramaWalls a l’índex 8** a **Edit > Project Settings > Tags and Layers** (User Layer 8) i assigna aquesta capa a les dues parets. Mantén els Box Collider de les parets amb Is Trigger desactivat. El personatge queda a Default. La consulta és un segment central; no comprova tota la silueta ni fa que el personatge travessi físicament la paret.
 
 El forat creix de radi zero fins a **Radius** en **Transition Duration** segons, i es tanca amb el recorregut invers. **F** o la sortida del personatge de darrere la paret inicien el tancament; si torna a quedar ocult abans d’acabar, el cercle inverteix el moviment des de la mida actual. Durant el tancament es conserva l’últim centre. Posa Transition Duration = **0** per recuperar el canvi instantani. El comptador indica les parets que tapen el personatge, encara que un cercle estigui acabant de tancar-se.
 
@@ -401,8 +403,6 @@ El forat creix de radi zero fins a **Radius** en **Transition Duration** segons,
 7. Desactiva ForatController: restaura la paret immediatament per no deixar propietats de retall sense un controlador actiu.
 
 <a href="assets/demoforat-sense.png"><img src="assets/demoforat-sense.png" alt="Efecte desactivat: la paret oculta el personatge" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
-
-<a href="assets/demoforat-lateral.png"><img src="assets/demoforat-lateral.png" alt="Personatge lateral: la paret recupera el seu aspecte complet" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
 ### Transició del radi
 

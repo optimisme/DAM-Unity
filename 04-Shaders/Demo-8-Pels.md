@@ -15,8 +15,8 @@ La guia inclou el codi complet: pots començar amb un projecte buit de la planti
 1. Crea un projecte **Universal 3D (URP)** anomenat **Demo-8-Pels**. No triïs Built-in ni HDRP.
 2. A **Window > Package Management > Package Manager**, comprova **Universal RP**, **Shader Graph** i **Input System**. Espera que acabin la importació i la compilació.
 3. A **Edit > Project Settings > Player > Other Settings > Active Input Handling**, selecciona **Input System Package (New)**. Accepta el reinici si es demana. A **Player > Resolution and Presentation**, activa **Run In Background**.
-4. A **Project Settings > Graphics**, conserva l’URP Asset de la plantilla. A **Quality**, el nivell actiu ha d’utilitzar **PC_RPAsset**, dins d’Assets/Settings.
-5. Crea **Assets/Demos/Pels**, amb les carpetes **Shaders**, **Materials**, **Textures**, **Meshes**, **Scripts** i **Scenes**. Crea també **Assets/Common**.
+4. A **Edit > Project Settings > Graphics**, conserva l’URP Asset de la plantilla. A **Quality**, el nivell actiu ha d’utilitzar **PC_RPAsset**, dins d’Assets/Settings.
+5. A la finestra **Project**, crea **Assets/Demos/Pels** (botó dret > **Create > Folder**), amb les carpetes **Shaders**, **Materials**, **Textures**, **Meshes**, **Scripts** i **Scenes**. Crea també **Assets/Common**.
 6. Obre **Assets/Scenes/SampleScene.unity**. Conserva **Main Camera**, **Directional Light** i **Global Volume**. Amb **File > Save As…**, desa l’escena com a **Assets/Demos/Pels/Scenes/DemoPels.unity**.
 7. Desactiva **Global Volume** amb la casella al costat del nom a l’Inspector. La demo no necessita postprocessament, Scene Depth ni Opaque Texture.
 
@@ -28,7 +28,7 @@ La curvatura d’aquesta demo és **esfèrica**, coneguda a partir de la posici�
 
 ## 3. Generar la malla i el mapa de pèl fi
 
-Crea **Assets/Demos/Pels/Scripts/GenerarRecursosPels.cs**, substitueix-ne tot el contingut pel codi següent i desa’l. La directiva `UNITY_EDITOR` impedeix que les dependències de l’editor entrin en una compilació del joc.
+A la finestra Project, fes botó dret a **Assets/Demos/Pels/Scripts** i tria **Create > Scripting > MonoBehaviour Script**, amb nom `GenerarRecursosPels`. Obre’l, substitueix-ne tot el contingut pel codi següent i desa’l. La directiva `UNITY_EDITOR` impedeix que les dependències de l’editor entrin en una compilació del joc.
 
 ```csharp
 #if UNITY_EDITOR
@@ -103,12 +103,12 @@ public static class GenerarRecursosPels
 #endif
 ```
 
-Espera la compilació i executa **Demos > Pels > 1 - Generar malla i mapa**. S’han de crear:
+Espera la compilació i, a la barra de menús de Unity, executa **Demos > Pels > 1 - Generar malla i mapa**. S’han de crear:
 
 - **Meshes/EsferaRadi1.asset**, amb 128 segments horitzontals i 64 verticals.
 - **Textures/MapaPels.png**, de **2048 × 1024 píxels**.
 
-Selecciona MapaPels i comprova a l’Inspector: **sRGB desactivat**, **Compression = None**, **Filter Mode = Bilinear**, **Max Size = 2048**, **Generate Mip Maps activat**, **Wrap U = Repeat** i **Wrap V = Clamp**. Si has canviat res, prem Apply. El generador ja deixa aquests valors configurats.
+Selecciona MapaPels i comprova a l’Inspector: **sRGB desactivat**, **Compression = None**, **Filter Mode = Bilinear**, **Max Size = 2048**, **Generate Mip Maps activat**, **Wrap U = Repeat** i **Wrap V = Clamp**. El generador ja deixa aquests valors configurats; si n’has canviat algun, prem **Apply**.
 
 ### Valors definitius del pèl fi
 
@@ -126,7 +126,7 @@ Aquests són els valors actualitzats: no facis servir un mapa de 1024 × 512 ni 
 
 ## 4. Crear les funcions HLSL compartides
 
-Crea **Assets/Demos/Pels/Shaders/Pels.hlsl** amb un editor de text. Si Unity no ofereix una plantilla HLSL, crea el fitxer des de l’editor extern i comprova que no quedi amb extensió `.txt`. Copia-hi tot aquest codi:
+Unity no té una plantilla per a fitxers `.hlsl`. Obre l’editor de codi des de Unity amb **Assets > Open C# Project** i, a la carpeta **Assets/Demos/Pels/Shaders**, crea un fitxer nou anomenat **Pels.hlsl** (comprova que no quedi amb extensió `.txt`). Copia-hi tot aquest codi i desa’l; en tornar a Unity apareixerà a la finestra Project:
 
 ```hlsl
 #ifndef DAM_PELS_INCLUDED
@@ -217,7 +217,7 @@ void PelsPOM_float(UnityTexture2D Map, float3 PosOS, float3 ViewOS,
 
 ## 5. Shader Graph de shells
 
-Crea **Shaders/SPelsShells** amb **Create > Shader Graph > URP > Unlit Shader Graph**. Obre’l. A Graph Inspector fixa **Precision = Single** i aquestes opcions:
+A la finestra Project, fes botó dret a la carpeta **Shaders** i tria **Create > Shader Graph > URP > Unlit Shader Graph**, amb nom **SPelsShells**. Fes-hi doble clic per obrir-lo. Al Blackboard, fes doble clic al camí que hi ha sota el nom del gràfic i escriu `DAM Shaders`. A **Graph Inspector > Graph Settings** fixa **Precision = Single** i aquestes opcions:
 
 | Opció | Valor |
 |---|---|
@@ -230,7 +230,7 @@ Crea **Shaders/SPelsShells** amb **Create > Shader Graph > URP > Unlit Shader Gr
 | Depth Test | LEqual |
 | Cast Shadows | Desactivat |
 
-Al Blackboard crea les propietats següents. Activa **Exposed**; les Reference han de coincidir exactament, incloent majúscules. Els colors s’indiquen com a **RGB 0–255**, amb alpha 255.
+Al Blackboard crea les propietats següents. Activa **Show In Inspector**; les Reference han de coincidir exactament, incloent majúscules. Els colors s’indiquen com a **RGB 0–255**, amb alpha 255.
 
 | Nom | Tipus | Reference | Valor inicial |
 |---|---|---|---|
@@ -257,7 +257,7 @@ Escriu els valors de la taula als camps sense cable. Si el camp és vectorial i 
 
 <a href="assets/demopels-shells-graf-complet.png"><img src="assets/demopels-shells-graf-complet.png" alt="Graf complet de Shells, amb totes les connexions i previsualitzacions" width="1600" style="width: 100%; max-width: 1600px; height: auto;"></a>
 
-### Pas 1. Extrusió al llarg de la normal
+### Pas 1. Extrusió de la malla
 
 **Nodes que has de crear i valors que has d’escriure:**
 
@@ -283,11 +283,11 @@ Escriu els valors de la taula als camps sense cable. Si el camp és vectorial i 
 | `Extrusio` | Out | `PosicioFinal` | B |
 | `PosicioFinal` | Out | `Vertex / Position` | Position |
 
-Connecta **PosicioFinal:Out → Vertex / Position**. Es connecta la posició final, no només l’increment. Mantén Vertex / Normal i Tangent amb els valors inicials.
+Connecta **PosicioFinal:Out → Vertex / Position**. Es connecta la posició final, no només l’increment. El context Vertex només té el bloc Position.
 
 **Comprova el resultat:** Comprova l’extrusió en la previsualització principal després de connectar Vertex / Position. La distribució de totes les capes es comprova a l’escena amb PelsShells.
 
-### Pas 2. Secció del pèl i opacitat
+### Pas 2. Secció i alpha
 
 **Nodes que has de crear i valors que has d’escriure:**
 
@@ -324,7 +324,7 @@ Connecta **Opacitat:Out → Fragment / Alpha**. No utilitzis la sortida A de la 
 
 **Comprova el resultat:** Desplega **Sample Texture 2D**, **Smoothstep** i **Maximum** (Opacitat): comprova el mapa d’altures, el tall suau i la màscara final. Amb Capa = 0, Opacitat ha de ser blanca.
 
-### Pas 3. Color del pèl
+### Pas 3. Color i sortides
 
 Crea una **Custom Function** amb **Type = File**, **Source = Pels.hlsl**, **Name = PelsColor** i **Precision = Single**. Al camp Name no escriguis `_float`: Shader Graph afegeix aquest sufix. Al codi, la funció sí que es diu `PelsColor_float`.
 
@@ -358,7 +358,7 @@ Desa el gràfic.
 
 ## 6. Shader Graph de POM amb curvatura
 
-Crea un **nou** URP Unlit Shader Graph anomenat **SPelsPOM**. Precision = **Single**. No dupliquis simplement el material transparent: aquest gràfic utilitza **Surface Type = Opaque**, **Alpha Clipping activat**, **Render Face = Front**, **Depth Write = Auto**, **Depth Test = LEqual** i **Cast Shadows desactivat**.
+A la carpeta **Shaders**, crea un **nou** gràfic amb **Create > Shader Graph > URP > Unlit Shader Graph**, anomenat **SPelsPOM**. Escriu també `DAM Shaders` com a camí al Blackboard i fixa Precision = **Single**. No dupliquis el gràfic de shells: aquest utilitza **Surface Type = Opaque**, **Alpha Clipping activat**, **Render Face = Front**, **Depth Write = Auto**, **Depth Test = LEqual** i **Cast Shadows desactivat**.
 
 Crea aquestes propietats exposades:
 
@@ -376,7 +376,7 @@ Crea aquestes propietats exposades:
 
 <a href="assets/demopels-pom-graf-complet.png"><img src="assets/demopels-pom-graf-complet.png" alt="Graf complet de POM, amb totes les connexions i previsualitzacions" width="1600" style="width: 100%; max-width: 1600px; height: auto;"></a>
 
-### Pas 1. Crear l’envolupant exterior
+### Pas 1. Extrusió de la malla (envolupant exterior)
 
 **Nodes que has de crear i valors que has d’escriure:**
 
@@ -402,7 +402,7 @@ Connecta **PosicioFinal:Out → Vertex / Position**. Aquí no hi ha Capa ni Altu
 
 **Comprova el resultat:** Comprova l’envolupant en la previsualització principal; ha d’incloure el desplaçament de tota la malla.
 
-### Pas 2. Recórrer el mapa d’altures
+### Pas 2. Raig i curvatura
 
 Afegeix una Custom Function: **Type = File**, **Source = Pels.hlsl**, **Name = PelsPOM**, **Precision = Single**. Anomenarem aquest node **Recorregut**.
 
@@ -450,7 +450,7 @@ Mantén el port Texture2D en el format habitual de Shader Graph, compatible amb 
 
 **Comprova el resultat:** Comprova el POM sobre l’esfera de l’escena des de diversos angles. La funció té diverses sortides; valida també Alpha i Alpha Clip Threshold al material.
 
-### Pas 3. Color del punt trobat
+### Pas 3. Color i sortides
 
 Crea una altra Custom Function **PelsColor**, amb exactament els mateixos sis inputs i la mateixa sortida del pas 5.3. No la connectis a la posició i altura originals: ha d’utilitzar el punt que ha trobat el POM.
 
@@ -481,18 +481,18 @@ Desa el gràfic.
 
 ## 7. Materials i objectes de l’escena
 
-A **Materials**, crea quatre materials amb **Create > Rendering > Material**:
+A la finestra Project, fes botó dret a la carpeta **Materials** i crea quatre materials amb **Create > Material**. A l’Inspector, tria el shader indicat a **Shader**:
 
 | Material | Shader | Valors |
 |---|---|---|
-| MPelsShells | SPelsShells | Mapa = MapaPels; Llargada = 0.16; Capa = 0.5; Ratlles = 1; colors de la taula |
-| MPelsPOM | SPelsPOM | Mapa = MapaPels; Llargada = 0.16; Passos = 128; Curvatura = 1; Ratlles = 0; colors de la taula |
-| MTerra | Universal Render Pipeline/Unlit | Base Map RGB (83,125,105), alpha 255 |
-| MPedestal | Universal Render Pipeline/Unlit | Base Map RGB (32,46,56), alpha 255 |
+| MPelsShells | DAM Shaders > SPelsShells | Mapa = MapaPels; Llargada = 0.16; Capa = 0.5; Ratlles = 1; colors de la taula |
+| MPelsPOM | DAM Shaders > SPelsPOM | Mapa = MapaPels; Llargada = 0.16; Passos = 128; Curvatura = 1; Ratlles = 0; colors de la taula |
+| MTerra | Universal Render Pipeline > Unlit | Base Map RGB (83,125,105), alpha 255 |
+| MPedestal | Universal Render Pipeline > Unlit | Base Map RGB (32,46,56), alpha 255 |
 
-Arrossega cada Shader Graph sobre el material corresponent. Al ZIP els trobaràs sota **DAM Shaders/SPelsShells** i **DAM Shaders/SPelsPOM**. Els noms del menú poden ser diferents si no has definit un Path al gràfic; això no afecta el resultat.
+També pots arrossegar cada Shader Graph des del Project sobre el material corresponent.
 
-Crea aquests objectes **a l’arrel de la jerarquia**, amb Rotation = (0,0,0). Les posicions són globals:
+Crea aquests objectes **a l’arrel de la jerarquia** amb el botó **+** de la Hierarchy (**3D Object > Cube / Cylinder**, o **Create Empty** per als buits), amb Rotation = (0,0,0). Les posicions són globals:
 
 | Objecte | Tipus | Position | Scale | Material |
 |---|---|---|---|---|
@@ -503,13 +503,13 @@ Crea aquests objectes **a l’arrel de la jerarquia**, amb Rotation = (0,0,0). L
 | EsferaPOM | Empty | (1.5,1.5,0) | (1,1,1) | MPelsPOM |
 | ControlPels | Empty | (0,0,0) | (1,1,1) | — |
 
-A **EsferaPOM**, afegeix **Mesh Filter** i **Mesh Renderer**. Assigna **EsferaRadi1** al Mesh Filter i **MPelsPOM** al primer material del Mesh Renderer. A Lighting, posa **Cast Shadows = Off** i desactiva **Receive Shadows**. No necessita Collider.
+A **EsferaPOM**, afegeix els components **Mesh Filter** i **Mesh Renderer** amb **Add Component**. Assigna **EsferaRadi1** al Mesh Filter i **MPelsPOM** al primer material del Mesh Renderer. A Lighting, posa **Cast Shadows = Off** i desactiva **Receive Shadows**. No necessita Collider.
 
 No escalis una Sphere de Unity per substituir aquesta malla: el POM necessita el radi i les UV del recurs generat.
 
 ## 8. Generar i controlar les shells
 
-Crea **Scripts/PelsShells.cs** amb aquest codi:
+A **Assets/Demos/Pels/Scripts**, crea un script amb **Create > Scripting > MonoBehaviour Script**, anomena’l `PelsShells` i substitueix-ne el contingut per aquest codi:
 
 ```csharp
 using UnityEngine;
@@ -567,7 +567,7 @@ public class PelsShells : MonoBehaviour
 }
 ```
 
-Afegeix **PelsShells** a **EsferaShells** i configura:
+Afegeix el component **Pels Shells** a **EsferaShells** i configura:
 
 | Camp | Valor |
 |---|---|
@@ -596,9 +596,9 @@ Configura Main Camera:
 
 La rotació apunta a **(0,1.5,0)**. Conserva Audio Listener i Universal Additional Camera Data. A Directional Light posa Rotation = (40,-35,0) i Intensity = 1.4; els materials d’aquesta demo són Unlit, de manera que aquesta llum queda disponible per a futures ampliacions. Mantén Global Volume desactivat.
 
-Copia [DemoOrbitCamera.cs](demos/DemoOrbitCamera.cs) a **Assets/Common** i afegeix-lo a Main Camera. Configura **Center = (0,1.5,0)** i **Minimum Distance = 2.8**; conserva la resta de valors inicials.
+A la finestra Project, fes botó dret a **Assets/Common** i tria **Create > Scripting > MonoBehaviour Script**, amb nom `DemoOrbitCamera`. Obre’l i substitueix-ne tot el contingut pel de [DemoOrbitCamera.cs](demos/DemoOrbitCamera.cs). Afegeix el component **Demo Orbit Camera** a Main Camera. Configura **Center = (0,1.5,0)** i **Minimum Distance = 2.8**; conserva la resta de valors inicials.
 
-Crea **Scripts/PelsController.cs**:
+A **Assets/Demos/Pels/Scripts**, crea un altre script amb **Create > Scripting > MonoBehaviour Script**, anomena’l `PelsController` i substitueix-ne el contingut per aquest codi:
 
 ```csharp
 using UnityEngine;
@@ -667,7 +667,7 @@ public class PelsController : MonoBehaviour
 }
 ```
 
-Afegeix PelsController a **ControlPels**:
+Afegeix el component **Pels Controller** a **ControlPels**:
 
 | Camp | Valor |
 |---|---|

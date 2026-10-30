@@ -4,51 +4,60 @@ Crea un shader amb una propietat de color i aplica’l a un cub.
 
 ## Projecte
 
-Fes un nou projecte tipus **"Universal 3D"** anomenat **ShadersTest** amb **Unity**. Obre **Assets/Scenes/SampleScene** i conserva **Main Camera**, **Directional Light** i **Global Volume**; no cal crear-los. Desa una còpia amb **File > Save As…**.
+1. Crea un projecte nou amb la plantilla **Universal 3D** i anomena'l **ShadersTest**.
+2. A la finestra **Project**, obre **Assets/Scenes/SampleScene**. Conserva **Main Camera**, **Directional Light** i **Global Volume**; no cal crear-los.
+3. A la finestra **Project**, selecciona la carpeta **Assets** i crea una carpeta nova amb **Assets > Create > Folder**. Anomena-la **Shaders**.
 
-Als *Assets* crea una nova carpeta **"Shaders"**
+## Primer shader
 
-## Primer Shader
-
-A la carpeta *Assets > Shaders* crea un nou **"Unlit Shader"** i anomena'l **"SColor"**
-
-*Create > Shader Graph > URP > Unlit Shader Graph*
+1. Selecciona la carpeta **Assets/Shaders** a la finestra **Project**.
+2. Crea un **Unlit Shader Graph** amb **Assets > Create > Shader Graph > URP > Unlit Shader Graph** (també el trobes amb el botó dret a la carpeta, **Create > Shader Graph > URP > Unlit Shader Graph**).
+3. Anomena'l **SColor**.
 
 <center>
 <a href="./assets/primer-createunlitshader.png"><img src="./assets/primer-createunlitshader.png" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 </center>
 <br/>
 
-Amb el botó dret a la carpeta del Project, utilitza **Create > Rendering > Material** i anomena’l **MColor**. Arrossega **SColor** del Project sobre el material i comprova a l’**Inspector** que el shader queda assignat:
+## Material
+
+1. Amb la carpeta **Assets/Shaders** seleccionada, crea un material amb **Assets > Create > Material**.
+2. Anomena'l **MColor**.
+3. Arrossega **SColor** des de la finestra **Project** a sobre del material **MColor**.
+4. Selecciona **MColor** i comprova a l’**Inspector** que el camp **Shader** mostra **Shader Graphs/SColor**:
 
 <center>
 <a href="./assets/primer-materialshader.png"><img src="./assets/primer-materialshader.png" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 </center>
 <br/>
 
-Fes doble clic a sobre del *shader* per obrir la pestanya de definició del shader.
+## Editar el gràfic
+
+Fes doble clic a **SColor** per obrir-lo a la finestra de **Shader Graph**.
 
 <center>
 <a href="./assets/primer-shadertab.png"><img src="./assets/primer-shadertab.png" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 </center>
 <br/>
 
-Inicialment només es veuen les sortides del material:
+Al centre hi ha el **Master Stack**, amb els dos blocs de sortida del material:
 
 - **Vertex**: controla els valors que afecten la geometria de l’objecte (per exemple, la posició dels vèrtexs o la seva deformació).
 
-- **Fragment** controla propietats de la superfície com el color. Aquest gràfic és Unlit: el color no depèn de la il·luminació habitual de l’escena.
+- **Fragment**: controla propietats de la superfície com el color. Aquest gràfic és Unlit: el color no depèn de la il·luminació habitual de l’escena.
 
-A l'esquerra tenim un espai on podem definir els paràmetres que l'usuari podrà configurar del nostre *shader*.
+A l'esquerra hi ha el **Blackboard**, on es defineixen les propietats que es podran configurar des del material. A la dreta hi ha el **Graph Inspector** i el **Main Preview**.
 
-Prem el botó **+** i afegeix un paràmetre de tipus **Color** anomenat **"Base Color"**
+1. Al **Blackboard**, prem el botó **+** i tria **Color**.
+2. Anomena la propietat **Base Color**.
 
 <center>
 <a href="./assets/primer-parameters.png"><img src="./assets/primer-parameters.png" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 </center>
 <br/>
 
-Arrossega el nou paràmetre **"Base Color"** cap a l'àrea del gràfic, i connecta la seva sortida amb l'entrada de **"Fragment > Base Color(3)"**
+3. Arrossega la propietat **Base Color** del **Blackboard** cap a l'àrea del gràfic.
+4. Connecta la sortida del node **Base Color** amb l'entrada **Base Color(3)** del bloc **Fragment**.
 
 <center>
 <video src="./assets/primer-dragparameter.mov" width="600" controls></video>
@@ -58,23 +67,21 @@ Arrossega el nou paràmetre **"Base Color"** cap a l'àrea del gràfic, i connec
 
 <a href="assets/primer-graf-complet.png"><img src="assets/primer-graf-complet.png" alt="Graf complet de SColor amb la propietat Base Color connectada al Fragment" width="1600" style="width: 100%; max-width: 1600px; height: auto;"></a>
 
-Comprova que la propietat té **Exposed** activat per poder-la editar al material.
+5. Selecciona la propietat **Base Color** al **Blackboard** i comprova a **Graph Inspector > Node Settings** que **Show In Inspector** està activat. Així la podràs editar des del material.
 
-Això farà que el color escollit per l'usuari s'apliqui com a color de sortida del shader.
+Això farà que el color escollit al material s'apliqui com a color de sortida del shader.
 
-Desa el shader amb el botó del **disquet** per aplicar els canvis a l’escena.
+6. Desa el gràfic amb el botó **Save Asset** (el **disquet** de la part superior esquerra de la finestra de Shader Graph) per aplicar els canvis.
 
 <center>
 <img src="./assets/savedisk.png" style="width: 90%; max-width: 100px">
 </center>
 <br/>
 
-Crea un nou material i anomena'l "MColor", **arrossega el shader a sobre del material**.
+## Aplicar-lo a un cub
 
-Crea un nou objecte tipus *3D Object > Cube* a l'escena:
-
-- Posa'l a la posició X:0, Y:0, Z:0
-- Aplica-li el material *"MColor"*
+1. Crea un cub amb el botó **+** de la finestra **Hierarchy**: **3D Object > Cube**.
+2. Arrossega el material **MColor** des de la finestra **Project** a sobre del cub (a l'escena o a la **Hierarchy**).
 
 El color inicial depèn del valor per defecte de la propietat; pots canviar-lo amb el selector de:
 
@@ -85,10 +92,11 @@ El color inicial depèn del valor per defecte de la propietat; pots canviar-lo a
 </center>
 <br/>
 
+Desa l'escena amb **File > Save**.
 
 ## Comprovar el resultat
 
 - Canvia el color al material i comprova que el cub el mostra.
 - Crea un segon material amb el mateix shader: comprova que pot tenir un color diferent.
-- Si no apareix la propietat, comprova Exposed i desa el gràfic.
-- Si no canvia el cub, comprova quin material té assignat el seu Renderer.
+- Si no apareix la propietat, comprova **Show In Inspector** i desa el gràfic.
+- Si no canvia el cub, comprova quin material té assignat el seu **Mesh Renderer**.

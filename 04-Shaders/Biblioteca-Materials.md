@@ -9,7 +9,7 @@ Una col·lecció de **14 famílies de materials estilitzats per a URP**, pensada
 
 <img src="assets/biblioteca-materials-cataleg.png" alt="Catàleg de materials estilitzats" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
-El catàleg conserva la càmera, la llum principal i Global Volume de **Universal 3D**. El ZIP s’ha revisat també el 9 d’octubre de 2026: obertura automàtica i prova de les 15 famílies per separat.
+El catàleg conserva la càmera, la llum principal i Global Volume de **Universal 3D**. El ZIP s’ha revisat també el 9 d’octubre de 2026: obertura automàtica i prova dels 15 grups del catàleg (les 14 famílies i l’aigua Galaxy) per separat.
 
 ## Què inclou
 
@@ -55,7 +55,7 @@ Cada grup conté el pedestal, el cub, l’esfera, el pla i l’etiqueta. El grup
 
 Selecciona un grup a la **Hierarchy** i marca o desmarca la casella d’activació al costat del nom, a dalt de l’**Inspector**. S’activarà o desactivarà tota la família. L’ull de la Hierarchy només controla la visibilitat de l’editor; per desactivar també el renderitzat durant Play, utilitza la casella de l’objecte. Fora de Play, desa l’escena per conservar la selecció de grups actius.
 
-El taller i els botons del catàleg utilitzen aquests mateixos grups, amb referències assignades al component Cataleg. En entrar en Play, el catàleg comença mostrant Base; pots canviar de família amb el panell o activar altres grups manualment.
+El taller i els botons del catàleg utilitzen aquests mateixos grups, amb referències assignades al component **CatalogNavigator** de l’objecte **Cataleg**. En entrar en Play, el catàleg comença mostrant Base; pots canviar de família amb el panell o activar altres grups manualment.
 
 ## Ajustar materials amb menys càrrega
 
@@ -69,7 +69,7 @@ Obre **DAM > Materials: taller individual** amb l’escena CatalegMaterials ober
 
 L’aïllament desactiva els objectes dels altres exemples; no només els deixa fora de la càmera. Fora de Play, els canvis de visibilitat formen part de l’escena i es poden desfer. En Play, el catàleg també aïlla la família seleccionada; Home recupera tots els exemples.
 
-Per veure les animacions, entra en Play i selecciona la família al panell. La compilació inicial dels shaders pot continuar trigant. Si tens altres editors Unity executant demos en Play, també comparteixen els recursos de l’ordinador. L’aïllament s’ha comprovat amb les 15 famílies i amb combinacions; no s’ha mesurat un augment concret d’FPS.
+Per veure les animacions, entra en Play i selecciona la família al panell. La compilació inicial dels shaders pot continuar trigant. Si tens altres editors Unity executant demos en Play, també comparteixen els recursos de l’ordinador. L’aïllament s’ha comprovat amb els 15 grups i amb combinacions; no s’ha mesurat un augment concret d’FPS.
 
 ## Importar el `.unitypackage` en un projecte dels alumnes
 
@@ -101,19 +101,25 @@ No inclou ProjectSettings, paquets, càmeres, llums, scripts ni l’escena de ca
 
 ### 3. Aplicar i personalitzar
 
-1. Crea un cub o selecciona un objecte amb Mesh Renderer.
-2. Arrossega, per exemple, **Materials/M_Plastic.mat** sobre l’objecte.
-3. Per personalitzar-lo, selecciona el material i fes **Duplicate**. Mou la còpia a la carpeta de materials del teu joc i dona-li un nom, com `M_PlasticGroc`.
+1. Crea un cub amb el botó **+** de la **Hierarchy** (**3D Object > Cube**) o selecciona un objecte amb Mesh Renderer.
+2. Arrossega, per exemple, **Materials/M_Plastic.mat** des de la finestra **Project** sobre l’objecte.
+3. Per personalitzar-lo, selecciona el material a la finestra **Project** i fes **Edit > Duplicate**. Arrossega la còpia a la carpeta de materials del teu joc dins de la finestra Project i dona-li un nom, com `M_PlasticGroc`.
 4. Canvia **Color** i **Brillantor** a l’Inspector. Els objectes que utilitzin la còpia compartiran aquests valors.
 5. Per canviar la construcció de l’efecte, obre el `.shadergraph` corresponent. Si vols conservar l’original, duplica també el graf i assigna’l al material nou.
 
 Modificar un material compartit afecta tots els objectes que l’utilitzen. Els paràmetres del material es conserven en sortir de Play només si els has editat com a assets; els canvis de components de l’escena fets durant Play són temporals.
 
-### 4. Copiar la carpeta com a alternativa
+### 4. Exportar la biblioteca modificada
 
-També pots copiar **tota la carpeta Assets/DAMShaders/Library** del projecte de catàleg a la carpeta Assets d’un altre projecte URP. Conserva els arxius **`.meta`**, encara que el Finder els amagui: contenen els GUID amb què els materials troben els grafs i les textures.
+Si has modificat la biblioteca al projecte de catàleg i la vols portar a un altre projecte URP, exporta-la des de Unity en lloc de copiar fitxers fora de l’editor:
 
-Copia la carpeta sencera, no només els `.mat`. Si la biblioteca ja existeix al projecte, evita crear-ne una segona còpia amb els mateixos `.meta`. Conserva els materials personalitzats fora de la biblioteca abans d’actualitzar-la: reimportar el mateix paquet pot substituir els assets originals.
+1. A la finestra **Project** del projecte de catàleg, fes clic dret a la carpeta **Assets/DAMShaders/Library** i tria **Export Package…**.
+2. Deixa marcats tots els elements i prem **Export**. Desa el `.unitypackage` resultant.
+3. Al projecte de destinació, importa’l com a l’apartat 2.
+
+El paquet exportat conserva els arxius **`.meta`**: contenen els GUID amb què els materials troben els grafs i les textures.
+
+Exporta la carpeta sencera, no només els `.mat`. Si la biblioteca ja existeix al projecte, evita crear-ne una segona còpia amb els mateixos `.meta`. Conserva els materials personalitzats fora de la biblioteca abans d’actualitzar-la: reimportar el mateix paquet pot substituir els assets originals.
 
 ## Aigua i requisits especials
 
@@ -138,7 +144,7 @@ Les textures són PNG generades prèviament; no es recalculen amb Voronoi o soro
 
 Al taller, selecciona una família, tria un botó **M_…** i prem **Aplicar aquest material als exemples**. Això canvia el material del cub, l’esfera i el pla. Fora de Play, el canvi de l’escena es pot desfer amb Undo; en Play és temporal. Editar els paràmetres de l’asset sí que modifica el material compartit.
 
-El gel combina dues mostres de cristalls; la capa interior utilitza **Parallax Mapping**, amb MapaAltura i la direcció de la càmera en espai tangent. **Profunditat = 0** elimina aquest desplaçament. És una il·lusió de profunditat sobre un material opac, no una simulació de refracció o reflexions múltiples dins del volum. El normal map de facetes modifica els reflexos de la il·luminació. Fi i Glacera comparteixen els mapes del gel amb paràmetres diferents. Els materials GelCristallsV1, V2 i V3 porten tres jocs addicionals coordinats de cristalls, normals i altura.
+El gel combina dues mostres de cristalls; la capa interior utilitza **Parallax Mapping**, amb MapaAltura i la direcció de la càmera en espai tangent. **Profunditat = 0** elimina aquest desplaçament. És una il·lusió de profunditat sobre un material opac, no una simulació de refracció o reflexions múltiples dins del volum. El normal map de facetes modifica els reflexos de la il·luminació. Fi i Glacera comparteixen els mapes del gel amb paràmetres diferents. Els materials **M_GelCristallsV1**, **V2** i **V3** porten tres jocs addicionals coordinats de cristalls, normals i altura.
 
 <img src="assets/biblioteca-materials-gel-altura.png" alt="Gel amb cristalls interiors i facetes" width="600" style="width: 90%; max-width: 600px; height: auto;">
 
@@ -203,6 +209,6 @@ M_Plastic parteix d’un acabat suau; M_PlasticBrillant incrementa Brillantor. E
 
 ## Comprovació
 
-Provat amb Unity a macOS. S’han comprovat la compilació i les referències de textura dels 36 materials, i s’han renderitzat totes les variants de fusta, roca, maons i gel. El gel s’ha renderitzat des de dos angles i s’ha comparat amb Profunditat a zero: el paràmetre modifica el resultat. També s’ha comprovat l’aïllament de les 15 famílies i les combinacions al taller. No s’ha mesurat un guany concret d’FPS ni s’ha validat en Windows o Linux.
+Provat amb Unity a macOS. S’han comprovat la compilació i les referències de textura dels 36 materials, i s’han renderitzat totes les variants de fusta, roca, maons i gel. El gel s’ha renderitzat des de dos angles i s’ha comparat amb Profunditat a zero: el paràmetre modifica el resultat. També s’ha comprovat l’aïllament dels 15 grups i les combinacions al taller. No s’ha mesurat un guany concret d’FPS ni s’ha validat en Windows o Linux.
 
 L’ampliació s’ha comprovat amb 84 textures i 36 materials: variants diferents, mapes d’altura lineals, importació dels normals i compilació dels shaders. El gel s’ha comparat amb profunditat zero i amb un mapa gris uniforme; tots dos canvis modifiquen el resultat. S’han renderitzat també els tres jocs nous de cristalls.

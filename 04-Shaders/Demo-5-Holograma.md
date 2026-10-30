@@ -9,14 +9,14 @@ Construirem tres figures semitransparents amb franges animades i vores que s’i
 ## 1. Partir de Universal 3D
 
 1. Crea un projecte **Universal 3D (URP)**.
-2. A Package Manager, comprova **Universal RP**, **Shader Graph** i **Input System**. Shader Graph arriba com a dependència d’URP.
+2. A **Window > Package Management > Package Manager**, comprova **Universal RP**, **Shader Graph** i **Input System**. Shader Graph arriba com a dependència d’URP.
 3. A **Project Settings > Player > Active Input Handling**, selecciona **Input System Package (New)**. Accepta el reinici si Unity el demana.
-4. Crea `Assets/Demos/Holograma` amb les carpetes **Shaders**, **Materials**, **Scenes** i **Meshes**. Crea també **Assets/Common** per als scripts.
+4. A la finestra **Project**, crea `Assets/Demos/Holograma` (botó dret > **Create > Folder**) amb les carpetes **Shaders**, **Materials**, **Scenes** i **Meshes**. Crea també **Assets/Common** per als scripts.
 5. Obre **Assets/Scenes/SampleScene**, que ja inclou **Main Camera**, **Directional Light** i **Global Volume**. Conserva aquests objectes. Amb **File > Save As…**, desa una còpia com a `DemoHolograma` dins de Scenes. Més endavant ajustarem la càmera i la llum existents.
 
 ## 2. Crear el Shader Graph
 
-A Shaders, crea **Create > Shader Graph > URP > Lit Shader Graph**, amb nom **SHolograma**. A Graph Inspector > Graph Settings, fixa:
+A la finestra Project, fes botó dret a la carpeta Shaders i tria **Create > Shader Graph > URP > Lit Shader Graph**, amb nom **SHolograma**. Obre’l i, a **Graph Inspector > Graph Settings**, fixa:
 
 | Opció | Valor |
 |---|---|
@@ -29,7 +29,7 @@ A Shaders, crea **Create > Shader Graph > URP > Lit Shader Graph**, amb nom **SH
 
 Per a Transparent, utilitza Blending Mode **Alpha**.
 
-Afegeix al Blackboard aquestes propietats. Activa **Exposed** i escriu les **Reference exactes**, inclòs el guió baix. Els colors s’indiquen com a **RGB (0–255)**, tal com apareixen al selector de Unity; mantén **Alpha = 255** llevat que s’indiqui un altre valor. Els valors Float i Vector continuen en les seves unitats originals.
+Afegeix al Blackboard aquestes propietats. Activa **Show In Inspector** i escriu les **Reference exactes**, inclòs el guió baix. Els colors s’indiquen com a **RGB (0–255)**, tal com apareixen al selector de Unity; mantén **Alpha = 255** llevat que s’indiqui un altre valor. Els valors Float i Vector continuen en les seves unitats originals.
 
 | Nom | Tipus | Reference | Valor inicial |
 |---|---|---|---|
@@ -52,9 +52,9 @@ Per veure el resultat d’un node, fes-hi botó dret i tria **View > Expand Prev
 
 Escriu els valors de la taula als camps sense cable. Si el camp és vectorial i només s’indica un valor, repeteix-lo a tots els components. Clica les captures per veure-les a mida completa.
 
-**Graf complet:** segueix els grups numerats fins al **Master Stack**. Les previsualitzacions mostren les franges, el contorn Fresnel, el color i l’alpha. [Obre la imatge a mida completa](assets/demoholograma-graf-complet.png) per llegir els ports i seguir tots els cables.
+**Graf complet d’Holograma:** segueix els grups numerats fins al **Master Stack**. Les previsualitzacions mostren les franges, el contorn Fresnel, el color i l’alpha. [Obre la imatge a mida completa](assets/demoholograma-graf-complet.png) per llegir els ports i seguir tots els cables.
 
-<a href="assets/demoholograma-graf-complet.png"><img src="assets/demoholograma-graf-complet.png" alt="Graf complet de Holograma amb totes les connexions i les previsualitzacions" width="1600" style="width: 100%; max-width: 1600px; height: auto;"></a>
+<a href="assets/demoholograma-graf-complet.png"><img src="assets/demoholograma-graf-complet.png" alt="Graf complet d’Holograma amb totes les connexions i les previsualitzacions" width="1600" style="width: 100%; max-width: 1600px; height: auto;"></a>
 
 ### Pas 1. Franges animades
 
@@ -64,7 +64,7 @@ Position Object.y fixa les franges a l’objecte. Temps anima la fase sense mour
 
 | Identificador de la guia | Tipus a cercar a Unity | Configuració / valors sense cable |
 |---|---|---|
-| `UV` | UV | Channel = UV0 |
+| `UV` | UV | Channel = UV0 (apareix a la captura, però no es connecta) |
 | `Posicio` | Position | Space: Object |
 | `Eixos` | Split | Valors per defecte |
 | `Altura` | Multiply | Valors per defecte |
@@ -78,9 +78,9 @@ Position Object.y fixa les franges a l’objecte. Temps anima la fase sense mour
 |---|---|---|---|
 | `Posicio` | Out | `Eixos` | In |
 | `Eixos` | G | `Altura` | A |
-| `Frequencia` | Out | `Altura` | B |
+| `Frequencia franges` | Out | `Altura` | B |
 | `Altura` | Out | `Fase` | A |
-| `Temps` | Out | `Fase` | B |
+| `Temps (controlat pel guio)` | Out | `Fase` | B |
 | `Fase` | Out | `Ona` | In |
 | `Ona` | Out | `Franges` | In |
 
@@ -108,7 +108,7 @@ Maximum combina les franges amb Fresnel. Lerp conserva un mínim d’alpha de 0.
 
 **Comprova el resultat:** Desplega **Fresnel Effect** i **Maximum** (Mascara): en una previsualització esfèrica, el Fresnel il·lumina el contorn i Maximum hi afegeix les franges.
 
-### Pas 3. Color i emissio
+### Pas 3. Color i emissió
 
 Multiplica el color per la màscara i Intensitat per alimentar Emission.
 
@@ -132,7 +132,7 @@ Multiplica el color per la màscara i Intensitat per alimentar Emission.
 
 ### Pas 4. Master Stack i connexions finals
 
-Connecta les sortides als blocs del Master Stack indicats a la taula de cables. Si hi ha un bloc Normal, configura’l en Tangent. Els blocs sense cable conserven el valor per defecte.
+Connecta les sortides als blocs del Master Stack indicats a la taula de cables. Els blocs sense cable (Normal (Tangent Space), Metallic, Smoothness) conserven el valor per defecte.
 
 **Cables: arrossega de la sortida a l’entrada indicada.**
 
@@ -142,17 +142,28 @@ Connecta les sortides als blocs del Master Stack indicats a la taula de cables. 
 | `Emissio` | Out | `Fragment / Emission` | Emission |
 | `Transparencia` | Out | `Fragment / Alpha` | Alpha |
 
-Els números de les entrades són valors literals. En un vector, repeteix el valor a tots els components quan s’indica un únic nombre. A Combine, tria RG per a Vector2; a Split, R/G/B equivalen a X/Y/Z. Desa el graf abans de crear els materials.
+Els números de les entrades són valors literals. En un vector, repeteix el valor a tots els components quan s’indica un únic nombre. A Split, R/G/B equivalen a X/Y/Z. Desa el graf abans de crear els materials.
 
 **Comprova el resultat:** Desa el graf. Comprova la transparència sobre la mostra i la resplendor amb el Bloom de l’escena.
 
 ## 4. Crear els materials
 
-A la carpeta **Materials**, utilitza **Create > Rendering > Material** per a cada material indicat. A l’Inspector, selecciona **Shader > DAM Shaders > SHolograma** (o arrossega SHolograma del Project sobre el material). `MHolograma0`, `MHolograma1`, `MHolograma2`: Frequencia = **12, 24, 36**. Color RGB: **(5,204,255), (102,38,255), (255,46,89)**.
+1. A la finestra Project, fes botó dret a la carpeta **Materials** i tria **Create > Material**. Anomena’l **MHolograma0**.
+2. A l’Inspector, selecciona **Shader > DAM Shaders > SHolograma** (o arrossega SHolograma del Project sobre el material).
+3. Repeteix-ho per crear **MHolograma1** i **MHolograma2**.
+4. Configura cada material segons la taula. Intensitat es manté a **3**.
+
+| Material | Frequencia franges | Color |
+|---|---|---|
+| MHolograma0 | 12 | RGB (5, 204, 255) |
+| MHolograma1 | 24 | RGB (102, 38, 255) |
+| MHolograma2 | 36 | RGB (255, 46, 89) |
+
+Assignaràs MHolograma0, MHolograma1 i MHolograma2 a Holograma0, Holograma1 i Holograma2, respectivament, a l’apartat 5.
 
 ## 5. Construir l’escena
 
-Les posicions són globals i les escales corresponen a les primitives de Unity. Mantén els objectes a l’arrel, sense un pare escalat. Els elements decoratius i textos es poden ometre: no intervenen en el shader.
+Crea cada objecte amb el menú **+** de la Hierarchy (**3D Object > Cube**, **Capsule**, **Sphere** o **Cylinder**). Les posicions són globals i les escales corresponen a les primitives de Unity. Mantén els objectes a l’arrel, sense un pare escalat. Els textos decoratius es poden ometre: no intervenen en el shader.
 
 | Objecte | Primitiva | Posicio | Escala |
 |---|---|---|---|
@@ -164,19 +175,21 @@ Les posicions són globals i les escales corresponen a les primitives de Unity. 
 | Holograma2 | Capsule | (3.2, 2.15, 0) | (1.4, 1.3, 1.4) |
 | Peanya2 | Cylinder | (3.2, 0.24, 0) | (2.85, 0.23, 2.85) |
 
+Arrossega MHolograma0, MHolograma1 i MHolograma2 del Project sobre Holograma0, Holograma1 i Holograma2, respectivament.
+
 ### Càmera i llums
 
 Posa Main Camera a **(8,6,−14)**, amb projecció **Perspective**, Field of View **40**, Near **0.1**, Far **100** i fons de color sòlid **RGB (5,7,13)**. Orienta-la cap al punt **(0,1.7,0)**. La rotació Euler corresponent és aproximadament **(14.932, -29.745, 0)**.
 
-Selecciona la **Directional Light** existent, canvia-li el nom a **Key Light** i ajusta-la: rotació (45,−30,0), intensitat 2 i color RGB (255,224,189); afegeix una segona llum amb **GameObject > Light > Directional Light**, anomena-la **Fill Light** i configura-la: rotació (25,140,0), intensitat 1 i color RGB (89,171,255). A **Window > Rendering > Lighting > Environment**, posa **Environment Lighting > Source = Color** i **Ambient Color** (82,97,122). La base porta un material Lit gris blavós (14,18,24), Smoothness 0.25; les peanyes, RGB (26,36,48). Crea aquests materials també amb **Create > Rendering > Material**, selecciona **Shader > Universal Render Pipeline > Lit** i assigna’ls als objectes corresponents.
+Selecciona la **Directional Light** existent, canvia-li el nom a **Key Light** i ajusta-la: rotació (45,−30,0), intensitat 2 i color RGB (255,224,189); afegeix una segona llum amb **+ > Light > Directional Light** a la Hierarchy, anomena-la **Fill Light** i configura-la: rotació (25,140,0), intensitat 1 i color RGB (89,171,255). A **Window > Rendering > Lighting**, pestanya **Environment**, posa **Environment Lighting > Source = Color** i **Ambient Color** (82,97,122). Crea els materials **Base** i **Pedestal** amb **Create > Material** i shader **Universal Render Pipeline > Lit**: Base, gris blavós RGB (14,18,24); Pedestal, RGB (26,36,48); tots dos amb Smoothness 0.25. Assigna Base a l’objecte Base i Pedestal a les tres peanyes.
 
-Activa **HDR** i **Post Processing** a la càmera existent. Selecciona el **Global Volume** existent; duplica el seu perfil a la carpeta de la demo i assigna-hi la còpia. Conserva només **Bloom** al perfil de la demo (elimina els altres overrides per reproduir aquesta il·luminació) i activa els seus overrides: Intensity **0.35**, Threshold **1**, Scatter **0.6**.
+Activa **HDR** i **Post Processing** a la càmera existent. Selecciona el **Global Volume** existent; duplica el seu perfil a la carpeta de la demo (al ZIP es diu **Bloom**) i assigna-hi la còpia. Conserva només **Bloom** al perfil de la demo (elimina els altres overrides per reproduir aquesta il·luminació) i activa els seus overrides: Intensity **0.35**, Threshold **1**, Scatter **0.6**.
 
 ## 6. Afegir els controls
 
 ### Càmera orbital i zoom
 
-Descarrega [DemoOrbitCamera.cs](demos/DemoOrbitCamera.cs) i desa’l a **Assets/Common/DemoOrbitCamera.cs**. Afegeix el component **Demo Orbit Camera** a **Main Camera**. Al ZIP ja està configurat.
+A la finestra Project, fes botó dret a **Assets/Common** i tria **Create > Scripting > MonoBehaviour Script**. Anomena’l **DemoOrbitCamera**, obre’l i substitueix-ne tot el contingut pel de [DemoOrbitCamera.cs](demos/DemoOrbitCamera.cs). Afegeix el component **Demo Orbit Camera** a **Main Camera**. Al ZIP ja està configurat.
 
 - **Center = (0, 1.7, 0)**: punt fix al voltant del qual gira la càmera.
 - **Minimum Distance = 3**, **Maximum Distance = 35**.
@@ -187,7 +200,7 @@ En **Play**, clica **Game**. Mantén premut el **botó dret** i arrossega per gi
 
 El controlador del panell, que trobaràs a continuació, informa la càmera de quan el punter és sobre els controls perquè el lliscador no mogui el punt de vista. La càmera funciona igualment quan el temps del shader està en pausa.
 
-Crea **Assets/Common/DemoControls.cs** amb aquest codi complet:
+A **Assets/Common**, crea **DemoControls** amb **Create > Scripting > MonoBehaviour Script** i substitueix-ne el contingut per aquest codi complet:
 
 ```csharp
 using UnityEngine;
@@ -286,7 +299,7 @@ public class DemoControls : MonoBehaviour
 }
 ```
 
-Crea un objecte buit **Controls** i afegeix-hi DemoControls. A **Surfaces**, assigna els tres Renderers de les mostres, en ordre d’esquerra a dreta. No hi afegeixis la base, els textos ni les peanyes.
+Crea un objecte buit **Controls** i afegeix-hi DemoControls. A **Surfaces**, assigna els Mesh Renderers de Holograma0, Holograma1 i Holograma2, en aquest ordre. No hi afegeixis la base, els textos ni les peanyes.
 
 | Camp | Valor |
 |---|---|
@@ -305,8 +318,8 @@ Els canvis durant Play són temporals. Per canviar els valors inicials de manera
 
 1. Comprova les franges de les tres figures i l’animació vertical.
 2. Prem Espai per congelar el temps.
-3. Mou Frequencia: augmenta o disminueix la densitat de les franges.
-4. Gira la càmera a l’editor: Fresnel continua destacant les zones vistes de gairell.
+3. Mou el lliscador `_Frequencia`: augmenta o disminueix la densitat de les franges.
+4. Gira la càmera amb el botó dret a la vista Game: Fresnel continua destacant les zones vistes de gairell.
 
 <a href="assets/demoholograma-variant.png"><img src="assets/demoholograma-variant.png" alt="Variant amb el lliscador al màxim" width="1200" style="width: 100%; max-width: 1200px; height: auto;"></a>
 
